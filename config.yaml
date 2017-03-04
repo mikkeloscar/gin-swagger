@@ -1,0 +1,28 @@
+layout:
+  application:
+    - name: configure
+      # source: asset:serverConfigureapi
+      source: "{{ .TmpDir }}/templates/config.gotmpl"
+      target: "{{`{{ joinFilePath .Target .ServerPackage }}`}}"
+      file_name: "config.go"
+      # skip_exists: true
+    - name: embedded_spec
+      source: asset:swaggerJsonEmbed
+      target: "{{`{{ joinFilePath .Target .ServerPackage }}`}}"
+      file_name: "embedded_spec.go"
+    - name: server
+      # source: asset:serverServer
+      source: "{{ .TmpDir }}/templates/api.gotmpl"
+      target: "{{`{{ joinFilePath .Target .ServerPackage }}`}}"
+      file_name: "api.go"
+  models:
+    - name: definition
+      source: asset:model
+      target: "{{`{{ joinFilePath .Target .ModelPackage }}`}}"
+      file_name: "{{`{{ (snakize (pascalize .Name)) }}`}}.go"
+  operations:
+    - name: parameters
+      # source: asset:serverParameter
+      source: "{{ .TmpDir }}/templates/parameter.gotmpl"
+      target: "{{`{{ if gt (len .Tags) 0 }}{{ joinFilePath .Target .ServerPackage .APIPackage .Package  }}{{ else }}{{ joinFilePath .Target .ServerPackage .Package  }}{{ end }}`}}"
+      file_name: "{{`{{ (snakize (pascalize .Name)) }}`}}_parameters.go"

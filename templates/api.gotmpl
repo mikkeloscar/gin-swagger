@@ -1,0 +1,198 @@
+package {{ .APIPackage }}
+
+import (
+	"context"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+	"strings"
+
+	"golang.org/x/oauth2"
+
+	"github.com/gin-gonic/gin"
+	ginoauth2 "github.com/zalando/gin-oauth2"
+	"github.com/mikkeloscar/gin-swagger/middleware"
+	{{range .DefaultImports}}{{printf "%q" .}}
+	{{end}}
+	{{range $key, $value := .Imports}}{{$key}} {{ printf "%q" $value}}
+	{{end}}
+)
+
+// Routes defines all the routes of the API service.
+type Routes struct {
+	*gin.Engine
+	{{range .Operations}}{{ pascalize .Name }} struct {
+		*gin.RouterGroup
+		{{ if .Authorized }}Auth gin.HandlerFunc
+{{end}}		Post *gin.RouterGroup
+	}
+{{end}}
+}
+
+// configureWellKnown enables and configures /.well-known endpoints.
+func (r *Routes) configureWellKnown(healthFunc func() bool) {
+	wellKnown := r.Group("/.well-known")
+	{
+		wellKnown.GET("/schema-discovery", func(ctx *gin.Context) {
+			discovery := struct {
+				SchemaURL  string `json:"schema_url"`
+				SchemaType string `json:"schema_type"`
+				UIURL      string `json:"ui_url"`
+			}{
+				SchemaURL:  "/swagger.json",
+				SchemaType: "swagger-2.0",
+				UIURL:      "/ui/",
+			}
+			ctx.JSON(http.StatusOK, &discovery)
+		})
+		wellKnown.GET("/health", healthHandler(healthFunc))
+	}
+
+	r.GET("/ui/", func(ctx *gin.Context) {
+		// TODO: implement /ui
+		ctx.String(http.StatusNotImplemented, "Not Implemented")
+	})
+
+	r.GET("/swagger.json", func(ctx *gin.Context) {
+		ctx.String(http.StatusOK, string(SwaggerJSON))
+	})
+}
+
+// healthHandler is the health HTTP handler used for the /.well-known/health
+// route if enabled.
+func healthHandler(healthFunc func() bool) gin.HandlerFunc {
+	healthy := healthFunc
+	return func(ctx *gin.Context) {
+			health := struct {
+				Health bool `json:"health"`
+			}{
+				Health: healthy(),
+			}
+
+			if !health.Health {
+				ctx.JSON(http.StatusServiceUnavailable, &health)
+			} else {
+				ctx.JSON(http.StatusOK, &health)
+			}
+	}
+}
+
+// Service is the interface that must be implemented in order to provide
+// business logic for the API service.
+type Service interface {
+	Healthy() bool
+	{{range .Operations}}{{ pascalize .Name }}(ctx *gin.Context)
+{{end}}
+}
+
+func ginizePath(path string) string {
+	return strings.Replace(strings.Replace(path, "{", ":", -1), "}", "", -1)
+}
+
+// configureRoutes configures the routes for the API service.
+func configureRoutes(service Service, enableAuth bool) *Routes {
+	routes := &Routes{Engine: gin.Default()}
+
+	{{range .Operations}}routes.{{ pascalize .Name }}.RouterGroup = routes.Group("")
+	{{ if ne .Method "GET" }}routes.{{ pascalize .Name }}.RouterGroup.Use(middleware.ContentTypes({{range $index, $typ := .ConsumesMediaTypes}}{{if $index}},{{end}}"{{$typ}}"{{end}}))
+{{ end }}	{{ if .Params }}routes.{{ pascalize .Name }}.RouterGroup.Use({{.Package}}.Bind{{ pascalize .Name }})
+{{ end }}	{{ if .Authorized }}if enableAuth {
+		{{ $routeName := (pascalize .Name) }}
+		{{ $securityDefinitions := .SecurityDefinitions }}
+		{{ range .Security }}{{ $def := index $securityDefinitions .Name }}
+		{{ if eq $def.SecuritySchemeProps.Type "oauth2" }}
+		routes.{{ $routeName }}.Auth = ginoauth2.Auth(
+			middleware.ScopesAuth({{range $index, $scope := .Scopes}}{{if $index}},{{end}}"{{$scope}}"{{end}}),
+			oauth2.Endpoint{
+				TokenURL: {{printf "%q" $def.SecuritySchemeProps.TokenURL}},
+			},
+		)
+		{{ end }}
+		routes.{{ $routeName }}.RouterGroup.Use(routes.{{ $routeName }}.Auth)
+		{{ end }}
+	}
+{{end}}	routes.{{ pascalize .Name }}.Post = routes.{{ pascalize .Name }}.Group("")
+	routes.{{ pascalize .Name }}.Post.{{.Method}}(ginizePath({{printf "%q" .Path}}), service.{{ pascalize .Name }})
+
+{{end}}
+	return routes
+}
+
+// API defines the API service.
+type API struct {
+	Routes *Routes
+	config *Config
+	server *http.Server
+}
+
+// NewAPI initializes a new API service.
+func NewAPI(svc Service, config *Config) *API {
+	if !config.Debug {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	api := &API{
+		Routes: configureRoutes(svc, !config.AuthDisabled),
+		config: config,
+	}
+
+	api.server = &http.Server{
+		Addr:         config.Address,
+		Handler:      api.Routes.Engine,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
+	if !config.WellKnownDisabled {
+		api.Routes.configureWellKnown(svc.Healthy)
+	}
+
+	return api
+}
+
+// Run runs the API server it will listen on either HTTP or HTTPS depending on
+// the config passed to NewAPI.
+func (a *API) Run() error {
+	if a.config.InsecureHTTP {
+		return a.server.ListenAndServe()
+	}
+	return a.server.ListenAndServeTLS(a.config.TLSCertFile, a.config.TLSKeyFile)
+}
+
+// Shutdown will gracefully shutdown the API server.
+func (a *API) Shutdown() error {
+	return a.server.Shutdown(context.Background())
+}
+
+// RunWithSigHandler runs the API server with SIGTERM handling automatically
+// enabled. The server will listen for a SIGTERM, SIGINT or SIGQUIT signal and
+// gracefully shutdown the web server.
+// It's possible to optionally pass any number shutdown functions which will
+// execute one by one after the webserver has been shutdown successfully.
+func (a *API) RunWithSigHandler(shutdown ...func() error) error {
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+
+	go func() {
+		<-sigCh
+		a.Shutdown()
+	}()
+
+	err := a.Run()
+	if err != nil {
+		if err != http.ErrServerClosed {
+			return err
+		}
+	}
+
+	for _, fn := range shutdown {
+		err := fn()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
