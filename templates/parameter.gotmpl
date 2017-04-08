@@ -159,6 +159,12 @@ type {{ pascalize .Name }}Params struct {
   {{ end}}
 }
 
+{{ if .Params }}// {{ pascalize .Name }}ParamsFromCtx gets the params struct from the gin context.
+func {{ pascalize .Name }}ParamsFromCtx(ctx *gin.Context) *{{ pascalize .Name }}Params {
+	params, _ := ctx.Get("params")
+	return params.(*{{ pascalize .Name }}Params)
+}{{ end }}
+
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
 func ({{ .ReceiverName }} *{{ pascalize .Name }}Params) bindRequest(ctx *gin.Context) error {

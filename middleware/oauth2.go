@@ -20,6 +20,32 @@ func ScopesAuth(scopes ...string) ginoauth2.AccessCheckFunction {
 				return false
 			}
 		}
+		// set uid and realm
+		// ctx.Set("uid")
 		return true
+	}
+}
+
+// User defines a user with UID and Realm.
+type User struct {
+	UID   string
+	Realm string
+}
+
+// GetUser gets user (uid and realm) from a gin context.
+func GetUser(ctx *gin.Context) *User {
+	uid, ok := ctx.Get("uid")
+	if !ok {
+		return nil
+	}
+
+	realm, ok := ctx.Get("realm")
+	if !ok {
+		return nil
+	}
+
+	return &User{
+		UID:   uid.(string),
+		Realm: realm.(string),
 	}
 }

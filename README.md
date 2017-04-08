@@ -28,3 +28,5 @@
   * Use case post: *audit report events post handler*.
 * [ ] Swagger UI
 * [ ] Ginize generated code.
+* [ ] Set and get user info (uid, realm) from gin context.
+* [ ] Response helper functions
