@@ -128,3 +128,21 @@ func (m *ClusterUpdate) validateStatus(formats strfmt.Registry) error {
 
 	return nil
 }
+
+// MarshalBinary interface implementation
+func (m *ClusterUpdate) MarshalBinary() ([]byte, error) {
+	if m == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(m)
+}
+
+// UnmarshalBinary interface implementation
+func (m *ClusterUpdate) UnmarshalBinary(b []byte) error {
+	var res ClusterUpdate
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*m = res
+	return nil
+}

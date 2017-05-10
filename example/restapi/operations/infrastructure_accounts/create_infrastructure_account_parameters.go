@@ -9,24 +9,27 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
+	"github.com/mikkeloscar/gin-swagger/api"
 
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// BindCreateInfrastructureAccount validates and binds request parameters to the gin
-// context.
-func BindCreateInfrastructureAccount(ctx *gin.Context) {
-	params := &CreateInfrastructureAccountParams{}
-	err := params.bindRequest(ctx)
-	if err != nil {
-		errObj := err.(*errors.CompositeError)
-		ctx.JSON(int(errObj.Code()), errObj)
-		return
+func BusinessLogicCreateInfrastructureAccount(f func(ctx *gin.Context, params *CreateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// generate params from request
+		params := &CreateInfrastructureAccountParams{}
+		err := params.bindRequest(ctx)
+		if err != nil {
+			errObj := err.(*errors.CompositeError)
+			ctx.JSON(int(errObj.Code()), errObj)
+			return
+		}
+
+		resp := f(ctx, params)
+		ctx.JSON(resp.Code, resp.Body)
 	}
-	ctx.Set("params", params)
-	ctx.Next()
 }
 
 // CreateInfrastructureAccountParams contains all the bound params for the create infrastructure account operation

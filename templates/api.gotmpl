@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	ginoauth2 "github.com/zalando/gin-oauth2"
 	"github.com/mikkeloscar/gin-swagger/middleware"
+	"github.com/mikkeloscar/gin-swagger/api"
 	{{range .DefaultImports}}{{printf "%q" .}}
 	{{end}}
 	{{range $key, $value := .Imports}}{{$key}} {{ printf "%q" $value}}
@@ -83,7 +84,7 @@ func healthHandler(healthFunc func() bool) gin.HandlerFunc {
 // business logic for the API service.
 type Service interface {
 	Healthy() bool
-	{{range .Operations}}{{ pascalize .Name }}(ctx *gin.Context)
+	{{range .Operations}}{{ pascalize .Name }}(ctx *gin.Context{{ if .Params }}, params *{{.Package}}.{{ pascalize .Name }}Params{{ end }}) *api.Response
 {{end}}
 }
 
@@ -97,7 +98,6 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	{{range .Operations}}routes.{{ pascalize .Name }}.RouterGroup = routes.Group("")
 	{{ if ne .Method "GET" }}routes.{{ pascalize .Name }}.RouterGroup.Use(middleware.ContentTypes({{range $index, $typ := .ConsumesMediaTypes}}{{if $index}},{{end}}"{{$typ}}"{{end}}))
-{{ end }}	{{ if .Params }}routes.{{ pascalize .Name }}.RouterGroup.Use({{.Package}}.Bind{{ pascalize .Name }})
 {{ end }}	{{ if .Authorized }}if enableAuth {
 		{{ $routeName := (pascalize .Name) }}
 		{{ $securityDefinitions := .SecurityDefinitions }}
@@ -114,7 +114,7 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 		{{ end }}
 	}
 {{end}}	routes.{{ pascalize .Name }}.Post = routes.{{ pascalize .Name }}.Group("")
-	routes.{{ pascalize .Name }}.Post.{{.Method}}(ginizePath({{printf "%q" .Path}}), service.{{ pascalize .Name }})
+	routes.{{ pascalize .Name }}.Post.{{.Method}}(ginizePath({{printf "%q" .Path}}), {{.Package}}.BusinessLogic{{ pascalize .Name }}(service.{{ pascalize .Name }}))
 
 {{end}}
 	return routes

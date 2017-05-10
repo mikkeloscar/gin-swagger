@@ -6,7 +6,16 @@ package health
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
+	"github.com/mikkeloscar/gin-swagger/api"
 )
+
+func BusinessLogicGetHealth(f func(ctx *gin.Context) *api.Response) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		resp := f(ctx)
+		ctx.JSON(resp.Code, resp.Body)
+	}
+}
 
 // GetHealthParams contains all the bound params for the get health operation
 // typically these are obtained from a http.Request

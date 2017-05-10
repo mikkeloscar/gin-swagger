@@ -9,22 +9,25 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/swag"
 	"github.com/go-openapi/validate"
+	"github.com/mikkeloscar/gin-swagger/api"
 
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// BindListClusters validates and binds request parameters to the gin
-// context.
-func BindListClusters(ctx *gin.Context) {
-	params := &ListClustersParams{}
-	err := params.bindRequest(ctx)
-	if err != nil {
-		errObj := err.(*errors.CompositeError)
-		ctx.JSON(int(errObj.Code()), errObj)
-		return
+func BusinessLogicListClusters(f func(ctx *gin.Context, params *ListClustersParams) *api.Response) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// generate params from request
+		params := &ListClustersParams{}
+		err := params.bindRequest(ctx)
+		if err != nil {
+			errObj := err.(*errors.CompositeError)
+			ctx.JSON(int(errObj.Code()), errObj)
+			return
+		}
+
+		resp := f(ctx, params)
+		ctx.JSON(resp.Code, resp.Body)
 	}
-	ctx.Set("params", params)
-	ctx.Next()
 }
 
 // ListClustersParams contains all the bound params for the list clusters operation

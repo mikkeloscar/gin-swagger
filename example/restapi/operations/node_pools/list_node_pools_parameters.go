@@ -7,22 +7,25 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/validate"
+	"github.com/mikkeloscar/gin-swagger/api"
 
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// BindListNodePools validates and binds request parameters to the gin
-// context.
-func BindListNodePools(ctx *gin.Context) {
-	params := &ListNodePoolsParams{}
-	err := params.bindRequest(ctx)
-	if err != nil {
-		errObj := err.(*errors.CompositeError)
-		ctx.JSON(int(errObj.Code()), errObj)
-		return
+func BusinessLogicListNodePools(f func(ctx *gin.Context, params *ListNodePoolsParams) *api.Response) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// generate params from request
+		params := &ListNodePoolsParams{}
+		err := params.bindRequest(ctx)
+		if err != nil {
+			errObj := err.(*errors.CompositeError)
+			ctx.JSON(int(errObj.Code()), errObj)
+			return
+		}
+
+		resp := f(ctx, params)
+		ctx.JSON(resp.Code, resp.Body)
 	}
-	ctx.Set("params", params)
-	ctx.Next()
 }
 
 // ListNodePoolsParams contains all the bound params for the list node pools operation

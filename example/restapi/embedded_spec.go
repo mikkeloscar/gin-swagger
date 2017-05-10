@@ -66,65 +66,7 @@ func init() {
                 "items": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "required": [
-                      "id",
-                      "type",
-                      "name",
-                      "owner",
-                      "environment",
-                      "criticality_level",
-                      "external_id",
-                      "lifecycle_status"
-                    ],
-                    "properties": {
-                      "criticality_level": {
-                        "description": "Level of criticality as defined by tech controlling. 1 is non critical, 2 is standard production, 3 is PCI",
-                        "type": "integer",
-                        "format": "int32",
-                        "example": 2
-                      },
-                      "environment": {
-                        "description": "Environment. possible values are \"production\" or \"staging\". This field is set at creation time and cannot be modified.",
-                        "type": "string",
-                        "example": "production"
-                      },
-                      "external_id": {
-                        "description": "The external identifier of the account (i.e. AWS account ID)",
-                        "type": "string",
-                        "example": "123456789012"
-                      },
-                      "id": {
-                        "description": "Globally unique ID of the infrastructure account.",
-                        "type": "string",
-                        "example": "aws:123456789012"
-                      },
-                      "lifecycle_status": {
-                        "description": "Lifecycle Status is used to describe the current status of the account.",
-                        "type": "string",
-                        "enum": [
-                          "requested",
-                          "creating",
-                          "ready",
-                          "decommissioned"
-                        ]
-                      },
-                      "name": {
-                        "description": "Name of the infrastructure account",
-                        "type": "string",
-                        "example": "foo"
-                      },
-                      "owner": {
-                        "description": "Owner of the infrastructure account (references an object in the organization service)",
-                        "type": "string",
-                        "example": "team/bar"
-                      },
-                      "type": {
-                        "description": "Type of the infrastructure account. Possible types are \"aws\", \"gcp\", \"dc\". This field is set at creation time and cannot be modified.",
-                        "type": "string",
-                        "example": "aws"
-                      }
-                    }
+                    "$ref": "#/definitions/InfrastructureAccount"
                   }
                 }
               }

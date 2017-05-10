@@ -12,8 +12,10 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mikkeloscar/gin-swagger/api"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/clusters"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/config_items"
+	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/health"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/infrastructure_accounts"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/node_pools"
 	"github.com/mikkeloscar/gin-swagger/middleware"
@@ -151,21 +153,21 @@ func healthHandler(healthFunc func() bool) gin.HandlerFunc {
 // business logic for the API service.
 type Service interface {
 	Healthy() bool
-	AddOrUpdateConfigItem(ctx *gin.Context)
-	CreateCluster(ctx *gin.Context)
-	CreateInfrastructureAccount(ctx *gin.Context)
-	CreateOrUpdateNodePool(ctx *gin.Context)
-	DeleteCluster(ctx *gin.Context)
-	DeleteConfigItem(ctx *gin.Context)
-	DeleteNodePool(ctx *gin.Context)
-	GetCluster(ctx *gin.Context)
-	GetHealth(ctx *gin.Context)
-	GetInfrastructureAccount(ctx *gin.Context)
-	ListClusters(ctx *gin.Context)
-	ListInfrastructureAccounts(ctx *gin.Context)
-	ListNodePools(ctx *gin.Context)
-	UpdateCluster(ctx *gin.Context)
-	UpdateInfrastructureAccount(ctx *gin.Context)
+	AddOrUpdateConfigItem(ctx *gin.Context, params *config_items.AddOrUpdateConfigItemParams) *api.Response
+	CreateCluster(ctx *gin.Context, params *clusters.CreateClusterParams) *api.Response
+	CreateInfrastructureAccount(ctx *gin.Context, params *infrastructure_accounts.CreateInfrastructureAccountParams) *api.Response
+	CreateOrUpdateNodePool(ctx *gin.Context, params *node_pools.CreateOrUpdateNodePoolParams) *api.Response
+	DeleteCluster(ctx *gin.Context, params *clusters.DeleteClusterParams) *api.Response
+	DeleteConfigItem(ctx *gin.Context, params *config_items.DeleteConfigItemParams) *api.Response
+	DeleteNodePool(ctx *gin.Context, params *node_pools.DeleteNodePoolParams) *api.Response
+	GetCluster(ctx *gin.Context, params *clusters.GetClusterParams) *api.Response
+	GetHealth(ctx *gin.Context) *api.Response
+	GetInfrastructureAccount(ctx *gin.Context, params *infrastructure_accounts.GetInfrastructureAccountParams) *api.Response
+	ListClusters(ctx *gin.Context, params *clusters.ListClustersParams) *api.Response
+	ListInfrastructureAccounts(ctx *gin.Context) *api.Response
+	ListNodePools(ctx *gin.Context, params *node_pools.ListNodePoolsParams) *api.Response
+	UpdateCluster(ctx *gin.Context, params *clusters.UpdateClusterParams) *api.Response
+	UpdateInfrastructureAccount(ctx *gin.Context, params *infrastructure_accounts.UpdateInfrastructureAccountParams) *api.Response
 }
 
 func ginizePath(path string) string {
@@ -178,7 +180,6 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	routes.AddOrUpdateConfigItem.RouterGroup = routes.Group("")
 	routes.AddOrUpdateConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
-	routes.AddOrUpdateConfigItem.RouterGroup.Use(config_items.BindAddOrUpdateConfigItem)
 	if enableAuth {
 
 		routes.AddOrUpdateConfigItem.Auth = ginoauth2.Auth(
@@ -192,11 +193,10 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.AddOrUpdateConfigItem.Post = routes.AddOrUpdateConfigItem.Group("")
-	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), service.AddOrUpdateConfigItem)
+	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.BusinessLogicAddOrUpdateConfigItem(service.AddOrUpdateConfigItem))
 
 	routes.CreateCluster.RouterGroup = routes.Group("")
 	routes.CreateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
-	routes.CreateCluster.RouterGroup.Use(clusters.BindCreateCluster)
 	if enableAuth {
 
 		routes.CreateCluster.Auth = ginoauth2.Auth(
@@ -210,11 +210,10 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.CreateCluster.Post = routes.CreateCluster.Group("")
-	routes.CreateCluster.Post.POST(ginizePath("/kubernetes-clusters"), service.CreateCluster)
+	routes.CreateCluster.Post.POST(ginizePath("/kubernetes-clusters"), clusters.BusinessLogicCreateCluster(service.CreateCluster))
 
 	routes.CreateInfrastructureAccount.RouterGroup = routes.Group("")
 	routes.CreateInfrastructureAccount.RouterGroup.Use(middleware.ContentTypes("application/json"))
-	routes.CreateInfrastructureAccount.RouterGroup.Use(infrastructure_accounts.BindCreateInfrastructureAccount)
 	if enableAuth {
 
 		routes.CreateInfrastructureAccount.Auth = ginoauth2.Auth(
@@ -228,11 +227,10 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.CreateInfrastructureAccount.Post = routes.CreateInfrastructureAccount.Group("")
-	routes.CreateInfrastructureAccount.Post.POST(ginizePath("/infrastructure-accounts"), service.CreateInfrastructureAccount)
+	routes.CreateInfrastructureAccount.Post.POST(ginizePath("/infrastructure-accounts"), infrastructure_accounts.BusinessLogicCreateInfrastructureAccount(service.CreateInfrastructureAccount))
 
 	routes.CreateOrUpdateNodePool.RouterGroup = routes.Group("")
 	routes.CreateOrUpdateNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
-	routes.CreateOrUpdateNodePool.RouterGroup.Use(node_pools.BindCreateOrUpdateNodePool)
 	if enableAuth {
 
 		routes.CreateOrUpdateNodePool.Auth = ginoauth2.Auth(
@@ -246,11 +244,10 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.CreateOrUpdateNodePool.Post = routes.CreateOrUpdateNodePool.Group("")
-	routes.CreateOrUpdateNodePool.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), service.CreateOrUpdateNodePool)
+	routes.CreateOrUpdateNodePool.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.BusinessLogicCreateOrUpdateNodePool(service.CreateOrUpdateNodePool))
 
 	routes.DeleteCluster.RouterGroup = routes.Group("")
 	routes.DeleteCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
-	routes.DeleteCluster.RouterGroup.Use(clusters.BindDeleteCluster)
 	if enableAuth {
 
 		routes.DeleteCluster.Auth = ginoauth2.Auth(
@@ -264,11 +261,10 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.DeleteCluster.Post = routes.DeleteCluster.Group("")
-	routes.DeleteCluster.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}"), service.DeleteCluster)
+	routes.DeleteCluster.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.BusinessLogicDeleteCluster(service.DeleteCluster))
 
 	routes.DeleteConfigItem.RouterGroup = routes.Group("")
 	routes.DeleteConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
-	routes.DeleteConfigItem.RouterGroup.Use(config_items.BindDeleteConfigItem)
 	if enableAuth {
 
 		routes.DeleteConfigItem.Auth = ginoauth2.Auth(
@@ -282,11 +278,10 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.DeleteConfigItem.Post = routes.DeleteConfigItem.Group("")
-	routes.DeleteConfigItem.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), service.DeleteConfigItem)
+	routes.DeleteConfigItem.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.BusinessLogicDeleteConfigItem(service.DeleteConfigItem))
 
 	routes.DeleteNodePool.RouterGroup = routes.Group("")
 	routes.DeleteNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
-	routes.DeleteNodePool.RouterGroup.Use(node_pools.BindDeleteNodePool)
 	if enableAuth {
 
 		routes.DeleteNodePool.Auth = ginoauth2.Auth(
@@ -300,10 +295,9 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.DeleteNodePool.Post = routes.DeleteNodePool.Group("")
-	routes.DeleteNodePool.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), service.DeleteNodePool)
+	routes.DeleteNodePool.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.BusinessLogicDeleteNodePool(service.DeleteNodePool))
 
 	routes.GetCluster.RouterGroup = routes.Group("")
-	routes.GetCluster.RouterGroup.Use(clusters.BindGetCluster)
 	if enableAuth {
 
 		routes.GetCluster.Auth = ginoauth2.Auth(
@@ -317,14 +311,13 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.GetCluster.Post = routes.GetCluster.Group("")
-	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), service.GetCluster)
+	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.BusinessLogicGetCluster(service.GetCluster))
 
 	routes.GetHealth.RouterGroup = routes.Group("")
 	routes.GetHealth.Post = routes.GetHealth.Group("")
-	routes.GetHealth.Post.GET(ginizePath("/healthz"), service.GetHealth)
+	routes.GetHealth.Post.GET(ginizePath("/healthz"), health.BusinessLogicGetHealth(service.GetHealth))
 
 	routes.GetInfrastructureAccount.RouterGroup = routes.Group("")
-	routes.GetInfrastructureAccount.RouterGroup.Use(infrastructure_accounts.BindGetInfrastructureAccount)
 	if enableAuth {
 
 		routes.GetInfrastructureAccount.Auth = ginoauth2.Auth(
@@ -338,10 +331,9 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.GetInfrastructureAccount.Post = routes.GetInfrastructureAccount.Group("")
-	routes.GetInfrastructureAccount.Post.GET(ginizePath("/infrastructure-accounts/{account_id}"), service.GetInfrastructureAccount)
+	routes.GetInfrastructureAccount.Post.GET(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.BusinessLogicGetInfrastructureAccount(service.GetInfrastructureAccount))
 
 	routes.ListClusters.RouterGroup = routes.Group("")
-	routes.ListClusters.RouterGroup.Use(clusters.BindListClusters)
 	if enableAuth {
 
 		routes.ListClusters.Auth = ginoauth2.Auth(
@@ -355,7 +347,7 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.ListClusters.Post = routes.ListClusters.Group("")
-	routes.ListClusters.Post.GET(ginizePath("/kubernetes-clusters"), service.ListClusters)
+	routes.ListClusters.Post.GET(ginizePath("/kubernetes-clusters"), clusters.BusinessLogicListClusters(service.ListClusters))
 
 	routes.ListInfrastructureAccounts.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -371,10 +363,9 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.ListInfrastructureAccounts.Post = routes.ListInfrastructureAccounts.Group("")
-	routes.ListInfrastructureAccounts.Post.GET(ginizePath("/infrastructure-accounts"), service.ListInfrastructureAccounts)
+	routes.ListInfrastructureAccounts.Post.GET(ginizePath("/infrastructure-accounts"), infrastructure_accounts.BusinessLogicListInfrastructureAccounts(service.ListInfrastructureAccounts))
 
 	routes.ListNodePools.RouterGroup = routes.Group("")
-	routes.ListNodePools.RouterGroup.Use(node_pools.BindListNodePools)
 	if enableAuth {
 
 		routes.ListNodePools.Auth = ginoauth2.Auth(
@@ -388,11 +379,10 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.ListNodePools.Post = routes.ListNodePools.Group("")
-	routes.ListNodePools.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools"), service.ListNodePools)
+	routes.ListNodePools.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools"), node_pools.BusinessLogicListNodePools(service.ListNodePools))
 
 	routes.UpdateCluster.RouterGroup = routes.Group("")
 	routes.UpdateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
-	routes.UpdateCluster.RouterGroup.Use(clusters.BindUpdateCluster)
 	if enableAuth {
 
 		routes.UpdateCluster.Auth = ginoauth2.Auth(
@@ -406,11 +396,10 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.UpdateCluster.Post = routes.UpdateCluster.Group("")
-	routes.UpdateCluster.Post.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), service.UpdateCluster)
+	routes.UpdateCluster.Post.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.BusinessLogicUpdateCluster(service.UpdateCluster))
 
 	routes.UpdateInfrastructureAccount.RouterGroup = routes.Group("")
 	routes.UpdateInfrastructureAccount.RouterGroup.Use(middleware.ContentTypes("application/json"))
-	routes.UpdateInfrastructureAccount.RouterGroup.Use(infrastructure_accounts.BindUpdateInfrastructureAccount)
 	if enableAuth {
 
 		routes.UpdateInfrastructureAccount.Auth = ginoauth2.Auth(
@@ -424,7 +413,7 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 	}
 	routes.UpdateInfrastructureAccount.Post = routes.UpdateInfrastructureAccount.Group("")
-	routes.UpdateInfrastructureAccount.Post.PATCH(ginizePath("/infrastructure-accounts/{account_id}"), service.UpdateInfrastructureAccount)
+	routes.UpdateInfrastructureAccount.Post.PATCH(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.BusinessLogicUpdateInfrastructureAccount(service.UpdateInfrastructureAccount))
 
 	return routes
 }

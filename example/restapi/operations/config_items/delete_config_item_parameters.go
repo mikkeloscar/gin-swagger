@@ -7,22 +7,25 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/validate"
+	"github.com/mikkeloscar/gin-swagger/api"
 
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// BindDeleteConfigItem validates and binds request parameters to the gin
-// context.
-func BindDeleteConfigItem(ctx *gin.Context) {
-	params := &DeleteConfigItemParams{}
-	err := params.bindRequest(ctx)
-	if err != nil {
-		errObj := err.(*errors.CompositeError)
-		ctx.JSON(int(errObj.Code()), errObj)
-		return
+func BusinessLogicDeleteConfigItem(f func(ctx *gin.Context, params *DeleteConfigItemParams) *api.Response) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// generate params from request
+		params := &DeleteConfigItemParams{}
+		err := params.bindRequest(ctx)
+		if err != nil {
+			errObj := err.(*errors.CompositeError)
+			ctx.JSON(int(errObj.Code()), errObj)
+			return
+		}
+
+		resp := f(ctx, params)
+		ctx.JSON(resp.Code, resp.Body)
 	}
-	ctx.Set("params", params)
-	ctx.Next()
 }
 
 // DeleteConfigItemParams contains all the bound params for the delete config item operation

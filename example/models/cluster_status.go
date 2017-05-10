@@ -82,6 +82,24 @@ func (m *ClusterStatus) validateProblems(formats strfmt.Registry) error {
 	return nil
 }
 
+// MarshalBinary interface implementation
+func (m *ClusterStatus) MarshalBinary() ([]byte, error) {
+	if m == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(m)
+}
+
+// UnmarshalBinary interface implementation
+func (m *ClusterStatus) UnmarshalBinary(b []byte) error {
+	var res ClusterStatus
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*m = res
+	return nil
+}
+
 // ClusterStatusProblemsItems0 cluster status problems items0
 // swagger:model ClusterStatusProblemsItems0
 type ClusterStatusProblemsItems0 struct {
@@ -291,5 +309,23 @@ func (m *ClusterStatusProblemsItems0) validateType(formats strfmt.Registry) erro
 		return err
 	}
 
+	return nil
+}
+
+// MarshalBinary interface implementation
+func (m *ClusterStatusProblemsItems0) MarshalBinary() ([]byte, error) {
+	if m == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(m)
+}
+
+// UnmarshalBinary interface implementation
+func (m *ClusterStatusProblemsItems0) UnmarshalBinary(b []byte) error {
+	var res ClusterStatusProblemsItems0
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*m = res
 	return nil
 }

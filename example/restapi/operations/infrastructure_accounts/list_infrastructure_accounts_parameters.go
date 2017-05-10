@@ -6,7 +6,16 @@ package infrastructure_accounts
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
+	"github.com/mikkeloscar/gin-swagger/api"
 )
+
+func BusinessLogicListInfrastructureAccounts(f func(ctx *gin.Context) *api.Response) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		resp := f(ctx)
+		ctx.JSON(resp.Code, resp.Body)
+	}
+}
 
 // ListInfrastructureAccountsParams contains all the bound params for the list infrastructure accounts operation
 // typically these are obtained from a http.Request

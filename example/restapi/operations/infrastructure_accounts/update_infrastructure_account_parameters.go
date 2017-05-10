@@ -10,24 +10,27 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/validate"
+	"github.com/mikkeloscar/gin-swagger/api"
 
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// BindUpdateInfrastructureAccount validates and binds request parameters to the gin
-// context.
-func BindUpdateInfrastructureAccount(ctx *gin.Context) {
-	params := &UpdateInfrastructureAccountParams{}
-	err := params.bindRequest(ctx)
-	if err != nil {
-		errObj := err.(*errors.CompositeError)
-		ctx.JSON(int(errObj.Code()), errObj)
-		return
+func BusinessLogicUpdateInfrastructureAccount(f func(ctx *gin.Context, params *UpdateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// generate params from request
+		params := &UpdateInfrastructureAccountParams{}
+		err := params.bindRequest(ctx)
+		if err != nil {
+			errObj := err.(*errors.CompositeError)
+			ctx.JSON(int(errObj.Code()), errObj)
+			return
+		}
+
+		resp := f(ctx, params)
+		ctx.JSON(resp.Code, resp.Body)
 	}
-	ctx.Set("params", params)
-	ctx.Next()
 }
 
 // UpdateInfrastructureAccountParams contains all the bound params for the update infrastructure account operation

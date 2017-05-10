@@ -10,24 +10,27 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/validate"
+	"github.com/mikkeloscar/gin-swagger/api"
 
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// BindAddOrUpdateConfigItem validates and binds request parameters to the gin
-// context.
-func BindAddOrUpdateConfigItem(ctx *gin.Context) {
-	params := &AddOrUpdateConfigItemParams{}
-	err := params.bindRequest(ctx)
-	if err != nil {
-		errObj := err.(*errors.CompositeError)
-		ctx.JSON(int(errObj.Code()), errObj)
-		return
+func BusinessLogicAddOrUpdateConfigItem(f func(ctx *gin.Context, params *AddOrUpdateConfigItemParams) *api.Response) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// generate params from request
+		params := &AddOrUpdateConfigItemParams{}
+		err := params.bindRequest(ctx)
+		if err != nil {
+			errObj := err.(*errors.CompositeError)
+			ctx.JSON(int(errObj.Code()), errObj)
+			return
+		}
+
+		resp := f(ctx, params)
+		ctx.JSON(resp.Code, resp.Body)
 	}
-	ctx.Set("params", params)
-	ctx.Next()
 }
 
 // AddOrUpdateConfigItemParams contains all the bound params for the add or update config item operation
