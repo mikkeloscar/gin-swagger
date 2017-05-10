@@ -24,7 +24,13 @@ func BusinessLogicAddOrUpdateConfigItem(f func(ctx *gin.Context, params *AddOrUp
 		err := params.bindRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
-			ctx.JSON(int(errObj.Code()), errObj)
+			problem := api.Problem{
+				Title:  "Unprocessable Entity.",
+				Status: int(errObj.Code()),
+				Detail: errObj.Error(),
+			}
+			ctx.Writer.Header.Set("Content-Type", "application/problem+json")
+			ctx.JSON(problem.Status, problem)
 			return
 		}
 
