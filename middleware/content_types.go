@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mikkeloscar/gin-swagger/api"
 )
 
 // ContentTypes is a middleware that checks the request Content-Type header and
@@ -18,14 +19,16 @@ func ContentTypes(contentTypes ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		reqContentType := c.ContentType()
 		if _, ok := validContentTypes[reqContentType]; !ok {
-			msg := gin.H{
-				"code": http.StatusUnsupportedMediaType,
-				"message": fmt.Sprintf("unsupported media type '%s', only %s are allowed",
+			problem := api.Problem{
+				Title:  "Unsupported media type.",
+				Status: http.StatusUnsupportedMediaType,
+				Detail: fmt.Sprintf("unsupported media type '%s', only %s are allowed",
 					reqContentType,
 					contentTypes,
 				),
 			}
-			c.JSON(http.StatusUnsupportedMediaType, msg)
+			c.Writer.Header.Set("Content-Type", "application/problem+json")
+			c.JSON(problem.Status, problem)
 			c.Abort()
 			return
 		}
