@@ -8,7 +8,7 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/infrastructure_accounts"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/node_pools"
 
-	"github.com/gin-gonic/gin"
+	"gopkg.in/gin-gonic/gin.v1"
 	"github.com/mikkeloscar/gin-swagger/api"
 )
 

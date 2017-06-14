@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
+	"gopkg.in/gin-gonic/gin.v1"
 	ginoauth2 "github.com/zalando/gin-oauth2"
 )
 

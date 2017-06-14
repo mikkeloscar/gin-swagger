@@ -28,7 +28,7 @@ func BusinessLogicCreateInfrastructureAccount(f func(ctx *gin.Context, params *C
 				Status: int(errObj.Code()),
 				Detail: errObj.Error(),
 			}
-			ctx.Writer.Header.Set("Content-Type", "application/problem+json")
+			ctx.Writer.Header().Set("Content-Type", "application/problem+json")
 			ctx.JSON(problem.Status, problem)
 			return
 		}

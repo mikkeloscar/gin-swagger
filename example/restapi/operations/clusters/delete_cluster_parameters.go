@@ -24,7 +24,7 @@ func BusinessLogicDeleteCluster(f func(ctx *gin.Context, params *DeleteClusterPa
 				Status: int(errObj.Code()),
 				Detail: errObj.Error(),
 			}
-			ctx.Writer.Header.Set("Content-Type", "application/problem+json")
+			ctx.Writer.Header().Set("Content-Type", "application/problem+json")
 			ctx.JSON(problem.Status, problem)
 			return
 		}
