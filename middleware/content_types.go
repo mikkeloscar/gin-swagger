@@ -27,7 +27,7 @@ func ContentTypes(contentTypes ...string) gin.HandlerFunc {
 					contentTypes,
 				),
 			}
-			c.Writer.Header.Set("Content-Type", "application/problem+json")
+			c.Writer.Header().Set("Content-Type", "application/problem+json")
 			c.JSON(problem.Status, problem)
 			c.Abort()
 			return

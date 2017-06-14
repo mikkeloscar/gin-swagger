@@ -104,7 +104,7 @@ package {{ .Package }}
 import (
   "net/http"
 
-  "github.com/gin-gonic/gin"
+  "gopkg.in/gin-gonic/gin.v1"
   "github.com/go-openapi/errors"
   "github.com/go-openapi/validate"
   "github.com/go-openapi/runtime"
@@ -132,7 +132,7 @@ func BusinessLogic{{ pascalize .Name }}(f func(ctx *gin.Context{{ if .Params }},
 				Status: int(errObj.Code()),
 				Detail: errObj.Error(),
 			}
-			ctx.Writer.Header.Set("Content-Type", "application/problem+json")
+			ctx.Writer.Header().Set("Content-Type", "application/problem+json")
 			ctx.JSON(problem.Status, problem)
 			return
 		}
