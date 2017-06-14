@@ -149,6 +149,9 @@ func NewAPI(svc Service, config *Config) *API {
 		api.Routes.configureWellKnown(svc.Healthy)
 	}
 
+	// configure healthz endpoint
+	api.Routes.GET("/healthz", healthHandler(svc.Healthy))
+
 	return api
 }
 
