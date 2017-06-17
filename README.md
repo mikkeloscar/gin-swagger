@@ -26,7 +26,6 @@
 * [x] Set custom middleware on each router Pre/post 'main' handler.
   * Use case pre: *custom authorization pre handler*.
   * Use case post: *audit report events post handler*.
-* [ ] Swagger UI
 * [ ] Ginize generated code.
 * [ ] Set and get user info (uid, realm) from gin context.
 * [ ] Response helper functions

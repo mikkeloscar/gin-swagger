@@ -45,17 +45,11 @@ func (r *Routes) configureWellKnown(healthFunc func() bool) {
 			}{
 				SchemaURL:  "/swagger.json",
 				SchemaType: "swagger-2.0",
-				UIURL:      "/ui/",
 			}
 			ctx.JSON(http.StatusOK, &discovery)
 		})
 		wellKnown.GET("/health", healthHandler(healthFunc))
 	}
-
-	r.GET("/ui/", func(ctx *gin.Context) {
-		// TODO: implement /ui
-		ctx.String(http.StatusNotImplemented, "Not Implemented")
-	})
 
 	r.GET("/swagger.json", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, string(SwaggerJSON))
