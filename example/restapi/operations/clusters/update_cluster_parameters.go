@@ -17,6 +17,8 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
+// BusinessLogicUpdateCluster executes the core logic of the related
+// route endpoint.
 func BusinessLogicUpdateCluster(f func(ctx *gin.Context, params *UpdateClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request

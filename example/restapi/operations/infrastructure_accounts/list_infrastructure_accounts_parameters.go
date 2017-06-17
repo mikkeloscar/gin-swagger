@@ -9,6 +9,8 @@ import (
 	"github.com/mikkeloscar/gin-swagger/api"
 )
 
+// BusinessLogicListInfrastructureAccounts executes the core logic of the related
+// route endpoint.
 func BusinessLogicListInfrastructureAccounts(f func(ctx *gin.Context) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 

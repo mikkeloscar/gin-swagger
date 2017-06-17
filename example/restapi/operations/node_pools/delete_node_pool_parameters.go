@@ -12,6 +12,8 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
+// BusinessLogicDeleteNodePool executes the core logic of the related
+// route endpoint.
 func BusinessLogicDeleteNodePool(f func(ctx *gin.Context, params *DeleteNodePoolParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request

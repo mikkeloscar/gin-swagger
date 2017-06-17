@@ -17,6 +17,8 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
+// BusinessLogicAddOrUpdateConfigItem executes the core logic of the related
+// route endpoint.
 func BusinessLogicAddOrUpdateConfigItem(f func(ctx *gin.Context, params *AddOrUpdateConfigItemParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request

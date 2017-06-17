@@ -19,6 +19,7 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/infrastructure_accounts"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/node_pools"
 	"github.com/mikkeloscar/gin-swagger/middleware"
+	log "github.com/sirupsen/logrus"
 	ginoauth2 "github.com/zalando/gin-oauth2"
 )
 
@@ -113,17 +114,11 @@ func (r *Routes) configureWellKnown(healthFunc func() bool) {
 			}{
 				SchemaURL:  "/swagger.json",
 				SchemaType: "swagger-2.0",
-				UIURL:      "/ui/",
 			}
 			ctx.JSON(http.StatusOK, &discovery)
 		})
 		wellKnown.GET("/health", healthHandler(healthFunc))
 	}
-
-	r.GET("/ui/", func(ctx *gin.Context) {
-		// TODO: implement /ui
-		ctx.String(http.StatusNotImplemented, "Not Implemented")
-	})
 
 	r.GET("/swagger.json", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, string(SwaggerJSON))
@@ -420,9 +415,11 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 
 // API defines the API service.
 type API struct {
-	Routes *Routes
-	config *Config
-	server *http.Server
+	Routes  *Routes
+	config  *Config
+	server  *http.Server
+	Title   string
+	Version string
 }
 
 // NewAPI initializes a new API service.
@@ -432,8 +429,10 @@ func NewAPI(svc Service, config *Config) *API {
 	}
 
 	api := &API{
-		Routes: configureRoutes(svc, !config.AuthDisabled),
-		config: config,
+		Routes:  configureRoutes(svc, !config.AuthDisabled),
+		config:  config,
+		Title:   "Cluster Registry",
+		Version: "0.0.1",
 	}
 
 	api.server = &http.Server{
@@ -456,6 +455,7 @@ func NewAPI(svc Service, config *Config) *API {
 // Run runs the API server it will listen on either HTTP or HTTPS depending on
 // the config passed to NewAPI.
 func (a *API) Run() error {
+	log.Infof("Serving '%s - %s' on address %s", a.Title, a.Version, a.server.Addr)
 	if a.config.InsecureHTTP {
 		return a.server.ListenAndServe()
 	}

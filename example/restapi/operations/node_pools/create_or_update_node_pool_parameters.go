@@ -17,6 +17,8 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
+// BusinessLogicCreateOrUpdateNodePool executes the core logic of the related
+// route endpoint.
 func BusinessLogicCreateOrUpdateNodePool(f func(ctx *gin.Context, params *CreateOrUpdateNodePoolParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request

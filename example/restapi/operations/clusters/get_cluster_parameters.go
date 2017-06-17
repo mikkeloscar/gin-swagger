@@ -12,6 +12,8 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
+// BusinessLogicGetCluster executes the core logic of the related
+// route endpoint.
 func BusinessLogicGetCluster(f func(ctx *gin.Context, params *GetClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request

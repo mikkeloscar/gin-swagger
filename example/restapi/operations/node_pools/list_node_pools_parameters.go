@@ -12,6 +12,8 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
+// BusinessLogicListNodePools executes the core logic of the related
+// route endpoint.
 func BusinessLogicListNodePools(f func(ctx *gin.Context, params *ListNodePoolsParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request

@@ -12,6 +12,8 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
+// BusinessLogicGetInfrastructureAccount executes the core logic of the related
+// route endpoint.
 func BusinessLogicGetInfrastructureAccount(f func(ctx *gin.Context, params *GetInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request

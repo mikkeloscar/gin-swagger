@@ -17,6 +17,8 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
+// BusinessLogicUpdateInfrastructureAccount executes the core logic of the related
+// route endpoint.
 func BusinessLogicUpdateInfrastructureAccount(f func(ctx *gin.Context, params *UpdateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
