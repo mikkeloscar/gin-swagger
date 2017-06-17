@@ -140,7 +140,12 @@ func BusinessLogic{{ pascalize .Name }}(f func(ctx *gin.Context{{ if .Params }},
 		}
 		{{ end }}
 		resp := f(ctx{{ if .Params }}, params{{end}})
-		ctx.JSON(resp.Code, resp.Body)
+		switch resp.Code {
+		case http.StatusNoContent:
+			ctx.AbortWithStatus(resp.Code)
+		default:
+			ctx.JSON(resp.Code, resp.Body)
+		}
 	}
 }
 
