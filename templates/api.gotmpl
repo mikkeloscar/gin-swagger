@@ -15,6 +15,7 @@ import (
 	ginoauth2 "github.com/zalando/gin-oauth2"
 	"github.com/mikkeloscar/gin-swagger/middleware"
 	"github.com/mikkeloscar/gin-swagger/api"
+	log "github.com/sirupsen/logrus"
 	{{range .DefaultImports}}{{printf "%q" .}}
 	{{end}}
 	{{range $key, $value := .Imports}}{{$key}} {{ printf "%q" $value}}
@@ -158,6 +159,7 @@ func NewAPI(svc Service, config *Config) *API {
 // Run runs the API server it will listen on either HTTP or HTTPS depending on
 // the config passed to NewAPI.
 func (a *API) Run() error {
+	log.Infof("Serving on address %s", a.server.Addr)
 	if a.config.InsecureHTTP {
 		return a.server.ListenAndServe()
 	}
