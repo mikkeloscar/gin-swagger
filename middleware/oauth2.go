@@ -33,18 +33,19 @@ type User struct {
 }
 
 // GetUser gets user (uid and realm) from a gin context.
-func GetUser(ctx *gin.Context) *User {
+func GetUser(ctx *gin.Context) User {
+	user := User{}
 	uid, ok := ctx.Get("uid")
 	if !ok {
-		return nil
+		return user
 	}
 
 	realm, ok := ctx.Get("realm")
 	if !ok {
-		return nil
+		return user
 	}
 
-	return &User{
+	return User{
 		UID:   uid.(string),
 		Realm: realm.(string),
 	}
