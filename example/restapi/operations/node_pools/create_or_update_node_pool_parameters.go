@@ -5,6 +5,7 @@ package node_pools
 
 import (
 	"io"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
@@ -37,7 +38,12 @@ func BusinessLogicCreateOrUpdateNodePool(f func(ctx *gin.Context, params *Create
 		}
 
 		resp := f(ctx, params)
-		ctx.JSON(resp.Code, resp.Body)
+		switch resp.Code {
+		case http.StatusNoContent:
+			ctx.AbortWithStatus(resp.Code)
+		default:
+			ctx.JSON(resp.Code, resp.Body)
+		}
 	}
 }
 
@@ -164,3 +170,5 @@ func (o *CreateOrUpdateNodePoolParams) validateNodePoolName(formats strfmt.Regis
 
 	return nil
 }
+
+// vim: ft=go

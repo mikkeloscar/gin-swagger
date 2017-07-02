@@ -5,6 +5,7 @@ package clusters
 
 import (
 	"io"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
@@ -37,7 +38,12 @@ func BusinessLogicUpdateCluster(f func(ctx *gin.Context, params *UpdateClusterPa
 		}
 
 		resp := f(ctx, params)
-		ctx.JSON(resp.Code, resp.Body)
+		switch resp.Code {
+		case http.StatusNoContent:
+			ctx.AbortWithStatus(resp.Code)
+		default:
+			ctx.JSON(resp.Code, resp.Body)
+		}
 	}
 }
 
@@ -129,3 +135,5 @@ func (o *UpdateClusterParams) validateClusterID(formats strfmt.Registry) error {
 
 	return nil
 }
+
+// vim: ft=go

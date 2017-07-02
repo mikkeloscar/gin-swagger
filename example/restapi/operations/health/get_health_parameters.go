@@ -4,6 +4,8 @@ package health
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
 	"github.com/mikkeloscar/gin-swagger/api"
@@ -15,7 +17,12 @@ func BusinessLogicGetHealth(f func(ctx *gin.Context) *api.Response) gin.HandlerF
 	return func(ctx *gin.Context) {
 
 		resp := f(ctx)
-		ctx.JSON(resp.Code, resp.Body)
+		switch resp.Code {
+		case http.StatusNoContent:
+			ctx.AbortWithStatus(resp.Code)
+		default:
+			ctx.JSON(resp.Code, resp.Body)
+		}
 	}
 }
 
@@ -36,3 +43,5 @@ func (o *GetHealthParams) bindRequest(ctx *gin.Context) error {
 	}
 	return nil
 }
+
+// vim: ft=go

@@ -4,6 +4,8 @@ package infrastructure_accounts
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/validate"
@@ -32,7 +34,12 @@ func BusinessLogicGetInfrastructureAccount(f func(ctx *gin.Context, params *GetI
 		}
 
 		resp := f(ctx, params)
-		ctx.JSON(resp.Code, resp.Body)
+		switch resp.Code {
+		case http.StatusNoContent:
+			ctx.AbortWithStatus(resp.Code)
+		default:
+			ctx.JSON(resp.Code, resp.Body)
+		}
 	}
 }
 
@@ -96,3 +103,5 @@ func (o *GetInfrastructureAccountParams) validateAccountID(formats strfmt.Regist
 
 	return nil
 }
+
+// vim: ft=go

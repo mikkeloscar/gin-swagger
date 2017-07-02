@@ -4,6 +4,8 @@ package infrastructure_accounts
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
 	"github.com/mikkeloscar/gin-swagger/api"
@@ -15,7 +17,12 @@ func BusinessLogicListInfrastructureAccounts(f func(ctx *gin.Context) *api.Respo
 	return func(ctx *gin.Context) {
 
 		resp := f(ctx)
-		ctx.JSON(resp.Code, resp.Body)
+		switch resp.Code {
+		case http.StatusNoContent:
+			ctx.AbortWithStatus(resp.Code)
+		default:
+			ctx.JSON(resp.Code, resp.Body)
+		}
 	}
 }
 
@@ -36,3 +43,5 @@ func (o *ListInfrastructureAccountsParams) bindRequest(ctx *gin.Context) error {
 	}
 	return nil
 }
+
+// vim: ft=go

@@ -4,6 +4,8 @@ package config_items
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/validate"
@@ -32,7 +34,12 @@ func BusinessLogicDeleteConfigItem(f func(ctx *gin.Context, params *DeleteConfig
 		}
 
 		resp := f(ctx, params)
-		ctx.JSON(resp.Code, resp.Body)
+		switch resp.Code {
+		case http.StatusNoContent:
+			ctx.AbortWithStatus(resp.Code)
+		default:
+			ctx.JSON(resp.Code, resp.Body)
+		}
 	}
 }
 
@@ -131,3 +138,5 @@ func (o *DeleteConfigItemParams) validateConfigKey(formats strfmt.Registry) erro
 
 	return nil
 }
+
+// vim: ft=go

@@ -468,13 +468,13 @@ func (a *API) Shutdown() error {
 }
 
 // RunWithSigHandler runs the API server with SIGTERM handling automatically
-// enabled. The server will listen for a SIGTERM, SIGINT or SIGQUIT signal and
-// gracefully shutdown the web server.
+// enabled. The server will listen for a SIGTERM signal and gracefully shutdown
+// the web server.
 // It's possible to optionally pass any number shutdown functions which will
 // execute one by one after the webserver has been shutdown successfully.
 func (a *API) RunWithSigHandler(shutdown ...func() error) error {
 	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+	signal.Notify(sigCh, syscall.SIGTERM)
 
 	go func() {
 		<-sigCh
@@ -497,3 +497,5 @@ func (a *API) RunWithSigHandler(shutdown ...func() error) error {
 
 	return nil
 }
+
+// vim: ft=go

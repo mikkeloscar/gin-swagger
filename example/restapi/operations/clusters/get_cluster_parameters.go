@@ -4,6 +4,8 @@ package clusters
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/validate"
@@ -32,7 +34,12 @@ func BusinessLogicGetCluster(f func(ctx *gin.Context, params *GetClusterParams) 
 		}
 
 		resp := f(ctx, params)
-		ctx.JSON(resp.Code, resp.Body)
+		switch resp.Code {
+		case http.StatusNoContent:
+			ctx.AbortWithStatus(resp.Code)
+		default:
+			ctx.JSON(resp.Code, resp.Body)
+		}
 	}
 }
 
@@ -96,3 +103,5 @@ func (o *GetClusterParams) validateClusterID(formats strfmt.Registry) error {
 
 	return nil
 }
+
+// vim: ft=go

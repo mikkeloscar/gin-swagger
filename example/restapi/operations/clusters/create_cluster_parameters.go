@@ -5,6 +5,7 @@ package clusters
 
 import (
 	"io"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
@@ -36,7 +37,12 @@ func BusinessLogicCreateCluster(f func(ctx *gin.Context, params *CreateClusterPa
 		}
 
 		resp := f(ctx, params)
-		ctx.JSON(resp.Code, resp.Body)
+		switch resp.Code {
+		case http.StatusNoContent:
+			ctx.AbortWithStatus(resp.Code)
+		default:
+			ctx.JSON(resp.Code, resp.Body)
+		}
 	}
 }
 
@@ -93,3 +99,5 @@ func (o *CreateClusterParams) bindRequest(ctx *gin.Context) error {
 	}
 	return nil
 }
+
+// vim: ft=go
