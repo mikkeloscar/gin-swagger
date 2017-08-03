@@ -1,12 +1,33 @@
 # gin-swagger - DRY templates for go-swagger
 
 gin-swagger is a tool assisting in writing golang REST APIs based on a [API
-First Principle][api-first]. Given a swagger spec of your REST API.
-
+First Principle][api-first]. Given a swagger spec of your REST API,
 `gin-swagger` can generate all the boring boilerplate stuff for you, so you
 only have to implement the core business logic of the API.
 
-It is based on [go-swagger][go-swagger].
+It is based on [go-swagger][go-swagger] which is used for the code generation.
+
+## Install
+
+### Dependencies
+
+* [go-swagger >= v0.11.0](https://github.com/go-swagger/go-swagger/releases/tag/0.11.0) - The `swagger` binary must be in your `PATH`.
+* [go-bindata](https://github.com/jteeuwen/go-bindata) - *Optional* only needed
+    if you are changing gin-swagger.
+
+Once you have the dependencies in place you can simply run `go get` to install
+gin-swagger.
+
+```
+$ go get github.com/mikkeloscar/gin-swagger
+$ gin-swagger --help
+usage: gin-swagger --application=APPLICATION [<flags>]
+
+Flags:
+      --help                     Show context-sensitive help (also try --help-long and --help-man).
+  -A, --application=APPLICATION  Name of the application (passed directly to swagger).
+  -f, --spec="./swagger.json"    the spec file to use.
+```
 
 ## How it works
 
