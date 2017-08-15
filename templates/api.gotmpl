@@ -11,6 +11,7 @@ import (
 
 	"golang.org/x/oauth2"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	ginoauth2 "github.com/zalando/gin-oauth2"
 	"github.com/mikkeloscar/gin-swagger/middleware"
@@ -135,6 +136,11 @@ func NewAPI(svc Service, config *Config) *API {
 		config: config,
 		Title: "{{ .Info.Title }}",
 		Version: "{{ .Info.Version }}",
+	}
+
+	// enable pprof http endpoints in debug mode
+	if config.Debug {
+		pprof.Register(api.Routes.Engine, nil)
 	}
 
 	api.server = &http.Server{
