@@ -11,6 +11,7 @@ import (
 
 	"golang.org/x/oauth2"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/mikkeloscar/gin-swagger/api"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/clusters"
@@ -433,6 +434,11 @@ func NewAPI(svc Service, config *Config) *API {
 		config:  config,
 		Title:   "Cluster Registry",
 		Version: "0.0.1",
+	}
+
+	// enable pprof http endpoints in debug mode
+	if config.Debug {
+		pprof.Register(api.Routes.Engine, nil)
 	}
 
 	api.server = &http.Server{

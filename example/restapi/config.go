@@ -23,7 +23,7 @@ type Config struct {
 
 // Parse parses configuration from commandline flags.
 func (c *Config) Parse() error {
-	kingpin.Flag("debug", "Enable debug logging.").BoolVar(&c.Debug)
+	kingpin.Flag("debug", "Enable debug logging and pprof metrics.").BoolVar(&c.Debug)
 	kingpin.Flag("address", "Address to listen on, e.g. :8080 or 0.0.0.0:8080.").
 		Default(defaultAddress).StringVar(&c.Address)
 	kingpin.Flag("insecure-http", "Service only HTTP.").BoolVar(&c.InsecureHTTP)
