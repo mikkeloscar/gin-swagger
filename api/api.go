@@ -1,6 +1,7 @@
 package api
 
 // Response is a simple response from an HTTP service.
+// Body is assumed to be an object that is json serializable.
 type Response struct {
 	Code int
 	Body interface{}
