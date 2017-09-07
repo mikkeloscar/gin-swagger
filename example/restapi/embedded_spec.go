@@ -42,7 +42,15 @@ func init() {
           "200": {
             "description": "List of all infrastructure accounts.",
             "schema": {
-              "$ref": "#/definitions/listInfrastructureAccountsOKBody"
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/InfrastructureAccount"
+                  }
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -141,12 +149,7 @@ func init() {
         "operationId": "getInfrastructureAccount",
         "parameters": [
           {
-            "pattern": "^[a-z][a-z0-9-:]*[a-z0-9]$",
-            "type": "string",
-            "description": "ID of the infrastructure account.",
-            "name": "account_id",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/account_id"
           }
         ],
         "responses": {
@@ -182,12 +185,7 @@ func init() {
         "operationId": "updateInfrastructureAccount",
         "parameters": [
           {
-            "pattern": "^[a-z][a-z0-9-:]*[a-z0-9]$",
-            "type": "string",
-            "description": "ID of the infrastructure account.",
-            "name": "account_id",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/account_id"
           },
           {
             "description": "Infrastructure Account that will be updated.",
@@ -306,7 +304,15 @@ func init() {
           "200": {
             "description": "List of all Kubernetes clusters.",
             "schema": {
-              "$ref": "#/definitions/listClustersOKBody"
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Cluster"
+                  }
+                }
+              }
             }
           },
           "401": {
@@ -382,12 +388,7 @@ func init() {
         "operationId": "getCluster",
         "parameters": [
           {
-            "pattern": "^[a-z][a-z0-9-:]*[a-z0-9]$",
-            "type": "string",
-            "description": "ID of the cluster.",
-            "name": "cluster_id",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/cluster_id"
           }
         ],
         "responses": {
@@ -423,12 +424,7 @@ func init() {
         "operationId": "deleteCluster",
         "parameters": [
           {
-            "pattern": "^[a-z][a-z0-9-:]*[a-z0-9]$",
-            "type": "string",
-            "description": "ID of the cluster.",
-            "name": "cluster_id",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/cluster_id"
           }
         ],
         "responses": {
@@ -470,12 +466,7 @@ func init() {
         "operationId": "updateCluster",
         "parameters": [
           {
-            "pattern": "^[a-z][a-z0-9-:]*[a-z0-9]$",
-            "type": "string",
-            "description": "ID of the cluster.",
-            "name": "cluster_id",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/cluster_id"
           },
           {
             "description": "Cluster that will be updated.",
@@ -522,20 +513,10 @@ func init() {
         "operationId": "addOrUpdateConfigItem",
         "parameters": [
           {
-            "pattern": "^[a-z][a-z0-9-:]*[a-z0-9]$",
-            "type": "string",
-            "description": "ID of the cluster.",
-            "name": "cluster_id",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/cluster_id"
           },
           {
-            "pattern": "^[a-z][a-z0-9_]*[a-z0-9]$",
-            "type": "string",
-            "description": "Key for the config value.",
-            "name": "config_key",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/config_key"
           },
           {
             "description": "Config value.",
@@ -583,20 +564,10 @@ func init() {
         "operationId": "deleteConfigItem",
         "parameters": [
           {
-            "pattern": "^[a-z][a-z0-9-:]*[a-z0-9]$",
-            "type": "string",
-            "description": "ID of the cluster.",
-            "name": "cluster_id",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/cluster_id"
           },
           {
-            "pattern": "^[a-z][a-z0-9_]*[a-z0-9]$",
-            "type": "string",
-            "description": "Key for the config value.",
-            "name": "config_key",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/config_key"
           }
         ],
         "responses": {
@@ -637,19 +608,22 @@ func init() {
         "operationId": "listNodePools",
         "parameters": [
           {
-            "pattern": "^[a-z][a-z0-9-:]*[a-z0-9]$",
-            "type": "string",
-            "description": "ID of the cluster.",
-            "name": "cluster_id",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/cluster_id"
           }
         ],
         "responses": {
           "200": {
             "description": "List of node pools",
             "schema": {
-              "$ref": "#/definitions/listNodePoolsOKBody"
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/NodePool"
+                  }
+                }
+              }
             }
           },
           "401": {
@@ -677,20 +651,10 @@ func init() {
         "operationId": "createOrUpdateNodePool",
         "parameters": [
           {
-            "pattern": "^[a-z][a-z0-9-:]*[a-z0-9]$",
-            "type": "string",
-            "description": "ID of the cluster.",
-            "name": "cluster_id",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/cluster_id"
           },
           {
-            "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$",
-            "type": "string",
-            "description": "Name of the node pool.",
-            "name": "node_pool_name",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/node_pool_name"
           },
           {
             "description": "Node pool to be created.",
@@ -738,20 +702,10 @@ func init() {
         "operationId": "deleteNodePool",
         "parameters": [
           {
-            "pattern": "^[a-z][a-z0-9-:]*[a-z0-9]$",
-            "type": "string",
-            "description": "ID of the cluster.",
-            "name": "cluster_id",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/cluster_id"
           },
           {
-            "pattern": "^[a-z][a-z0-9-]*[a-z0-9]$",
-            "type": "string",
-            "description": "Name of the node pool.",
-            "name": "node_pool_name",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/node_pool_name"
           }
         ],
         "responses": {
@@ -866,7 +820,10 @@ func init() {
           "example": "kube-1"
         },
         "node_pools": {
-          "$ref": "#/definitions/clusterNodePools"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NodePool"
+          }
         },
         "provider": {
           "description": "The provider of the cluster. Possible values are \"zalando-aws\", \"GKE\", ...",
@@ -902,7 +859,45 @@ func init() {
           "example": "a3b4c5d6e7f8"
         },
         "problems": {
-          "$ref": "#/definitions/clusterStatusProblems"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "title"
+            ],
+            "properties": {
+              "detail": {
+                "description": "A human-readable explanation specific to this occurrence of\nthe problem.\n",
+                "type": "string",
+                "example": "Cluster lifecycle manager was unable to apply the\nkubernetes-dashboard service because of insufficient\npermissions.\n"
+              },
+              "instance": {
+                "description": "A URI reference that identifies the specific occurrence of\nthe problem.\n",
+                "type": "string",
+                "example": "service/kubernetes-dashboard"
+              },
+              "status": {
+                "description": "The HTTP status code generated by the origin server for this\noccurence of the problem.\n",
+                "type": "integer",
+                "format": "int32",
+                "example": 401
+              },
+              "title": {
+                "description": "A short, human-readable summary of the problem type.\n",
+                "type": "string",
+                "example": "Failed to apply service 'kubernetes-dashboard'"
+              },
+              "type": {
+                "description": "A URI reference the indentifies the problem type.",
+                "type": "string",
+                "example": "https://cluster-status.example.org/service-apply-failed"
+              }
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
         }
       }
     },
@@ -1101,107 +1096,6 @@ func init() {
           "example": "worker/default"
         }
       }
-    },
-    "clusterNodePools": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/NodePool"
-      },
-      "x-go-gen-location": "models"
-    },
-    "clusterStatusProblems": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/clusterStatusProblemsItems"
-      },
-      "x-go-gen-location": "models"
-    },
-    "clusterStatusProblemsItems": {
-      "type": "object",
-      "required": [
-        "type",
-        "title"
-      ],
-      "properties": {
-        "detail": {
-          "description": "A human-readable explanation specific to this occurrence of\nthe problem.\n",
-          "type": "string",
-          "example": "Cluster lifecycle manager was unable to apply the\nkubernetes-dashboard service because of insufficient\npermissions.\n"
-        },
-        "instance": {
-          "description": "A URI reference that identifies the specific occurrence of\nthe problem.\n",
-          "type": "string",
-          "example": "service/kubernetes-dashboard"
-        },
-        "status": {
-          "description": "The HTTP status code generated by the origin server for this\noccurence of the problem.\n",
-          "type": "integer",
-          "format": "int32",
-          "example": 401
-        },
-        "title": {
-          "description": "A short, human-readable summary of the problem type.\n",
-          "type": "string",
-          "example": "Failed to apply service 'kubernetes-dashboard'"
-        },
-        "type": {
-          "description": "A URI reference the indentifies the problem type.",
-          "type": "string",
-          "example": "https://cluster-status.example.org/service-apply-failed"
-        }
-      },
-      "additionalProperties": {
-        "type": "string"
-      },
-      "x-go-gen-location": "models"
-    },
-    "listClustersOKBody": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "$ref": "#/definitions/listClustersOKBodyItems"
-        }
-      },
-      "x-go-gen-location": "operations"
-    },
-    "listClustersOKBodyItems": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/Cluster"
-      },
-      "x-go-gen-location": "operations"
-    },
-    "listInfrastructureAccountsOKBody": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "$ref": "#/definitions/listInfrastructureAccountsOKBodyItems"
-        }
-      },
-      "x-go-gen-location": "operations"
-    },
-    "listInfrastructureAccountsOKBodyItems": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/InfrastructureAccount"
-      },
-      "x-go-gen-location": "operations"
-    },
-    "listNodePoolsOKBody": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "$ref": "#/definitions/listNodePoolsOKBodyItems"
-        }
-      },
-      "x-go-gen-location": "operations"
-    },
-    "listNodePoolsOKBodyItems": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/NodePool"
-      },
-      "x-go-gen-location": "operations"
     }
   },
   "parameters": {

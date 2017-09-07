@@ -165,7 +165,7 @@ func ginizePath(path string) string {
 }
 
 // configureRoutes configures the routes for the API service.
-func configureRoutes(service Service, enableAuth bool) *Routes {
+func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.Use(middleware.LogrusLogger())
@@ -175,10 +175,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.AddOrUpdateConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.AddOrUpdateConfigItem.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -192,10 +196,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.CreateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.CreateCluster.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -209,10 +217,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.CreateInfrastructureAccount.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.CreateInfrastructureAccount.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -226,10 +238,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.CreateOrUpdateNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.CreateOrUpdateNodePool.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -243,10 +259,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.DeleteCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.DeleteCluster.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -260,10 +280,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.DeleteConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.DeleteConfigItem.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -277,10 +301,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.DeleteNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.DeleteNodePool.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -293,10 +321,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.GetCluster.RouterGroup = routes.Group("")
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.GetCluster.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -309,10 +341,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.GetInfrastructureAccount.RouterGroup = routes.Group("")
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.GetInfrastructureAccount.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -325,10 +361,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.ListClusters.RouterGroup = routes.Group("")
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.ListClusters.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -341,10 +381,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.ListInfrastructureAccounts.RouterGroup = routes.Group("")
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.ListInfrastructureAccounts.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -357,10 +401,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.ListNodePools.RouterGroup = routes.Group("")
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.ListNodePools.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -374,10 +422,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.UpdateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.UpdateCluster.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -391,10 +443,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	routes.UpdateInfrastructureAccount.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
+		}
 		routes.UpdateInfrastructureAccount.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth("uid"),
 			oauth2.Endpoint{
-				TokenURL: "https://info.services.auth.zalando.com/oauth2/tokeninfo",
+				TokenURL: routeTokenURL,
 			},
 		)
 
@@ -423,7 +479,7 @@ func NewAPI(svc Service, config *Config) *API {
 	}
 
 	api := &API{
-		Routes:  configureRoutes(svc, !config.AuthDisabled),
+		Routes:  configureRoutes(svc, !config.AuthDisabled, config.TokenURL),
 		config:  config,
 		Title:   "Cluster Registry",
 		Version: "0.0.1",
