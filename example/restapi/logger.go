@@ -21,9 +21,7 @@ var (
 	reset            = string([]byte{27, 91, 48, 109})
 	disableColor     = false
 	ginLogformat     = "[GIN] %v |%s %3d %s| %13v | %15s |%s %-7s %s %s\n%s"
-	defaultLogFormat = "ts=%v status_code=%s%3d%s response_time=%13v client=%15s |%s %-7s %s %s\n%s"
-
-	//ts=”$TIMESTAMP level=”ERROR”, file=”foo.go” msg=”Failed to..: $ERR_MSG”
+	defaultLogFormat = "ts=%v status_code=%d response_time=%v client=%s http_method=%s path=%s msg=%s\n"
 )
 
 func Logger(format string) gin.HandlerFunc {
@@ -33,12 +31,12 @@ func Logger(format string) gin.HandlerFunc {
 // LoggerWithWriter instance a Logger middleware with the specified writter buffer.
 // Example: os.Stdout, a file opened in write mode, a socket...
 func LoggerWithWriter(out io.Writer, logformat string, notlogged ...string) gin.HandlerFunc {
-	isTerm := true
+	// isTerm := true
 
 	if w, ok := out.(*os.File); !ok ||
 		(os.Getenv("TERM") == "dumb" || (!isatty.IsTerminal(w.Fd()) && !isatty.IsCygwinTerminal(w.Fd()))) ||
 		disableColor {
-		isTerm = false
+		// isTerm = false
 	}
 
 	var skip map[string]struct{}
@@ -69,12 +67,12 @@ func LoggerWithWriter(out io.Writer, logformat string, notlogged ...string) gin.
 			clientIP := c.ClientIP()
 			method := c.Request.Method
 			statusCode := c.Writer.Status()
-			var statusColor, methodColor, resetColor string
-			if isTerm {
-				statusColor = colorForStatus(statusCode)
-				methodColor = colorForMethod(method)
-				resetColor = reset
-			}
+			// var staItusColor, methodColor, resetColor string
+			// if isTerm {
+			// 	statusColor = colorForStatus(statusCode)
+			// 	methodColor = colorForMethod(method)
+			// 	resetColor = reset
+			// }
 			comment := c.Errors.ByType(gin.ErrorTypePrivate).String()
 
 			if raw != "" {
@@ -82,11 +80,11 @@ func LoggerWithWriter(out io.Writer, logformat string, notlogged ...string) gin.
 			}
 
 			fmt.Fprintf(out, logformat,
-				end.Format("2006-01-02 - 15:04:05"),
-				statusColor, statusCode, resetColor,
+				end.Format("2006-01-02-15:04:05"),
+				statusCode,
 				latency,
 				clientIP,
-				methodColor, method, resetColor,
+				method,
 				path,
 				comment,
 			)
