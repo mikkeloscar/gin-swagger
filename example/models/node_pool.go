@@ -15,6 +15,7 @@ import (
 
 // NodePool node pool
 // swagger:model NodePool
+
 type NodePool struct {
 
 	// A discount strategy indicates the type of discount to be associated with the node pool. This might affect the availability of the nodes in the pools in case of preemptible or spot instances.
@@ -35,6 +36,14 @@ type NodePool struct {
 	// Required: true
 	Profile *string `json:"profile"`
 }
+
+/* polymorph NodePool discount_strategy false */
+
+/* polymorph NodePool instance_type false */
+
+/* polymorph NodePool name false */
+
+/* polymorph NodePool profile false */
 
 // Validate validates this node pool
 func (m *NodePool) Validate(formats strfmt.Registry) error {

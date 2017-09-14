@@ -18,6 +18,7 @@ import (
 
 // ClusterStatus cluster status
 // swagger:model ClusterStatus
+
 type ClusterStatus struct {
 
 	// Current version of the cluster. This can refer to a commit hash or
@@ -41,6 +42,14 @@ type ClusterStatus struct {
 	// problems
 	Problems []*ClusterStatusProblemsItems0 `json:"problems"`
 }
+
+/* polymorph ClusterStatus current_version false */
+
+/* polymorph ClusterStatus last_version false */
+
+/* polymorph ClusterStatus next_version false */
+
+/* polymorph ClusterStatus problems false */
 
 // Validate validates this cluster status
 func (m *ClusterStatus) Validate(formats strfmt.Registry) error {
@@ -104,6 +113,7 @@ func (m *ClusterStatus) UnmarshalBinary(b []byte) error {
 
 // ClusterStatusProblemsItems0 cluster status problems items0
 // swagger:model ClusterStatusProblemsItems0
+
 type ClusterStatusProblemsItems0 struct {
 
 	// A human-readable explanation specific to this occurrence of
@@ -133,6 +143,16 @@ type ClusterStatusProblemsItems0 struct {
 	// cluster status problems items0
 	ClusterStatusProblemsItems0 map[string]string `json:"-"`
 }
+
+/* polymorph ClusterStatusProblemsItems0 detail false */
+
+/* polymorph ClusterStatusProblemsItems0 instance false */
+
+/* polymorph ClusterStatusProblemsItems0 status false */
+
+/* polymorph ClusterStatusProblemsItems0 title false */
+
+/* polymorph ClusterStatusProblemsItems0 type false */
 
 // UnmarshalJSON unmarshals this object with additional properties from JSON
 func (m *ClusterStatusProblemsItems0) UnmarshalJSON(data []byte) error {

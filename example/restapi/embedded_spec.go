@@ -31,27 +31,6 @@ func init() {
   },
   "basePath": "/",
   "paths": {
-    "/healthz": {
-      "get": {
-        "description": "Get health of the application.",
-        "tags": [
-          "Health"
-        ],
-        "summary": "Health endpoint",
-        "operationId": "getHealth",
-        "responses": {
-          "200": {
-            "description": "Application is healthy",
-            "schema": {
-              "$ref": "#/definitions/Health"
-            }
-          },
-          "503": {
-            "description": "Application is unhealthy"
-          }
-        }
-      }
-    },
     "/infrastructure-accounts": {
       "get": {
         "tags": [
@@ -998,14 +977,6 @@ func init() {
         },
         "message": {
           "type": "string"
-        }
-      }
-    },
-    "Health": {
-      "type": "object",
-      "properties": {
-        "health": {
-          "type": "boolean"
         }
       }
     },

@@ -18,6 +18,7 @@ import (
 
 // Cluster cluster
 // swagger:model Cluster
+
 type Cluster struct {
 
 	// Human readable alias for the Kubernetes cluster. The alias is unique
@@ -80,6 +81,34 @@ type Cluster struct {
 	// status
 	Status *ClusterStatus `json:"status,omitempty"`
 }
+
+/* polymorph Cluster alias false */
+
+/* polymorph Cluster api_server_url false */
+
+/* polymorph Cluster channel false */
+
+/* polymorph Cluster config_items false */
+
+/* polymorph Cluster criticality_level false */
+
+/* polymorph Cluster environment false */
+
+/* polymorph Cluster id false */
+
+/* polymorph Cluster infrastructure_account false */
+
+/* polymorph Cluster lifecycle_status false */
+
+/* polymorph Cluster local_id false */
+
+/* polymorph Cluster node_pools false */
+
+/* polymorph Cluster provider false */
+
+/* polymorph Cluster region false */
+
+/* polymorph Cluster status false */
 
 // Validate validates this cluster
 func (m *Cluster) Validate(formats strfmt.Registry) error {

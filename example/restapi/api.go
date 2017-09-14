@@ -16,7 +16,6 @@ import (
 	"github.com/mikkeloscar/gin-swagger/api"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/clusters"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/config_items"
-	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/health"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/infrastructure_accounts"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/node_pools"
 	"github.com/mikkeloscar/gin-swagger/middleware"
@@ -65,10 +64,6 @@ type Routes struct {
 	GetCluster struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
-	}
-	GetHealth struct {
-		*gin.RouterGroup
 		Post *gin.RouterGroup
 	}
 	GetInfrastructureAccount struct {
@@ -157,7 +152,6 @@ type Service interface {
 	DeleteConfigItem(ctx *gin.Context, params *config_items.DeleteConfigItemParams) *api.Response
 	DeleteNodePool(ctx *gin.Context, params *node_pools.DeleteNodePoolParams) *api.Response
 	GetCluster(ctx *gin.Context, params *clusters.GetClusterParams) *api.Response
-	GetHealth(ctx *gin.Context) *api.Response
 	GetInfrastructureAccount(ctx *gin.Context, params *infrastructure_accounts.GetInfrastructureAccountParams) *api.Response
 	ListClusters(ctx *gin.Context, params *clusters.ListClustersParams) *api.Response
 	ListInfrastructureAccounts(ctx *gin.Context) *api.Response
@@ -308,10 +302,6 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 	}
 	routes.GetCluster.Post = routes.GetCluster.Group("")
 	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.BusinessLogicGetCluster(service.GetCluster))
-
-	routes.GetHealth.RouterGroup = routes.Group("")
-	routes.GetHealth.Post = routes.GetHealth.Group("")
-	routes.GetHealth.Post.GET(ginizePath("/healthz"), health.BusinessLogicGetHealth(service.GetHealth))
 
 	routes.GetInfrastructureAccount.RouterGroup = routes.Group("")
 	if enableAuth {

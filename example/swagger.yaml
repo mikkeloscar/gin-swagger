@@ -508,25 +508,6 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-
-  '/healthz':
-    get:
-      summary: Health endpoint
-      description: Get health of the application.
-      tags:
-        - Health
-      operationId: getHealth
-      security: []
-      responses:
-        200:
-          description: Application is healthy
-          schema:
-            $ref: '#/definitions/Health'
-
-        503:
-          description: Application is unhealthy
-
-
 parameters:
   account_id:
     name: account_id
@@ -867,12 +848,6 @@ definitions:
       - profile
       - instance_type
       - discount_strategy
-
-  Health:
-    type: object
-    properties:
-      health:
-        type: boolean
 
   Error:
     type: object
