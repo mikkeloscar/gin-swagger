@@ -165,8 +165,14 @@ func ginizePath(path string) string {
 }
 
 // configureRoutes configures the routes for the API service.
-func configureRoutes(service Service, enableAuth bool) *Routes {
-	routes := &Routes{Engine: gin.Default()}
+func configureRoutes(service Service, enableAuth bool, logFormat string) *Routes {
+	engine := gin.New()
+	engine.Use(gin.Recovery())
+	if logFormat == "" {
+		logFormat = defaultLogFormat
+	}
+	engine.Use(Logger(logFormat))
+	routes := &Routes{Engine: engine}
 
 	routes.AddOrUpdateConfigItem.RouterGroup = routes.Group("")
 	routes.AddOrUpdateConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -420,7 +426,7 @@ func NewAPI(svc Service, config *Config) *API {
 	}
 
 	api := &API{
-		Routes:  configureRoutes(svc, !config.AuthDisabled),
+		Routes:  configureRoutes(svc, !config.AuthDisabled, config.LogFormat),
 		config:  config,
 		Title:   "Cluster Registry",
 		Version: "0.0.1",
