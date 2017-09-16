@@ -1,0 +1,40 @@
+package middleware
+
+import (
+	"time"
+
+	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
+)
+
+// LogrusLogger instance a Logger middleware that uses logrus for logging.
+// The output is in structured logging with the following format:
+// time="2017-09-16T05:32:16+02:00" level=info client:="::1" method=GET path=/ response_time=78ns status_code=404"
+func LogrusLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		start := time.Now()
+		path := c.Request.URL.Path
+		raw := c.Request.URL.RawQuery
+		if raw != "" {
+			path = path + "?" + raw
+		}
+
+		c.Next()
+
+		end := time.Now()
+		latency := end.Sub(start)
+		clientIP := c.ClientIP()
+		method := c.Request.Method
+		statusCode := c.Writer.Status()
+		comment := c.Errors.ByType(gin.ErrorTypePrivate).String()
+
+		log.SetFormatter(&log.TextFormatter{DisableColors: true})
+		log.WithFields(log.Fields{
+			"status_code":   statusCode,
+			"response_time": latency,
+			"client:":       clientIP,
+			"method":        method,
+			"path":          path,
+		}).Infoln(comment)
+	}
+}

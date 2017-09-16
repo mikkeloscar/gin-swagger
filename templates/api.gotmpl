@@ -90,7 +90,10 @@ func ginizePath(path string) string {
 
 // configureRoutes configures the routes for the API service.
 func configureRoutes(service Service, enableAuth bool) *Routes {
-	routes := &Routes{Engine: gin.Default()}
+	engine := gin.New()
+	engine.Use(gin.Recovery())
+	engine.Use(middleware.LogrusLogger())
+	routes := &Routes{Engine: engine}
 
 	{{range .Operations}}routes.{{ pascalize .Name }}.RouterGroup = routes.Group("")
 	{{ if ne .Method "GET" }}routes.{{ pascalize .Name }}.RouterGroup.Use(middleware.ContentTypes({{range $index, $typ := .ConsumesMediaTypes}}{{if $index}},{{end}}"{{$typ}}"{{end}}))
