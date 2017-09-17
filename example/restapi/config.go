@@ -19,7 +19,6 @@ type Config struct {
 	TLSCertFile       string
 	TLSKeyFile        string
 	WellKnownDisabled bool
-	LogFormat         string
 }
 
 // Parse parses configuration from commandline flags.
@@ -36,7 +35,6 @@ func (c *Config) Parse() error {
 		BoolVar(&c.WellKnownDisabled)
 	kingpin.Flag("disable-auth", "Disable auth for all resources.").
 		BoolVar(&c.AuthDisabled)
-	kingpin.Flag("log-format", "Format string for gin log outupt").StringVar(&c.LogFormat)
 	kingpin.Parse()
 
 	if !c.InsecureHTTP && (c.TLSCertFile == "" || c.TLSKeyFile == "") {
