@@ -22,19 +22,18 @@ func LogrusLogger() gin.HandlerFunc {
 		c.Next()
 
 		end := time.Now()
-		latency := end.Sub(start)
+		duration := end.Sub(start)
 		clientIP := c.ClientIP()
 		method := c.Request.Method
-		statusCode := c.Writer.Status()
+		status := c.Writer.Status()
 		comment := c.Errors.ByType(gin.ErrorTypePrivate).String()
 
-		log.SetFormatter(&log.TextFormatter{DisableColors: true})
 		log.WithFields(log.Fields{
-			"status_code":   statusCode,
-			"response_time": latency,
-			"client:":       clientIP,
-			"method":        method,
-			"path":          path,
+			"status":   status,
+			"duration": duration,
+			"client":   clientIP,
+			"method":   method,
+			"path":     path,
 		}).Infoln(comment)
 	}
 }
