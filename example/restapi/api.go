@@ -434,6 +434,9 @@ func NewAPI(svc Service, config *Config) *API {
 		pprof.Register(api.Routes.Engine, nil)
 	}
 
+	// set logrus logger to TextFormatter with no colors
+	log.SetFormatter(&log.TextFormatter{DisableColors: true})
+
 	api.server = &http.Server{
 		Addr:         config.Address,
 		Handler:      api.Routes.Engine,
