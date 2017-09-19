@@ -3,6 +3,7 @@
 BINARY       ?= gin-swagger
 SOURCES      = $(shell find . -name '*.go')
 GOPKGS       = $(shell go list ./... | grep -v /vendor/)
+TEMPLATES    = $(shell find templates/ -type f -name '*.gotmpl')
 BUILD_FLAGS  ?= -v
 LDFLAGS      ?= -X main.version=$(VERSION) -w -s
 
@@ -16,7 +17,7 @@ test:
 
 generate: bindata.go
 
-bindata.go: config.yaml templates/
+bindata.go: config.yaml $(TEMPLATES)
 	go generate .
 
 build: $(BINARY)
