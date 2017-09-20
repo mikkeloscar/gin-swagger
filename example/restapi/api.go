@@ -166,7 +166,10 @@ func ginizePath(path string) string {
 
 // configureRoutes configures the routes for the API service.
 func configureRoutes(service Service, enableAuth bool) *Routes {
-	routes := &Routes{Engine: gin.Default()}
+	engine := gin.New()
+	engine.Use(gin.Recovery())
+	engine.Use(middleware.LogrusLogger())
+	routes := &Routes{Engine: engine}
 
 	routes.AddOrUpdateConfigItem.RouterGroup = routes.Group("")
 	routes.AddOrUpdateConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -430,6 +433,9 @@ func NewAPI(svc Service, config *Config) *API {
 	if config.Debug {
 		pprof.Register(api.Routes.Engine, nil)
 	}
+
+	// set logrus logger to TextFormatter with no colors
+	log.SetFormatter(&log.TextFormatter{DisableColors: true})
 
 	api.server = &http.Server{
 		Addr:         config.Address,
