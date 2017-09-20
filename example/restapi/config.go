@@ -19,6 +19,7 @@ type Config struct {
 	TLSCertFile       string
 	TLSKeyFile        string
 	WellKnownDisabled bool
+	TokenURL          string
 }
 
 // Parse parses configuration from commandline flags.
@@ -35,6 +36,8 @@ func (c *Config) Parse() error {
 		BoolVar(&c.WellKnownDisabled)
 	kingpin.Flag("disable-auth", "Disable auth for all resources.").
 		BoolVar(&c.AuthDisabled)
+	kingpin.Flag("token-url", "Set TokenURL used to validate oauth2 tokens.").
+		StringVar(&c.TokenURL)
 	kingpin.Parse()
 
 	if !c.InsecureHTTP && (c.TLSCertFile == "" || c.TLSKeyFile == "") {

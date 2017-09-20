@@ -89,7 +89,7 @@ func ginizePath(path string) string {
 }
 
 // configureRoutes configures the routes for the API service.
-func configureRoutes(service Service, enableAuth bool) *Routes {
+func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.Use(middleware.LogrusLogger())
@@ -102,10 +102,14 @@ func configureRoutes(service Service, enableAuth bool) *Routes {
 		{{ $securityDefinitions := .SecurityDefinitions }}
 		{{ range .Security }}{{ $def := index $securityDefinitions .Name }}
 		{{ if eq $def.SecuritySchemeProps.Type "oauth2" }}
+		routeTokenURL := tokenURL
+		if routeTokenURL == "" {
+			routeTokenURL = {{printf "%q" $def.SecuritySchemeProps.TokenURL}}
+		}
 		routes.{{ $routeName }}.Auth = ginoauth2.Auth(
 			middleware.ScopesAuth({{range $index, $scope := .Scopes}}{{if $index}},{{end}}"{{$scope}}"{{end}}),
 			oauth2.Endpoint{
-				TokenURL: {{printf "%q" $def.SecuritySchemeProps.TokenURL}},
+				TokenURL: routeTokenURL,
 			},
 		)
 		{{ end }}
@@ -135,7 +139,7 @@ func NewAPI(svc Service, config *Config) *API {
 	}
 
 	api := &API{
-		Routes: configureRoutes(svc, !config.AuthDisabled),
+		Routes: configureRoutes(svc, !config.AuthDisabled, config.TokenURL),
 		config: config,
 		Title: "{{ .Info.Title }}",
 		Version: "{{ .Info.Version }}",
