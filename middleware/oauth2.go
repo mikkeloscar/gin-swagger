@@ -16,9 +16,10 @@ func ScopesAuth(scopes ...string) ginoauth2.AccessCheckFunction {
 
 	return func(tc *ginoauth2.TokenContainer, ctx *gin.Context) bool {
 		for scope := range authScopes {
-			if _, ok := tc.Scopes[scope]; !ok {
+			if value, ok := tc.Scopes[scope]; !ok {
 				return false
 			}
+			ctx.Set(scope, value)
 		}
 		// set uid and realm
 		// ctx.Set("uid")
@@ -39,14 +40,13 @@ func GetUser(ctx *gin.Context) User {
 	if !ok {
 		return user
 	}
+	user.UID = uid.(string)
 
 	realm, ok := ctx.Get("realm")
 	if !ok {
 		return user
 	}
+	user.Realm = realm.(string)
 
-	return User{
-		UID:   uid.(string),
-		Realm: realm.(string),
-	}
+	return user
 }
