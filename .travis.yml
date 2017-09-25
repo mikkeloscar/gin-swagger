@@ -5,13 +5,11 @@ go:
 - tip
 
 before_install:
-- go get github.com/Masterminds/glide
 - go get github.com/mattn/goveralls
 - go get github.com/alecthomas/gometalinter
 - go get -u github.com/go-swagger/go-swagger/cmd/swagger
 
 install:
-- glide install --strip-vendor
 - gometalinter --install
 
 script:
