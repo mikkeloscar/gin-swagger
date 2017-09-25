@@ -3,6 +3,7 @@ package middleware
 import (
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	ginoauth2 "github.com/zalando/gin-oauth2"
 )
 
@@ -49,7 +50,7 @@ func TestScopesAuth(t *testing.T) {
 	} {
 		t.Run(tc.msg, func(t *testing.T) {
 			fn := ScopesAuth(tc.scopes...)
-			if tc.accepted != fn(tc.container, nil) {
+			if tc.accepted != fn(tc.container, &gin.Context{Keys: make(map[string]interface{})}) {
 				t.Errorf("expected accepted: %t, got %t", tc.accepted, fn(tc.container, nil))
 			}
 		})
