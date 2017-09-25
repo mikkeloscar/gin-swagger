@@ -16,7 +16,8 @@ func ScopesAuth(scopes ...string) ginoauth2.AccessCheckFunction {
 
 	return func(tc *ginoauth2.TokenContainer, ctx *gin.Context) bool {
 		for scope := range authScopes {
-			if value, ok := tc.Scopes[scope]; !ok {
+			value, ok := tc.Scopes[scope]
+			if !ok {
 				return false
 			}
 			ctx.Set(scope, value)
