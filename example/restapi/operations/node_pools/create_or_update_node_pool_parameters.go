@@ -18,13 +18,13 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// BusinessLogicCreateOrUpdateNodePool executes the core logic of the related
+//  executes the core logic of the related
 // route endpoint.
-func BusinessLogicCreateOrUpdateNodePool(f func(ctx *gin.Context, params *CreateOrUpdateNodePoolParams) *api.Response) gin.HandlerFunc {
+func EndpointCreateOrUpdateNodePool(handler func(ctx *gin.Context, params *CreateOrUpdateNodePoolParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &CreateOrUpdateNodePoolParams{}
-		err := params.bindRequest(ctx)
+		err := readRequest(ctx, params) // this change of params is just an idea, if it's too much work it is not worth it.
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
 			problem := api.Problem{
@@ -37,7 +37,7 @@ func BusinessLogicCreateOrUpdateNodePool(f func(ctx *gin.Context, params *Create
 			return
 		}
 
-		resp := f(ctx, params)
+		resp := handler(ctx, params) //handler is one method of the service interface
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -72,15 +72,13 @@ type CreateOrUpdateNodePoolParams struct {
 	NodePoolName string
 }
 
-// CreateOrUpdateNodePoolParamsFromCtx gets the params struct from the gin context.
-func CreateOrUpdateNodePoolParamsFromCtx(ctx *gin.Context) *CreateOrUpdateNodePoolParams {
-	params, _ := ctx.Get("params")
-	return params.(*CreateOrUpdateNodePoolParams)
-}
+//removed some stuff here :-)
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *CreateOrUpdateNodePoolParams) bindRequest(ctx *gin.Context) error {
+
+// TODO this description should contain the fact that it reads the request body from the gin context passed and the "return" value is inside the object on which it is called
+func (o *CreateOrUpdateNodePoolParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 
