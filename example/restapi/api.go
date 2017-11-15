@@ -27,9 +27,9 @@ import (
 type Routes struct {
 	*gin.Engine
 	AddOrUpdateConfigItem struct {
-		*gin.RouterGroup
-		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
+		routerGroup *gin.RouterGroup
+		Auth        gin.HandlerFunc
+		Post        *gin.RouterGroup // drop this field
 	}
 	CreateCluster struct {
 		*gin.RouterGroup
@@ -190,7 +190,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.AddOrUpdateConfigItem.Post = routes.AddOrUpdateConfigItem.Group("")
-	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.BusinessLogicAddOrUpdateConfigItem(service.AddOrUpdateConfigItem))
+	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.EndpointAddOrUpdateConfigItem(service.AddOrUpdateConfigItem)) //no business logic here, more an endpoint wrapping an handler similar to go-kit
 
 	routes.CreateCluster.RouterGroup = routes.Group("")
 	routes.CreateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -463,8 +463,8 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	return routes
 }
 
-// API defines the API service.
-type API struct {
+// Server defines the server
+type Server struct {
 	Routes  *Routes
 	config  *Config
 	server  *http.Server

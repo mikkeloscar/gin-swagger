@@ -11,9 +11,11 @@ import (
 	"github.com/mikkeloscar/gin-swagger/api"
 )
 
+//THIS FILE IS TOTALLY NOT NEEDED IF THERE IS NO HEALTH IN THE SWAGGER FILE
+
 // BusinessLogicGetHealth executes the core logic of the related
 // route endpoint.
-func BusinessLogicGetHealth(f func(ctx *gin.Context) *api.Response) gin.HandlerFunc {
+func EndpointGetHealth(Handler func(ctx *gin.Context) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		resp := f(ctx)

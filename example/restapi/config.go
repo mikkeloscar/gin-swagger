@@ -22,8 +22,9 @@ type Config struct {
 	TokenURL          string
 }
 
-// Parse parses configuration from commandline flags.
-func (c *Config) Parse() error {
+func NewConfig() *Config {}
+
+func WithDefaultFlags() *Config {
 	kingpin.Flag("debug", "Enable debug logging and pprof metrics.").BoolVar(&c.Debug)
 	kingpin.Flag("address", "Address to listen on, e.g. :8080 or 0.0.0.0:8080.").
 		Default(defaultAddress).StringVar(&c.Address)
@@ -38,11 +39,18 @@ func (c *Config) Parse() error {
 		BoolVar(&c.AuthDisabled)
 	kingpin.Flag("token-url", "Set TokenURL used to validate oauth2 tokens.").
 		StringVar(&c.TokenURL)
-	kingpin.Parse()
 
+	// no parse
+}
+
+// Parse parses configuration from commandline flags.
+func (c *Config) Parse() error {
+	// do not call this if there are no defauilts
 	if !c.InsecureHTTP && (c.TLSCertFile == "" || c.TLSKeyFile == "") {
 		return fmt.Errorf("'--tls-cert-file' and '--tls-key-file' must be specified when '--insecure-http=false'")
 	}
+
+	kingpin.Parse()
 
 	return nil
 }
