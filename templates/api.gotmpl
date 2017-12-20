@@ -117,7 +117,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 		{{ end }}
 	}
 {{end}}	routes.{{ pascalize .Name }}.Post = routes.{{ pascalize .Name }}.Group("")
-	routes.{{ pascalize .Name }}.Post.{{.Method}}(ginizePath({{printf "%q" .Path}}), {{.Package}}.Endpoint{{ pascalize .Name }}(service.{{ pascalize .Name }}))
+	routes.{{ pascalize .Name }}.Post.{{.Method}}(ginizePath({{printf "%q" .Path}}), {{.Package}}.{{ pascalize .Name }}Endpoint(service.{{ pascalize .Name }}))
 
 {{end}}
 	return routes

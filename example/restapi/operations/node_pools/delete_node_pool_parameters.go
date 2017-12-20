@@ -14,9 +14,9 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// EndpointDeleteNodePool executes the core logic of the related
+// DeleteNodePoolEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointDeleteNodePool(handler func(ctx *gin.Context, params *DeleteNodePoolParams) *api.Response) gin.HandlerFunc {
+func DeleteNodePoolEndpoint(handler func(ctx *gin.Context, params *DeleteNodePoolParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &DeleteNodePoolParams{}

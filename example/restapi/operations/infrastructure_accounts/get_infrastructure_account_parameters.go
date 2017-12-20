@@ -14,9 +14,9 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// EndpointGetInfrastructureAccount executes the core logic of the related
+// GetInfrastructureAccountEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointGetInfrastructureAccount(handler func(ctx *gin.Context, params *GetInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
+func GetInfrastructureAccountEndpoint(handler func(ctx *gin.Context, params *GetInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &GetInfrastructureAccountParams{}

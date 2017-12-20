@@ -17,9 +17,9 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// EndpointCreateCluster executes the core logic of the related
+// CreateClusterEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointCreateCluster(handler func(ctx *gin.Context, params *CreateClusterParams) *api.Response) gin.HandlerFunc {
+func CreateClusterEndpoint(handler func(ctx *gin.Context, params *CreateClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &CreateClusterParams{}

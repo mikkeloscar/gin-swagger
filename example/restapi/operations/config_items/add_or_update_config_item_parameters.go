@@ -18,9 +18,9 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// EndpointAddOrUpdateConfigItem executes the core logic of the related
+// AddOrUpdateConfigItemEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointAddOrUpdateConfigItem(handler func(ctx *gin.Context, params *AddOrUpdateConfigItemParams) *api.Response) gin.HandlerFunc {
+func AddOrUpdateConfigItemEndpoint(handler func(ctx *gin.Context, params *AddOrUpdateConfigItemParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &AddOrUpdateConfigItemParams{}

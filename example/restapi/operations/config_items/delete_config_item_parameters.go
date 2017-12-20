@@ -14,9 +14,9 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// EndpointDeleteConfigItem executes the core logic of the related
+// DeleteConfigItemEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointDeleteConfigItem(handler func(ctx *gin.Context, params *DeleteConfigItemParams) *api.Response) gin.HandlerFunc {
+func DeleteConfigItemEndpoint(handler func(ctx *gin.Context, params *DeleteConfigItemParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &DeleteConfigItemParams{}

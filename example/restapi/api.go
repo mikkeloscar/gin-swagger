@@ -190,7 +190,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.AddOrUpdateConfigItem.Post = routes.AddOrUpdateConfigItem.Group("")
-	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.EndpointAddOrUpdateConfigItem(service.AddOrUpdateConfigItem))
+	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.AddOrUpdateConfigItemEndpoint(service.AddOrUpdateConfigItem))
 
 	routes.CreateCluster.RouterGroup = routes.Group("")
 	routes.CreateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -211,7 +211,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.CreateCluster.Post = routes.CreateCluster.Group("")
-	routes.CreateCluster.Post.POST(ginizePath("/kubernetes-clusters"), clusters.EndpointCreateCluster(service.CreateCluster))
+	routes.CreateCluster.Post.POST(ginizePath("/kubernetes-clusters"), clusters.CreateClusterEndpoint(service.CreateCluster))
 
 	routes.CreateInfrastructureAccount.RouterGroup = routes.Group("")
 	routes.CreateInfrastructureAccount.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -232,7 +232,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.CreateInfrastructureAccount.Post = routes.CreateInfrastructureAccount.Group("")
-	routes.CreateInfrastructureAccount.Post.POST(ginizePath("/infrastructure-accounts"), infrastructure_accounts.EndpointCreateInfrastructureAccount(service.CreateInfrastructureAccount))
+	routes.CreateInfrastructureAccount.Post.POST(ginizePath("/infrastructure-accounts"), infrastructure_accounts.CreateInfrastructureAccountEndpoint(service.CreateInfrastructureAccount))
 
 	routes.CreateOrUpdateNodePool.RouterGroup = routes.Group("")
 	routes.CreateOrUpdateNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -253,7 +253,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.CreateOrUpdateNodePool.Post = routes.CreateOrUpdateNodePool.Group("")
-	routes.CreateOrUpdateNodePool.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.EndpointCreateOrUpdateNodePool(service.CreateOrUpdateNodePool))
+	routes.CreateOrUpdateNodePool.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.CreateOrUpdateNodePoolEndpoint(service.CreateOrUpdateNodePool))
 
 	routes.DeleteCluster.RouterGroup = routes.Group("")
 	routes.DeleteCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -274,7 +274,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.DeleteCluster.Post = routes.DeleteCluster.Group("")
-	routes.DeleteCluster.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.EndpointDeleteCluster(service.DeleteCluster))
+	routes.DeleteCluster.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.DeleteClusterEndpoint(service.DeleteCluster))
 
 	routes.DeleteConfigItem.RouterGroup = routes.Group("")
 	routes.DeleteConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -295,7 +295,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.DeleteConfigItem.Post = routes.DeleteConfigItem.Group("")
-	routes.DeleteConfigItem.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.EndpointDeleteConfigItem(service.DeleteConfigItem))
+	routes.DeleteConfigItem.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.DeleteConfigItemEndpoint(service.DeleteConfigItem))
 
 	routes.DeleteNodePool.RouterGroup = routes.Group("")
 	routes.DeleteNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -316,7 +316,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.DeleteNodePool.Post = routes.DeleteNodePool.Group("")
-	routes.DeleteNodePool.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.EndpointDeleteNodePool(service.DeleteNodePool))
+	routes.DeleteNodePool.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.DeleteNodePoolEndpoint(service.DeleteNodePool))
 
 	routes.GetCluster.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -336,7 +336,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.GetCluster.Post = routes.GetCluster.Group("")
-	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.EndpointGetCluster(service.GetCluster))
+	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.GetClusterEndpoint(service.GetCluster))
 
 	routes.GetInfrastructureAccount.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -356,7 +356,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.GetInfrastructureAccount.Post = routes.GetInfrastructureAccount.Group("")
-	routes.GetInfrastructureAccount.Post.GET(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.EndpointGetInfrastructureAccount(service.GetInfrastructureAccount))
+	routes.GetInfrastructureAccount.Post.GET(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.GetInfrastructureAccountEndpoint(service.GetInfrastructureAccount))
 
 	routes.ListClusters.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -376,7 +376,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.ListClusters.Post = routes.ListClusters.Group("")
-	routes.ListClusters.Post.GET(ginizePath("/kubernetes-clusters"), clusters.EndpointListClusters(service.ListClusters))
+	routes.ListClusters.Post.GET(ginizePath("/kubernetes-clusters"), clusters.ListClustersEndpoint(service.ListClusters))
 
 	routes.ListInfrastructureAccounts.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -396,7 +396,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.ListInfrastructureAccounts.Post = routes.ListInfrastructureAccounts.Group("")
-	routes.ListInfrastructureAccounts.Post.GET(ginizePath("/infrastructure-accounts"), infrastructure_accounts.EndpointListInfrastructureAccounts(service.ListInfrastructureAccounts))
+	routes.ListInfrastructureAccounts.Post.GET(ginizePath("/infrastructure-accounts"), infrastructure_accounts.ListInfrastructureAccountsEndpoint(service.ListInfrastructureAccounts))
 
 	routes.ListNodePools.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -416,7 +416,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.ListNodePools.Post = routes.ListNodePools.Group("")
-	routes.ListNodePools.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools"), node_pools.EndpointListNodePools(service.ListNodePools))
+	routes.ListNodePools.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools"), node_pools.ListNodePoolsEndpoint(service.ListNodePools))
 
 	routes.UpdateCluster.RouterGroup = routes.Group("")
 	routes.UpdateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -437,7 +437,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.UpdateCluster.Post = routes.UpdateCluster.Group("")
-	routes.UpdateCluster.Post.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.EndpointUpdateCluster(service.UpdateCluster))
+	routes.UpdateCluster.Post.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.UpdateClusterEndpoint(service.UpdateCluster))
 
 	routes.UpdateInfrastructureAccount.RouterGroup = routes.Group("")
 	routes.UpdateInfrastructureAccount.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -458,7 +458,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.UpdateInfrastructureAccount.Post = routes.UpdateInfrastructureAccount.Group("")
-	routes.UpdateInfrastructureAccount.Post.PATCH(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.EndpointUpdateInfrastructureAccount(service.UpdateInfrastructureAccount))
+	routes.UpdateInfrastructureAccount.Post.PATCH(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.UpdateInfrastructureAccountEndpoint(service.UpdateInfrastructureAccount))
 
 	return routes
 }

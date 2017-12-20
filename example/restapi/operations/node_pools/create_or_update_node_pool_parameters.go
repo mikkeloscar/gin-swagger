@@ -18,9 +18,9 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// EndpointCreateOrUpdateNodePool executes the core logic of the related
+// CreateOrUpdateNodePoolEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointCreateOrUpdateNodePool(handler func(ctx *gin.Context, params *CreateOrUpdateNodePoolParams) *api.Response) gin.HandlerFunc {
+func CreateOrUpdateNodePoolEndpoint(handler func(ctx *gin.Context, params *CreateOrUpdateNodePoolParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &CreateOrUpdateNodePoolParams{}

@@ -14,9 +14,9 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// EndpointDeleteCluster executes the core logic of the related
+// DeleteClusterEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointDeleteCluster(handler func(ctx *gin.Context, params *DeleteClusterParams) *api.Response) gin.HandlerFunc {
+func DeleteClusterEndpoint(handler func(ctx *gin.Context, params *DeleteClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &DeleteClusterParams{}

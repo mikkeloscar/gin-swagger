@@ -17,9 +17,9 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// EndpointCreateInfrastructureAccount executes the core logic of the related
+// CreateInfrastructureAccountEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointCreateInfrastructureAccount(handler func(ctx *gin.Context, params *CreateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
+func CreateInfrastructureAccountEndpoint(handler func(ctx *gin.Context, params *CreateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &CreateInfrastructureAccountParams{}

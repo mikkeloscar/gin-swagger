@@ -11,9 +11,9 @@ import (
 	"github.com/mikkeloscar/gin-swagger/api"
 )
 
-// EndpointListInfrastructureAccounts executes the core logic of the related
+// ListInfrastructureAccountsEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointListInfrastructureAccounts(handler func(ctx *gin.Context) *api.Response) gin.HandlerFunc {
+func ListInfrastructureAccountsEndpoint(handler func(ctx *gin.Context) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		resp := handler(ctx)

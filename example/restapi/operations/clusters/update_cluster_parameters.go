@@ -18,9 +18,9 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// EndpointUpdateCluster executes the core logic of the related
+// UpdateClusterEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointUpdateCluster(handler func(ctx *gin.Context, params *UpdateClusterParams) *api.Response) gin.HandlerFunc {
+func UpdateClusterEndpoint(handler func(ctx *gin.Context, params *UpdateClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &UpdateClusterParams{}

@@ -14,9 +14,9 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// EndpointListNodePools executes the core logic of the related
+// ListNodePoolsEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointListNodePools(handler func(ctx *gin.Context, params *ListNodePoolsParams) *api.Response) gin.HandlerFunc {
+func ListNodePoolsEndpoint(handler func(ctx *gin.Context, params *ListNodePoolsParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &ListNodePoolsParams{}

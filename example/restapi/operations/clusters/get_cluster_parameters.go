@@ -14,9 +14,9 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// EndpointGetCluster executes the core logic of the related
+// GetClusterEndpoint executes the core logic of the related
 // route endpoint.
-func EndpointGetCluster(handler func(ctx *gin.Context, params *GetClusterParams) *api.Response) gin.HandlerFunc {
+func GetClusterEndpoint(handler func(ctx *gin.Context, params *GetClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &GetClusterParams{}
