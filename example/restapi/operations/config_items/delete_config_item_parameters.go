@@ -14,13 +14,13 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// BusinessLogicDeleteConfigItem executes the core logic of the related
+// EndpointDeleteConfigItem executes the core logic of the related
 // route endpoint.
-func BusinessLogicDeleteConfigItem(f func(ctx *gin.Context, params *DeleteConfigItemParams) *api.Response) gin.HandlerFunc {
+func EndpointDeleteConfigItem(handler func(ctx *gin.Context, params *DeleteConfigItemParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &DeleteConfigItemParams{}
-		err := params.bindRequest(ctx)
+		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
 			problem := api.Problem{
@@ -33,7 +33,7 @@ func BusinessLogicDeleteConfigItem(f func(ctx *gin.Context, params *DeleteConfig
 			return
 		}
 
-		resp := f(ctx, params)
+		resp := handler(ctx, params)
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -63,15 +63,9 @@ type DeleteConfigItemParams struct {
 	ConfigKey string
 }
 
-// DeleteConfigItemParamsFromCtx gets the params struct from the gin context.
-func DeleteConfigItemParamsFromCtx(ctx *gin.Context) *DeleteConfigItemParams {
-	params, _ := ctx.Get("params")
-	return params.(*DeleteConfigItemParams)
-}
-
-// BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
+// readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *DeleteConfigItemParams) bindRequest(ctx *gin.Context) error {
+func (o *DeleteConfigItemParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 

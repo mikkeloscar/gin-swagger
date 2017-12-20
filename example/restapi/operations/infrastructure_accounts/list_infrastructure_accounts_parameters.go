@@ -11,12 +11,12 @@ import (
 	"github.com/mikkeloscar/gin-swagger/api"
 )
 
-// BusinessLogicListInfrastructureAccounts executes the core logic of the related
+// EndpointListInfrastructureAccounts executes the core logic of the related
 // route endpoint.
-func BusinessLogicListInfrastructureAccounts(f func(ctx *gin.Context) *api.Response) gin.HandlerFunc {
+func EndpointListInfrastructureAccounts(handler func(ctx *gin.Context) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		resp := f(ctx)
+		resp := handler(ctx)
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -33,9 +33,9 @@ func BusinessLogicListInfrastructureAccounts(f func(ctx *gin.Context) *api.Respo
 type ListInfrastructureAccountsParams struct {
 }
 
-// BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
+// readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *ListInfrastructureAccountsParams) bindRequest(ctx *gin.Context) error {
+func (o *ListInfrastructureAccountsParams) readRequest(ctx *gin.Context) error {
 	var res []error
 
 	if len(res) > 0 {

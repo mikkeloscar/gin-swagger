@@ -23,7 +23,7 @@ import (
 	ginoauth2 "github.com/zalando/gin-oauth2"
 )
 
-// Routes defines all the routes of the API service.
+// Routes defines all the routes of the Server service.
 type Routes struct {
 	*gin.Engine
 	AddOrUpdateConfigItem struct {
@@ -141,7 +141,7 @@ func healthHandler(healthFunc func() bool) gin.HandlerFunc {
 }
 
 // Service is the interface that must be implemented in order to provide
-// business logic for the API service.
+// business logic for the Server service.
 type Service interface {
 	Healthy() bool
 	AddOrUpdateConfigItem(ctx *gin.Context, params *config_items.AddOrUpdateConfigItemParams) *api.Response
@@ -164,7 +164,7 @@ func ginizePath(path string) string {
 	return strings.Replace(strings.Replace(path, "{", ":", -1), "}", "", -1)
 }
 
-// configureRoutes configures the routes for the API service.
+// configureRoutes configures the routes for the Server service.
 func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
@@ -190,7 +190,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.AddOrUpdateConfigItem.Post = routes.AddOrUpdateConfigItem.Group("")
-	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.BusinessLogicAddOrUpdateConfigItem(service.AddOrUpdateConfigItem))
+	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.EndpointAddOrUpdateConfigItem(service.AddOrUpdateConfigItem))
 
 	routes.CreateCluster.RouterGroup = routes.Group("")
 	routes.CreateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -211,7 +211,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.CreateCluster.Post = routes.CreateCluster.Group("")
-	routes.CreateCluster.Post.POST(ginizePath("/kubernetes-clusters"), clusters.BusinessLogicCreateCluster(service.CreateCluster))
+	routes.CreateCluster.Post.POST(ginizePath("/kubernetes-clusters"), clusters.EndpointCreateCluster(service.CreateCluster))
 
 	routes.CreateInfrastructureAccount.RouterGroup = routes.Group("")
 	routes.CreateInfrastructureAccount.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -232,7 +232,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.CreateInfrastructureAccount.Post = routes.CreateInfrastructureAccount.Group("")
-	routes.CreateInfrastructureAccount.Post.POST(ginizePath("/infrastructure-accounts"), infrastructure_accounts.BusinessLogicCreateInfrastructureAccount(service.CreateInfrastructureAccount))
+	routes.CreateInfrastructureAccount.Post.POST(ginizePath("/infrastructure-accounts"), infrastructure_accounts.EndpointCreateInfrastructureAccount(service.CreateInfrastructureAccount))
 
 	routes.CreateOrUpdateNodePool.RouterGroup = routes.Group("")
 	routes.CreateOrUpdateNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -253,7 +253,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.CreateOrUpdateNodePool.Post = routes.CreateOrUpdateNodePool.Group("")
-	routes.CreateOrUpdateNodePool.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.BusinessLogicCreateOrUpdateNodePool(service.CreateOrUpdateNodePool))
+	routes.CreateOrUpdateNodePool.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.EndpointCreateOrUpdateNodePool(service.CreateOrUpdateNodePool))
 
 	routes.DeleteCluster.RouterGroup = routes.Group("")
 	routes.DeleteCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -274,7 +274,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.DeleteCluster.Post = routes.DeleteCluster.Group("")
-	routes.DeleteCluster.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.BusinessLogicDeleteCluster(service.DeleteCluster))
+	routes.DeleteCluster.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.EndpointDeleteCluster(service.DeleteCluster))
 
 	routes.DeleteConfigItem.RouterGroup = routes.Group("")
 	routes.DeleteConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -295,7 +295,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.DeleteConfigItem.Post = routes.DeleteConfigItem.Group("")
-	routes.DeleteConfigItem.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.BusinessLogicDeleteConfigItem(service.DeleteConfigItem))
+	routes.DeleteConfigItem.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.EndpointDeleteConfigItem(service.DeleteConfigItem))
 
 	routes.DeleteNodePool.RouterGroup = routes.Group("")
 	routes.DeleteNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -316,7 +316,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.DeleteNodePool.Post = routes.DeleteNodePool.Group("")
-	routes.DeleteNodePool.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.BusinessLogicDeleteNodePool(service.DeleteNodePool))
+	routes.DeleteNodePool.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.EndpointDeleteNodePool(service.DeleteNodePool))
 
 	routes.GetCluster.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -336,7 +336,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.GetCluster.Post = routes.GetCluster.Group("")
-	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.BusinessLogicGetCluster(service.GetCluster))
+	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.EndpointGetCluster(service.GetCluster))
 
 	routes.GetInfrastructureAccount.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -356,7 +356,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.GetInfrastructureAccount.Post = routes.GetInfrastructureAccount.Group("")
-	routes.GetInfrastructureAccount.Post.GET(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.BusinessLogicGetInfrastructureAccount(service.GetInfrastructureAccount))
+	routes.GetInfrastructureAccount.Post.GET(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.EndpointGetInfrastructureAccount(service.GetInfrastructureAccount))
 
 	routes.ListClusters.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -376,7 +376,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.ListClusters.Post = routes.ListClusters.Group("")
-	routes.ListClusters.Post.GET(ginizePath("/kubernetes-clusters"), clusters.BusinessLogicListClusters(service.ListClusters))
+	routes.ListClusters.Post.GET(ginizePath("/kubernetes-clusters"), clusters.EndpointListClusters(service.ListClusters))
 
 	routes.ListInfrastructureAccounts.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -396,7 +396,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.ListInfrastructureAccounts.Post = routes.ListInfrastructureAccounts.Group("")
-	routes.ListInfrastructureAccounts.Post.GET(ginizePath("/infrastructure-accounts"), infrastructure_accounts.BusinessLogicListInfrastructureAccounts(service.ListInfrastructureAccounts))
+	routes.ListInfrastructureAccounts.Post.GET(ginizePath("/infrastructure-accounts"), infrastructure_accounts.EndpointListInfrastructureAccounts(service.ListInfrastructureAccounts))
 
 	routes.ListNodePools.RouterGroup = routes.Group("")
 	if enableAuth {
@@ -416,7 +416,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.ListNodePools.Post = routes.ListNodePools.Group("")
-	routes.ListNodePools.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools"), node_pools.BusinessLogicListNodePools(service.ListNodePools))
+	routes.ListNodePools.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools"), node_pools.EndpointListNodePools(service.ListNodePools))
 
 	routes.UpdateCluster.RouterGroup = routes.Group("")
 	routes.UpdateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -437,7 +437,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.UpdateCluster.Post = routes.UpdateCluster.Group("")
-	routes.UpdateCluster.Post.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.BusinessLogicUpdateCluster(service.UpdateCluster))
+	routes.UpdateCluster.Post.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.EndpointUpdateCluster(service.UpdateCluster))
 
 	routes.UpdateInfrastructureAccount.RouterGroup = routes.Group("")
 	routes.UpdateInfrastructureAccount.RouterGroup.Use(middleware.ContentTypes("application/json"))
@@ -458,13 +458,13 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 
 	}
 	routes.UpdateInfrastructureAccount.Post = routes.UpdateInfrastructureAccount.Group("")
-	routes.UpdateInfrastructureAccount.Post.PATCH(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.BusinessLogicUpdateInfrastructureAccount(service.UpdateInfrastructureAccount))
+	routes.UpdateInfrastructureAccount.Post.PATCH(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.EndpointUpdateInfrastructureAccount(service.UpdateInfrastructureAccount))
 
 	return routes
 }
 
-// API defines the API service.
-type API struct {
+// Server defines the Server service.
+type Server struct {
 	Routes  *Routes
 	config  *Config
 	server  *http.Server
@@ -472,13 +472,13 @@ type API struct {
 	Version string
 }
 
-// NewAPI initializes a new API service.
-func NewAPI(svc Service, config *Config) *API {
+// NewServer initializes a new Server service.
+func NewServer(svc Service, config *Config) *Server {
 	if !config.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	api := &API{
+	api := &Server{
 		Routes:  configureRoutes(svc, !config.AuthDisabled, config.TokenURL),
 		config:  config,
 		Title:   "Cluster Registry",
@@ -510,9 +510,9 @@ func NewAPI(svc Service, config *Config) *API {
 	return api
 }
 
-// Run runs the API server it will listen on either HTTP or HTTPS depending on
-// the config passed to NewAPI.
-func (a *API) Run() error {
+// Run runs the Server server it will listen on either HTTP or HTTPS depending on
+// the config passed to NewServer.
+func (a *Server) Run() error {
 	log.Infof("Serving '%s - %s' on address %s", a.Title, a.Version, a.server.Addr)
 	if a.config.InsecureHTTP {
 		return a.server.ListenAndServe()
@@ -520,17 +520,17 @@ func (a *API) Run() error {
 	return a.server.ListenAndServeTLS(a.config.TLSCertFile, a.config.TLSKeyFile)
 }
 
-// Shutdown will gracefully shutdown the API server.
-func (a *API) Shutdown() error {
+// Shutdown will gracefully shutdown the Server server.
+func (a *Server) Shutdown() error {
 	return a.server.Shutdown(context.Background())
 }
 
-// RunWithSigHandler runs the API server with SIGTERM handling automatically
+// RunWithSigHandler runs the Server server with SIGTERM handling automatically
 // enabled. The server will listen for a SIGTERM signal and gracefully shutdown
 // the web server.
 // It's possible to optionally pass any number shutdown functions which will
 // execute one by one after the webserver has been shutdown successfully.
-func (a *API) RunWithSigHandler(shutdown ...func() error) error {
+func (a *Server) RunWithSigHandler(shutdown ...func() error) error {
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGTERM)
 

@@ -14,13 +14,13 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// BusinessLogicDeleteNodePool executes the core logic of the related
+// EndpointDeleteNodePool executes the core logic of the related
 // route endpoint.
-func BusinessLogicDeleteNodePool(f func(ctx *gin.Context, params *DeleteNodePoolParams) *api.Response) gin.HandlerFunc {
+func EndpointDeleteNodePool(handler func(ctx *gin.Context, params *DeleteNodePoolParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &DeleteNodePoolParams{}
-		err := params.bindRequest(ctx)
+		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
 			problem := api.Problem{
@@ -33,7 +33,7 @@ func BusinessLogicDeleteNodePool(f func(ctx *gin.Context, params *DeleteNodePool
 			return
 		}
 
-		resp := f(ctx, params)
+		resp := handler(ctx, params)
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -63,15 +63,9 @@ type DeleteNodePoolParams struct {
 	NodePoolName string
 }
 
-// DeleteNodePoolParamsFromCtx gets the params struct from the gin context.
-func DeleteNodePoolParamsFromCtx(ctx *gin.Context) *DeleteNodePoolParams {
-	params, _ := ctx.Get("params")
-	return params.(*DeleteNodePoolParams)
-}
-
-// BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
+// readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *DeleteNodePoolParams) bindRequest(ctx *gin.Context) error {
+func (o *DeleteNodePoolParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 

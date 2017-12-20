@@ -17,13 +17,13 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// BusinessLogicCreateInfrastructureAccount executes the core logic of the related
+// EndpointCreateInfrastructureAccount executes the core logic of the related
 // route endpoint.
-func BusinessLogicCreateInfrastructureAccount(f func(ctx *gin.Context, params *CreateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
+func EndpointCreateInfrastructureAccount(handler func(ctx *gin.Context, params *CreateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &CreateInfrastructureAccountParams{}
-		err := params.bindRequest(ctx)
+		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
 			problem := api.Problem{
@@ -36,7 +36,7 @@ func BusinessLogicCreateInfrastructureAccount(f func(ctx *gin.Context, params *C
 			return
 		}
 
-		resp := f(ctx, params)
+		resp := handler(ctx, params)
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -59,15 +59,9 @@ type CreateInfrastructureAccountParams struct {
 	InfrastructureAccount *models.InfrastructureAccount
 }
 
-// CreateInfrastructureAccountParamsFromCtx gets the params struct from the gin context.
-func CreateInfrastructureAccountParamsFromCtx(ctx *gin.Context) *CreateInfrastructureAccountParams {
-	params, _ := ctx.Get("params")
-	return params.(*CreateInfrastructureAccountParams)
-}
-
-// BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
+// readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *CreateInfrastructureAccountParams) bindRequest(ctx *gin.Context) error {
+func (o *CreateInfrastructureAccountParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 

@@ -28,15 +28,13 @@ var (
 	}
 )
 
-func init() {
+func main() {
 	kingpin.Flag("application", "Name of the application (passed directly to swagger).").
 		Required().Short('A').StringVar(&config.Application)
 	kingpin.Flag("spec", "the spec file to use.").
 		Short('f').Default(defaultSwaggerPath).StringVar(&config.SwaggerPath)
 	kingpin.Parse()
-}
 
-func main() {
 	err := run(config.Application, config.SwaggerPath)
 	if err != nil {
 		log.Fatalf("failed to run swagger: %s", err)

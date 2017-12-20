@@ -16,13 +16,13 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// BusinessLogicListClusters executes the core logic of the related
+// EndpointListClusters executes the core logic of the related
 // route endpoint.
-func BusinessLogicListClusters(f func(ctx *gin.Context, params *ListClustersParams) *api.Response) gin.HandlerFunc {
+func EndpointListClusters(handler func(ctx *gin.Context, params *ListClustersParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &ListClustersParams{}
-		err := params.bindRequest(ctx)
+		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
 			problem := api.Problem{
@@ -35,7 +35,7 @@ func BusinessLogicListClusters(f func(ctx *gin.Context, params *ListClustersPara
 			return
 		}
 
-		resp := f(ctx, params)
+		resp := handler(ctx, params)
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -93,15 +93,9 @@ type ListClustersParams struct {
 	Region *string
 }
 
-// ListClustersParamsFromCtx gets the params struct from the gin context.
-func ListClustersParamsFromCtx(ctx *gin.Context) *ListClustersParams {
-	params, _ := ctx.Get("params")
-	return params.(*ListClustersParams)
-}
-
-// BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
+// readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *ListClustersParams) bindRequest(ctx *gin.Context) error {
+func (o *ListClustersParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 

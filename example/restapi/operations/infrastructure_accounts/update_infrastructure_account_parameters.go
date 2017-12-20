@@ -18,13 +18,13 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// BusinessLogicUpdateInfrastructureAccount executes the core logic of the related
+// EndpointUpdateInfrastructureAccount executes the core logic of the related
 // route endpoint.
-func BusinessLogicUpdateInfrastructureAccount(f func(ctx *gin.Context, params *UpdateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
+func EndpointUpdateInfrastructureAccount(handler func(ctx *gin.Context, params *UpdateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &UpdateInfrastructureAccountParams{}
-		err := params.bindRequest(ctx)
+		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
 			problem := api.Problem{
@@ -37,7 +37,7 @@ func BusinessLogicUpdateInfrastructureAccount(f func(ctx *gin.Context, params *U
 			return
 		}
 
-		resp := f(ctx, params)
+		resp := handler(ctx, params)
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -66,15 +66,9 @@ type UpdateInfrastructureAccountParams struct {
 	InfrastructureAccount *models.InfrastructureAccountUpdate
 }
 
-// UpdateInfrastructureAccountParamsFromCtx gets the params struct from the gin context.
-func UpdateInfrastructureAccountParamsFromCtx(ctx *gin.Context) *UpdateInfrastructureAccountParams {
-	params, _ := ctx.Get("params")
-	return params.(*UpdateInfrastructureAccountParams)
-}
-
-// BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
+// readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *UpdateInfrastructureAccountParams) bindRequest(ctx *gin.Context) error {
+func (o *UpdateInfrastructureAccountParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 

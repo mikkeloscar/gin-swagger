@@ -6,9 +6,11 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/restapi"
 )
 
-var apiConfig restapi.Config
-
 func main() {
+
+	var apiConfig restapi.Config
+	apiConfig.WithDefaultFlags()
+
 	err := apiConfig.Parse()
 	if err != nil {
 		log.Fatal(err)
@@ -16,7 +18,7 @@ func main() {
 
 	svc := &ExampleService{Health: false}
 
-	api := restapi.NewAPI(svc, &apiConfig)
+	api := restapi.NewServer(svc, &apiConfig)
 
 	err = api.RunWithSigHandler()
 	if err != nil {

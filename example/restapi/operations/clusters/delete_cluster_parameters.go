@@ -14,13 +14,13 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// BusinessLogicDeleteCluster executes the core logic of the related
+// EndpointDeleteCluster executes the core logic of the related
 // route endpoint.
-func BusinessLogicDeleteCluster(f func(ctx *gin.Context, params *DeleteClusterParams) *api.Response) gin.HandlerFunc {
+func EndpointDeleteCluster(handler func(ctx *gin.Context, params *DeleteClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &DeleteClusterParams{}
-		err := params.bindRequest(ctx)
+		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
 			problem := api.Problem{
@@ -33,7 +33,7 @@ func BusinessLogicDeleteCluster(f func(ctx *gin.Context, params *DeleteClusterPa
 			return
 		}
 
-		resp := f(ctx, params)
+		resp := handler(ctx, params)
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -57,15 +57,9 @@ type DeleteClusterParams struct {
 	ClusterID string
 }
 
-// DeleteClusterParamsFromCtx gets the params struct from the gin context.
-func DeleteClusterParamsFromCtx(ctx *gin.Context) *DeleteClusterParams {
-	params, _ := ctx.Get("params")
-	return params.(*DeleteClusterParams)
-}
-
-// BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
+// readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *DeleteClusterParams) bindRequest(ctx *gin.Context) error {
+func (o *DeleteClusterParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 

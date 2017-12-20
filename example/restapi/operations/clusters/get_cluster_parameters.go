@@ -14,13 +14,13 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 )
 
-// BusinessLogicGetCluster executes the core logic of the related
+// EndpointGetCluster executes the core logic of the related
 // route endpoint.
-func BusinessLogicGetCluster(f func(ctx *gin.Context, params *GetClusterParams) *api.Response) gin.HandlerFunc {
+func EndpointGetCluster(handler func(ctx *gin.Context, params *GetClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &GetClusterParams{}
-		err := params.bindRequest(ctx)
+		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
 			problem := api.Problem{
@@ -33,7 +33,7 @@ func BusinessLogicGetCluster(f func(ctx *gin.Context, params *GetClusterParams) 
 			return
 		}
 
-		resp := f(ctx, params)
+		resp := handler(ctx, params)
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -57,15 +57,9 @@ type GetClusterParams struct {
 	ClusterID string
 }
 
-// GetClusterParamsFromCtx gets the params struct from the gin context.
-func GetClusterParamsFromCtx(ctx *gin.Context) *GetClusterParams {
-	params, _ := ctx.Get("params")
-	return params.(*GetClusterParams)
-}
-
-// BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
+// readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *GetClusterParams) bindRequest(ctx *gin.Context) error {
+func (o *GetClusterParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 
