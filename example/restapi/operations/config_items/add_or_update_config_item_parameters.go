@@ -18,13 +18,13 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// BusinessLogicAddOrUpdateConfigItem executes the core logic of the related
+// AddOrUpdateConfigItemEndpoint executes the core logic of the related
 // route endpoint.
-func BusinessLogicAddOrUpdateConfigItem(f func(ctx *gin.Context, params *AddOrUpdateConfigItemParams) *api.Response) gin.HandlerFunc {
+func AddOrUpdateConfigItemEndpoint(handler func(ctx *gin.Context, params *AddOrUpdateConfigItemParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &AddOrUpdateConfigItemParams{}
-		err := params.bindRequest(ctx)
+		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
 			problem := api.Problem{
@@ -37,7 +37,7 @@ func BusinessLogicAddOrUpdateConfigItem(f func(ctx *gin.Context, params *AddOrUp
 			return
 		}
 
-		resp := f(ctx, params)
+		resp := handler(ctx, params)
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -72,15 +72,9 @@ type AddOrUpdateConfigItemParams struct {
 	Value *models.ConfigValue
 }
 
-// AddOrUpdateConfigItemParamsFromCtx gets the params struct from the gin context.
-func AddOrUpdateConfigItemParamsFromCtx(ctx *gin.Context) *AddOrUpdateConfigItemParams {
-	params, _ := ctx.Get("params")
-	return params.(*AddOrUpdateConfigItemParams)
-}
-
-// BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
+// readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *AddOrUpdateConfigItemParams) bindRequest(ctx *gin.Context) error {
+func (o *AddOrUpdateConfigItemParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 

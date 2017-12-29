@@ -18,13 +18,13 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
-// BusinessLogicUpdateCluster executes the core logic of the related
+// UpdateClusterEndpoint executes the core logic of the related
 // route endpoint.
-func BusinessLogicUpdateCluster(f func(ctx *gin.Context, params *UpdateClusterParams) *api.Response) gin.HandlerFunc {
+func UpdateClusterEndpoint(handler func(ctx *gin.Context, params *UpdateClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
 		params := &UpdateClusterParams{}
-		err := params.bindRequest(ctx)
+		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
 			problem := api.Problem{
@@ -37,7 +37,7 @@ func BusinessLogicUpdateCluster(f func(ctx *gin.Context, params *UpdateClusterPa
 			return
 		}
 
-		resp := f(ctx, params)
+		resp := handler(ctx, params)
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
@@ -66,15 +66,9 @@ type UpdateClusterParams struct {
 	ClusterID string
 }
 
-// UpdateClusterParamsFromCtx gets the params struct from the gin context.
-func UpdateClusterParamsFromCtx(ctx *gin.Context) *UpdateClusterParams {
-	params, _ := ctx.Get("params")
-	return params.(*UpdateClusterParams)
-}
-
-// BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
+// readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *UpdateClusterParams) bindRequest(ctx *gin.Context) error {
+func (o *UpdateClusterParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 

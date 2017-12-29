@@ -23,13 +23,13 @@ import (
 	{{end}}
 )
 
-// Routes defines all the routes of the API service.
+// Routes defines all the routes of the Server service.
 type Routes struct {
 	*gin.Engine
 	{{range .Operations}}{{ pascalize .Name }} struct {
 		*gin.RouterGroup
-		{{ if .Authorized }}Auth gin.HandlerFunc
-{{end}}		Post *gin.RouterGroup
+		{{ if .Authorized }}Auth gin.HandlerFunc {{end}}
+		Post *gin.RouterGroup
 	}
 {{end}}
 }
@@ -77,7 +77,7 @@ func healthHandler(healthFunc func() bool) gin.HandlerFunc {
 }
 
 // Service is the interface that must be implemented in order to provide
-// business logic for the API service.
+// business logic for the Server service.
 type Service interface {
 	Healthy() bool
 	{{range .Operations}}{{ pascalize .Name }}(ctx *gin.Context{{ if .Params }}, params *{{.Package}}.{{ pascalize .Name }}Params{{ end }}) *api.Response
@@ -88,7 +88,7 @@ func ginizePath(path string) string {
 	return strings.Replace(strings.Replace(path, "{", ":", -1), "}", "", -1)
 }
 
-// configureRoutes configures the routes for the API service.
+// configureRoutes configures the routes for the Server service.
 func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
@@ -117,14 +117,14 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 		{{ end }}
 	}
 {{end}}	routes.{{ pascalize .Name }}.Post = routes.{{ pascalize .Name }}.Group("")
-	routes.{{ pascalize .Name }}.Post.{{.Method}}(ginizePath({{printf "%q" .Path}}), {{.Package}}.BusinessLogic{{ pascalize .Name }}(service.{{ pascalize .Name }}))
+	routes.{{ pascalize .Name }}.Post.{{.Method}}(ginizePath({{printf "%q" .Path}}), {{.Package}}.{{ pascalize .Name }}Endpoint(service.{{ pascalize .Name }}))
 
 {{end}}
 	return routes
 }
 
-// API defines the API service.
-type API struct {
+// Server defines the Server service.
+type Server struct {
 	Routes *Routes
 	config *Config
 	server *http.Server
@@ -132,13 +132,13 @@ type API struct {
 	Version string
 }
 
-// NewAPI initializes a new API service.
-func NewAPI(svc Service, config *Config) *API {
+// NewServer initializes a new Server service.
+func NewServer(svc Service, config *Config) *Server {
 	if !config.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	api := &API{
+	api := &Server{
 		Routes: configureRoutes(svc, !config.AuthDisabled, config.TokenURL),
 		config: config,
 		Title: "{{ .Info.Title }}",
@@ -170,9 +170,9 @@ func NewAPI(svc Service, config *Config) *API {
 	return api
 }
 
-// Run runs the API server it will listen on either HTTP or HTTPS depending on
-// the config passed to NewAPI.
-func (a *API) Run() error {
+// Run runs the Server server it will listen on either HTTP or HTTPS depending on
+// the config passed to NewServer.
+func (a *Server) Run() error {
 	log.Infof("Serving '%s - %s' on address %s", a.Title, a.Version, a.server.Addr)
 	if a.config.InsecureHTTP {
 		return a.server.ListenAndServe()
@@ -180,17 +180,17 @@ func (a *API) Run() error {
 	return a.server.ListenAndServeTLS(a.config.TLSCertFile, a.config.TLSKeyFile)
 }
 
-// Shutdown will gracefully shutdown the API server.
-func (a *API) Shutdown() error {
+// Shutdown will gracefully shutdown the Server server.
+func (a *Server) Shutdown() error {
 	return a.server.Shutdown(context.Background())
 }
 
-// RunWithSigHandler runs the API server with SIGTERM handling automatically
+// RunWithSigHandler runs the Server server with SIGTERM handling automatically
 // enabled. The server will listen for a SIGTERM signal and gracefully shutdown
 // the web server.
 // It's possible to optionally pass any number shutdown functions which will
 // execute one by one after the webserver has been shutdown successfully.
-func (a *API) RunWithSigHandler(shutdown ...func() error) error {
+func (a *Server) RunWithSigHandler(shutdown ...func() error) error {
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGTERM)
 
