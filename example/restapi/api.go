@@ -170,10 +170,10 @@ func ginizePath(path string) string {
 func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer opentracing.Tracer) *Routes {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
-	engine.Use(middleware.LogrusLogger())
 	routes := &Routes{Engine: engine}
 
 	routes.AddOrUpdateConfigItem.RouterGroup = routes.Group("")
+	routes.AddOrUpdateConfigItem.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.AddOrUpdateConfigItem.RouterGroup.Use(tracing.InitSpan(tracer, "add_or_update_config_item"))
 	}
@@ -198,6 +198,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.AddOrUpdateConfigItemEndpoint(service.AddOrUpdateConfigItem))
 
 	routes.CreateCluster.RouterGroup = routes.Group("")
+	routes.CreateCluster.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.CreateCluster.RouterGroup.Use(tracing.InitSpan(tracer, "create_cluster"))
 	}
@@ -222,6 +223,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.CreateCluster.Post.POST(ginizePath("/kubernetes-clusters"), clusters.CreateClusterEndpoint(service.CreateCluster))
 
 	routes.CreateInfrastructureAccount.RouterGroup = routes.Group("")
+	routes.CreateInfrastructureAccount.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.CreateInfrastructureAccount.RouterGroup.Use(tracing.InitSpan(tracer, "create_infrastructure_account"))
 	}
@@ -246,6 +248,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.CreateInfrastructureAccount.Post.POST(ginizePath("/infrastructure-accounts"), infrastructure_accounts.CreateInfrastructureAccountEndpoint(service.CreateInfrastructureAccount))
 
 	routes.CreateOrUpdateNodePool.RouterGroup = routes.Group("")
+	routes.CreateOrUpdateNodePool.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.CreateOrUpdateNodePool.RouterGroup.Use(tracing.InitSpan(tracer, "create_or_update_node_pool"))
 	}
@@ -270,6 +273,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.CreateOrUpdateNodePool.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.CreateOrUpdateNodePoolEndpoint(service.CreateOrUpdateNodePool))
 
 	routes.DeleteCluster.RouterGroup = routes.Group("")
+	routes.DeleteCluster.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.DeleteCluster.RouterGroup.Use(tracing.InitSpan(tracer, "delete_cluster"))
 	}
@@ -294,6 +298,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.DeleteCluster.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.DeleteClusterEndpoint(service.DeleteCluster))
 
 	routes.DeleteConfigItem.RouterGroup = routes.Group("")
+	routes.DeleteConfigItem.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.DeleteConfigItem.RouterGroup.Use(tracing.InitSpan(tracer, "delete_config_item"))
 	}
@@ -318,6 +323,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.DeleteConfigItem.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.DeleteConfigItemEndpoint(service.DeleteConfigItem))
 
 	routes.DeleteNodePool.RouterGroup = routes.Group("")
+	routes.DeleteNodePool.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.DeleteNodePool.RouterGroup.Use(tracing.InitSpan(tracer, "delete_node_pool"))
 	}
@@ -342,6 +348,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.DeleteNodePool.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.DeleteNodePoolEndpoint(service.DeleteNodePool))
 
 	routes.GetCluster.RouterGroup = routes.Group("")
+	routes.GetCluster.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.GetCluster.RouterGroup.Use(tracing.InitSpan(tracer, "get_cluster"))
 	}
@@ -365,6 +372,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.GetClusterEndpoint(service.GetCluster))
 
 	routes.GetInfrastructureAccount.RouterGroup = routes.Group("")
+	routes.GetInfrastructureAccount.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.GetInfrastructureAccount.RouterGroup.Use(tracing.InitSpan(tracer, "get_infrastructure_account"))
 	}
@@ -388,6 +396,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.GetInfrastructureAccount.Post.GET(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.GetInfrastructureAccountEndpoint(service.GetInfrastructureAccount))
 
 	routes.ListClusters.RouterGroup = routes.Group("")
+	routes.ListClusters.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.ListClusters.RouterGroup.Use(tracing.InitSpan(tracer, "list_clusters"))
 	}
@@ -411,6 +420,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.ListClusters.Post.GET(ginizePath("/kubernetes-clusters"), clusters.ListClustersEndpoint(service.ListClusters))
 
 	routes.ListInfrastructureAccounts.RouterGroup = routes.Group("")
+	routes.ListInfrastructureAccounts.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.ListInfrastructureAccounts.RouterGroup.Use(tracing.InitSpan(tracer, "list_infrastructure_accounts"))
 	}
@@ -434,6 +444,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.ListInfrastructureAccounts.Post.GET(ginizePath("/infrastructure-accounts"), infrastructure_accounts.ListInfrastructureAccountsEndpoint(service.ListInfrastructureAccounts))
 
 	routes.ListNodePools.RouterGroup = routes.Group("")
+	routes.ListNodePools.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.ListNodePools.RouterGroup.Use(tracing.InitSpan(tracer, "list_node_pools"))
 	}
@@ -457,6 +468,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.ListNodePools.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools"), node_pools.ListNodePoolsEndpoint(service.ListNodePools))
 
 	routes.UpdateCluster.RouterGroup = routes.Group("")
+	routes.UpdateCluster.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.UpdateCluster.RouterGroup.Use(tracing.InitSpan(tracer, "update_cluster"))
 	}
@@ -481,6 +493,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	routes.UpdateCluster.Post.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.UpdateClusterEndpoint(service.UpdateCluster))
 
 	routes.UpdateInfrastructureAccount.RouterGroup = routes.Group("")
+	routes.UpdateInfrastructureAccount.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.UpdateInfrastructureAccount.RouterGroup.Use(tracing.InitSpan(tracer, "update_infrastructure_account"))
 	}

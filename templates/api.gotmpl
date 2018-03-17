@@ -94,10 +94,10 @@ func ginizePath(path string) string {
 func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer opentracing.Tracer) *Routes {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
-	engine.Use(middleware.LogrusLogger())
 	routes := &Routes{Engine: engine}
 
 	{{range .Operations}}routes.{{ pascalize .Name }}.RouterGroup = routes.Group("")
+	routes.{{ pascalize .Name }}.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.{{ pascalize .Name }}.RouterGroup.Use(tracing.InitSpan(tracer, "{{ snakize .Name }}"))
 	}
