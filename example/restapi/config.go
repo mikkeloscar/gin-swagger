@@ -3,6 +3,7 @@ package restapi
 import (
 	"fmt"
 
+	"github.com/opentracing/opentracing-go"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -20,6 +21,7 @@ type Config struct {
 	TLSKeyFile        string
 	WellKnownDisabled bool
 	TokenURL          string
+	Tracer            opentracing.Tracer
 }
 
 func (c *Config) WithDefaultFlags() {

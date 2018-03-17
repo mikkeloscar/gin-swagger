@@ -178,6 +178,7 @@ For a full example see the [example folder](example).
 * [ ] Set and get user info (uid, realm) from gin context.
 * [ ] Response helper functions
 * [ ] Default metrics (prometheus)
+* [x] OpenTracing support
 
 [api-first]: https://zalando.github.io/restful-api-guidelines/
 [gin]: https://github.com/gin-gonic/gin

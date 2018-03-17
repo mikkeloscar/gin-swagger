@@ -19,6 +19,8 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/infrastructure_accounts"
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/node_pools"
 	"github.com/mikkeloscar/gin-swagger/middleware"
+	"github.com/mikkeloscar/gin-swagger/tracing"
+	"github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
 	ginoauth2 "github.com/zalando/gin-oauth2"
 )
@@ -165,13 +167,16 @@ func ginizePath(path string) string {
 }
 
 // configureRoutes configures the routes for the Server service.
-func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes {
+func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer opentracing.Tracer) *Routes {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.Use(middleware.LogrusLogger())
 	routes := &Routes{Engine: engine}
 
 	routes.AddOrUpdateConfigItem.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.AddOrUpdateConfigItem.RouterGroup.Use(tracing.InitSpan(tracer, "add_or_update_config_item"))
+	}
 	routes.AddOrUpdateConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
@@ -193,6 +198,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.AddOrUpdateConfigItemEndpoint(service.AddOrUpdateConfigItem))
 
 	routes.CreateCluster.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.CreateCluster.RouterGroup.Use(tracing.InitSpan(tracer, "create_cluster"))
+	}
 	routes.CreateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
@@ -214,6 +222,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.CreateCluster.Post.POST(ginizePath("/kubernetes-clusters"), clusters.CreateClusterEndpoint(service.CreateCluster))
 
 	routes.CreateInfrastructureAccount.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.CreateInfrastructureAccount.RouterGroup.Use(tracing.InitSpan(tracer, "create_infrastructure_account"))
+	}
 	routes.CreateInfrastructureAccount.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
@@ -235,6 +246,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.CreateInfrastructureAccount.Post.POST(ginizePath("/infrastructure-accounts"), infrastructure_accounts.CreateInfrastructureAccountEndpoint(service.CreateInfrastructureAccount))
 
 	routes.CreateOrUpdateNodePool.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.CreateOrUpdateNodePool.RouterGroup.Use(tracing.InitSpan(tracer, "create_or_update_node_pool"))
+	}
 	routes.CreateOrUpdateNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
@@ -256,6 +270,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.CreateOrUpdateNodePool.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.CreateOrUpdateNodePoolEndpoint(service.CreateOrUpdateNodePool))
 
 	routes.DeleteCluster.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.DeleteCluster.RouterGroup.Use(tracing.InitSpan(tracer, "delete_cluster"))
+	}
 	routes.DeleteCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
@@ -277,6 +294,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.DeleteCluster.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.DeleteClusterEndpoint(service.DeleteCluster))
 
 	routes.DeleteConfigItem.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.DeleteConfigItem.RouterGroup.Use(tracing.InitSpan(tracer, "delete_config_item"))
+	}
 	routes.DeleteConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
@@ -298,6 +318,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.DeleteConfigItem.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.DeleteConfigItemEndpoint(service.DeleteConfigItem))
 
 	routes.DeleteNodePool.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.DeleteNodePool.RouterGroup.Use(tracing.InitSpan(tracer, "delete_node_pool"))
+	}
 	routes.DeleteNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
@@ -319,6 +342,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.DeleteNodePool.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.DeleteNodePoolEndpoint(service.DeleteNodePool))
 
 	routes.GetCluster.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.GetCluster.RouterGroup.Use(tracing.InitSpan(tracer, "get_cluster"))
+	}
 	if enableAuth {
 
 		routeTokenURL := tokenURL
@@ -339,6 +365,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.GetClusterEndpoint(service.GetCluster))
 
 	routes.GetInfrastructureAccount.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.GetInfrastructureAccount.RouterGroup.Use(tracing.InitSpan(tracer, "get_infrastructure_account"))
+	}
 	if enableAuth {
 
 		routeTokenURL := tokenURL
@@ -359,6 +388,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.GetInfrastructureAccount.Post.GET(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.GetInfrastructureAccountEndpoint(service.GetInfrastructureAccount))
 
 	routes.ListClusters.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.ListClusters.RouterGroup.Use(tracing.InitSpan(tracer, "list_clusters"))
+	}
 	if enableAuth {
 
 		routeTokenURL := tokenURL
@@ -379,6 +411,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.ListClusters.Post.GET(ginizePath("/kubernetes-clusters"), clusters.ListClustersEndpoint(service.ListClusters))
 
 	routes.ListInfrastructureAccounts.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.ListInfrastructureAccounts.RouterGroup.Use(tracing.InitSpan(tracer, "list_infrastructure_accounts"))
+	}
 	if enableAuth {
 
 		routeTokenURL := tokenURL
@@ -399,6 +434,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.ListInfrastructureAccounts.Post.GET(ginizePath("/infrastructure-accounts"), infrastructure_accounts.ListInfrastructureAccountsEndpoint(service.ListInfrastructureAccounts))
 
 	routes.ListNodePools.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.ListNodePools.RouterGroup.Use(tracing.InitSpan(tracer, "list_node_pools"))
+	}
 	if enableAuth {
 
 		routeTokenURL := tokenURL
@@ -419,6 +457,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.ListNodePools.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools"), node_pools.ListNodePoolsEndpoint(service.ListNodePools))
 
 	routes.UpdateCluster.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.UpdateCluster.RouterGroup.Use(tracing.InitSpan(tracer, "update_cluster"))
+	}
 	routes.UpdateCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
@@ -440,6 +481,9 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string) *Routes 
 	routes.UpdateCluster.Post.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.UpdateClusterEndpoint(service.UpdateCluster))
 
 	routes.UpdateInfrastructureAccount.RouterGroup = routes.Group("")
+	if tracer != nil {
+		routes.UpdateInfrastructureAccount.RouterGroup.Use(tracing.InitSpan(tracer, "update_infrastructure_account"))
+	}
 	routes.UpdateInfrastructureAccount.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
@@ -479,7 +523,12 @@ func NewServer(svc Service, config *Config) *Server {
 	}
 
 	api := &Server{
-		Routes:  configureRoutes(svc, !config.AuthDisabled, config.TokenURL),
+		Routes: configureRoutes(
+			svc,
+			!config.AuthDisabled,
+			config.TokenURL,
+			config.Tracer,
+		),
 		config:  config,
 		Title:   "Cluster Registry",
 		Version: "0.0.1",
