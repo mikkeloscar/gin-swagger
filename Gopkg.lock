@@ -126,6 +126,12 @@
   revision = "53818660ed4955e899c0bcafa97299a388bd7c8e"
 
 [[projects]]
+  name = "github.com/opentracing/opentracing-go"
+  packages = [".","log"]
+  revision = "1949ddbfd147afd4d964a9f00b24eb291e0e7c38"
+  version = "v1.0.2"
+
+[[projects]]
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   revision = "f006c2ac4710855cf0f916dd6b77acf6b048dc6e"
@@ -198,6 +204,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f53a2ec815037bfb142a36770ffa53919dc95d074ea8efe142a883c81e36270a"
+  inputs-digest = "943195d1dda1be2b51255d1e36da1a8793ffebb0d5ecebba06e430343ad90351"
   solver-name = "gps-cdcl"
   solver-version = 1

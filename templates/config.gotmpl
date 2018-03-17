@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"gopkg.in/alecthomas/kingpin.v2"
+	"github.com/opentracing/opentracing-go"
 )
 
 const (
@@ -19,7 +20,8 @@ type Config struct {
 	TLSCertFile       string
 	TLSKeyFile        string
 	WellKnownDisabled bool
-	TokenURL string
+	TokenURL          string
+	Tracer            opentracing.Tracer
 }
 
 func (c *Config) WithDefaultFlags() {
