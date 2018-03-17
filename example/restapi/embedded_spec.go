@@ -51,32 +51,6 @@ func init() {
                   }
                 }
               }
-            },
-            "examples": {
-              "application/json": {
-                "items": [
-                  {
-                    "criticality_level": 3,
-                    "environment": "production",
-                    "external_id": "123456789012",
-                    "id": "aws:123456789012",
-                    "lifecycle_status": "ready",
-                    "name": "foo",
-                    "owner": "team/bar",
-                    "type": "aws"
-                  },
-                  {
-                    "criticality_level": 2,
-                    "environment": "production",
-                    "external_id": "gth",
-                    "id": "dc:gth",
-                    "lifecycle_status": "ready",
-                    "name": "gth",
-                    "owner": "team/sysadmins",
-                    "type": "dc"
-                  }
-                ]
-              }
             }
           },
           "401": {

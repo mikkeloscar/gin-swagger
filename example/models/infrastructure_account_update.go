@@ -17,7 +17,6 @@ import (
 
 // InfrastructureAccountUpdate infrastructure account update
 // swagger:model InfrastructureAccountUpdate
-
 type InfrastructureAccountUpdate struct {
 
 	// Lifecycle Status is used to describe the current status of the account.
@@ -29,12 +28,6 @@ type InfrastructureAccountUpdate struct {
 	// Owner of the infrastructure account (references an object in the organization service)
 	Owner string `json:"owner,omitempty"`
 }
-
-/* polymorph InfrastructureAccountUpdate lifecycle_status false */
-
-/* polymorph InfrastructureAccountUpdate name false */
-
-/* polymorph InfrastructureAccountUpdate owner false */
 
 // Validate validates this infrastructure account update
 func (m *InfrastructureAccountUpdate) Validate(formats strfmt.Registry) error {

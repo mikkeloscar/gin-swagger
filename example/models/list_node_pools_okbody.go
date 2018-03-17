@@ -12,16 +12,16 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// Health health
-// swagger:model Health
-type Health struct {
+// ListNodePoolsOKBody list node pools o k body
+// swagger:model listNodePoolsOKBody
+type ListNodePoolsOKBody struct {
 
-	// health
-	Health bool `json:"health,omitempty"`
+	// items
+	Items ListNodePoolsOKBodyItems `json:"items"`
 }
 
-// Validate validates this health
-func (m *Health) Validate(formats strfmt.Registry) error {
+// Validate validates this list node pools o k body
+func (m *ListNodePoolsOKBody) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if len(res) > 0 {
@@ -31,7 +31,7 @@ func (m *Health) Validate(formats strfmt.Registry) error {
 }
 
 // MarshalBinary interface implementation
-func (m *Health) MarshalBinary() ([]byte, error) {
+func (m *ListNodePoolsOKBody) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -39,8 +39,8 @@ func (m *Health) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *Health) UnmarshalBinary(b []byte) error {
-	var res Health
+func (m *ListNodePoolsOKBody) UnmarshalBinary(b []byte) error {
+	var res ListNodePoolsOKBody
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

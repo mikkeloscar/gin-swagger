@@ -16,7 +16,6 @@ import (
 
 // ListNodePoolsOKBodyItems list node pools o k body items
 // swagger:model listNodePoolsOKBodyItems
-
 type ListNodePoolsOKBodyItems []*NodePool
 
 // Validate validates this list node pools o k body items

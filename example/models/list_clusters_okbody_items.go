@@ -16,7 +16,6 @@ import (
 
 // ListClustersOKBodyItems list clusters o k body items
 // swagger:model listClustersOKBodyItems
-
 type ListClustersOKBodyItems []*Cluster
 
 // Validate validates this list clusters o k body items

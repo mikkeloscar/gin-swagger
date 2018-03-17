@@ -12,19 +12,16 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// ListNodePoolsOKBody list node pools o k body
-// swagger:model listNodePoolsOKBody
-
-type ListNodePoolsOKBody struct {
+// ListInfrastructureAccountsOKBody list infrastructure accounts o k body
+// swagger:model listInfrastructureAccountsOKBody
+type ListInfrastructureAccountsOKBody struct {
 
 	// items
-	Items ListNodePoolsOKBodyItems `json:"items"`
+	Items ListInfrastructureAccountsOKBodyItems `json:"items"`
 }
 
-/* polymorph listNodePoolsOKBody items false */
-
-// Validate validates this list node pools o k body
-func (m *ListNodePoolsOKBody) Validate(formats strfmt.Registry) error {
+// Validate validates this list infrastructure accounts o k body
+func (m *ListInfrastructureAccountsOKBody) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if len(res) > 0 {
@@ -34,7 +31,7 @@ func (m *ListNodePoolsOKBody) Validate(formats strfmt.Registry) error {
 }
 
 // MarshalBinary interface implementation
-func (m *ListNodePoolsOKBody) MarshalBinary() ([]byte, error) {
+func (m *ListInfrastructureAccountsOKBody) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -42,8 +39,8 @@ func (m *ListNodePoolsOKBody) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *ListNodePoolsOKBody) UnmarshalBinary(b []byte) error {
-	var res ListNodePoolsOKBody
+func (m *ListInfrastructureAccountsOKBody) UnmarshalBinary(b []byte) error {
+	var res ListInfrastructureAccountsOKBody
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

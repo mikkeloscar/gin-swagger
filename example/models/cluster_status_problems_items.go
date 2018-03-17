@@ -17,7 +17,6 @@ import (
 
 // ClusterStatusProblemsItems cluster status problems items
 // swagger:model clusterStatusProblemsItems
-
 type ClusterStatusProblemsItems struct {
 
 	// A human-readable explanation specific to this occurrence of
@@ -47,16 +46,6 @@ type ClusterStatusProblemsItems struct {
 	// cluster status problems items
 	ClusterStatusProblemsItems map[string]string `json:"-"`
 }
-
-/* polymorph clusterStatusProblemsItems detail false */
-
-/* polymorph clusterStatusProblemsItems instance false */
-
-/* polymorph clusterStatusProblemsItems status false */
-
-/* polymorph clusterStatusProblemsItems title false */
-
-/* polymorph clusterStatusProblemsItems type false */
 
 // UnmarshalJSON unmarshals this object with additional properties from JSON
 func (m *ClusterStatusProblemsItems) UnmarshalJSON(data []byte) error {

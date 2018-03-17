@@ -16,7 +16,6 @@ import (
 
 // ClusterStatusProblems cluster status problems
 // swagger:model clusterStatusProblems
-
 type ClusterStatusProblems []*ClusterStatusProblemsItems
 
 // Validate validates this cluster status problems

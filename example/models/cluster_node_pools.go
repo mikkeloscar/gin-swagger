@@ -16,7 +16,6 @@ import (
 
 // ClusterNodePools cluster node pools
 // swagger:model clusterNodePools
-
 type ClusterNodePools []*NodePool
 
 // Validate validates this cluster node pools

@@ -17,7 +17,6 @@ import (
 
 // InfrastructureAccount infrastructure account
 // swagger:model InfrastructureAccount
-
 type InfrastructureAccount struct {
 
 	// Level of criticality as defined by tech controlling. 1 is non critical, 2 is standard production, 3 is PCI
@@ -52,22 +51,6 @@ type InfrastructureAccount struct {
 	// Required: true
 	Type *string `json:"type"`
 }
-
-/* polymorph InfrastructureAccount criticality_level false */
-
-/* polymorph InfrastructureAccount environment false */
-
-/* polymorph InfrastructureAccount external_id false */
-
-/* polymorph InfrastructureAccount id false */
-
-/* polymorph InfrastructureAccount lifecycle_status false */
-
-/* polymorph InfrastructureAccount name false */
-
-/* polymorph InfrastructureAccount owner false */
-
-/* polymorph InfrastructureAccount type false */
 
 // Validate validates this infrastructure account
 func (m *InfrastructureAccount) Validate(formats strfmt.Registry) error {

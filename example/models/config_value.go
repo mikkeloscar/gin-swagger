@@ -15,15 +15,12 @@ import (
 
 // ConfigValue config value
 // swagger:model ConfigValue
-
 type ConfigValue struct {
 
 	// Value of the Config value.
 	// Required: true
 	Value *string `json:"value"`
 }
-
-/* polymorph ConfigValue value false */
 
 // Validate validates this config value
 func (m *ConfigValue) Validate(formats strfmt.Registry) error {

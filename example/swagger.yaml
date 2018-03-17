@@ -41,25 +41,6 @@ paths:
                 type: array
                 items:
                     '$ref': '#/definitions/InfrastructureAccount'
-          examples:
-            application/json:
-              items:
-                - id: aws:123456789012
-                  name: foo
-                  type: aws
-                  owner: team/bar
-                  environment: production
-                  criticality_level: 3
-                  external_id: "123456789012"
-                  lifecycle_status: ready
-                - id: dc:gth
-                  name: gth
-                  type: dc
-                  owner: team/sysadmins
-                  environment: production
-                  criticality_level: 2
-                  external_id: "gth"
-                  lifecycle_status: ready
         401:
           description: Unauthorized
         403:

@@ -7,7 +7,6 @@ package models
 
 import (
 	"encoding/json"
-	"strconv"
 
 	strfmt "github.com/go-openapi/strfmt"
 
@@ -18,7 +17,6 @@ import (
 
 // Cluster cluster
 // swagger:model Cluster
-
 type Cluster struct {
 
 	// Human readable alias for the Kubernetes cluster. The alias is unique
@@ -68,7 +66,7 @@ type Cluster struct {
 	LocalID *string `json:"local_id"`
 
 	// node pools
-	NodePools []*NodePool `json:"node_pools"`
+	NodePools ClusterNodePools `json:"node_pools"`
 
 	// The provider of the cluster. Possible values are "zalando-aws", "GKE", ...
 	// Required: true
@@ -81,34 +79,6 @@ type Cluster struct {
 	// status
 	Status *ClusterStatus `json:"status,omitempty"`
 }
-
-/* polymorph Cluster alias false */
-
-/* polymorph Cluster api_server_url false */
-
-/* polymorph Cluster channel false */
-
-/* polymorph Cluster config_items false */
-
-/* polymorph Cluster criticality_level false */
-
-/* polymorph Cluster environment false */
-
-/* polymorph Cluster id false */
-
-/* polymorph Cluster infrastructure_account false */
-
-/* polymorph Cluster lifecycle_status false */
-
-/* polymorph Cluster local_id false */
-
-/* polymorph Cluster node_pools false */
-
-/* polymorph Cluster provider false */
-
-/* polymorph Cluster region false */
-
-/* polymorph Cluster status false */
 
 // Validate validates this cluster
 func (m *Cluster) Validate(formats strfmt.Registry) error {
@@ -155,11 +125,6 @@ func (m *Cluster) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateLocalID(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
-
-	if err := m.validateNodePools(formats); err != nil {
 		// prop
 		res = append(res, err)
 	}
@@ -303,33 +268,6 @@ func (m *Cluster) validateLocalID(formats strfmt.Registry) error {
 
 	if err := validate.Required("local_id", "body", m.LocalID); err != nil {
 		return err
-	}
-
-	return nil
-}
-
-func (m *Cluster) validateNodePools(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.NodePools) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.NodePools); i++ {
-
-		if swag.IsZero(m.NodePools[i]) { // not required
-			continue
-		}
-
-		if m.NodePools[i] != nil {
-
-			if err := m.NodePools[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("node_pools" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
 	}
 
 	return nil

@@ -16,7 +16,6 @@ import (
 
 // ListInfrastructureAccountsOKBodyItems list infrastructure accounts o k body items
 // swagger:model listInfrastructureAccountsOKBodyItems
-
 type ListInfrastructureAccountsOKBodyItems []*InfrastructureAccount
 
 // Validate validates this list infrastructure accounts o k body items
