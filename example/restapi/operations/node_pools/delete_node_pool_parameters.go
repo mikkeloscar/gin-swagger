@@ -19,7 +19,7 @@ import (
 func DeleteNodePoolEndpoint(handler func(ctx *gin.Context, params *DeleteNodePoolParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &DeleteNodePoolParams{}
+		params := NewDeleteNodePoolParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -41,6 +41,13 @@ func DeleteNodePoolEndpoint(handler func(ctx *gin.Context, params *DeleteNodePoo
 			ctx.JSON(resp.Code, resp.Body)
 		}
 	}
+}
+
+// NewDeleteNodePoolParams creates a new DeleteNodePoolParams object
+// with the default values initialized.
+func NewDeleteNodePoolParams() *DeleteNodePoolParams {
+	var ()
+	return &DeleteNodePoolParams{}
 }
 
 // DeleteNodePoolParams contains all the bound params for the delete node pool operation

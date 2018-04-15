@@ -19,7 +19,7 @@ import (
 func DeleteConfigItemEndpoint(handler func(ctx *gin.Context, params *DeleteConfigItemParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &DeleteConfigItemParams{}
+		params := NewDeleteConfigItemParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -41,6 +41,13 @@ func DeleteConfigItemEndpoint(handler func(ctx *gin.Context, params *DeleteConfi
 			ctx.JSON(resp.Code, resp.Body)
 		}
 	}
+}
+
+// NewDeleteConfigItemParams creates a new DeleteConfigItemParams object
+// with the default values initialized.
+func NewDeleteConfigItemParams() *DeleteConfigItemParams {
+	var ()
+	return &DeleteConfigItemParams{}
 }
 
 // DeleteConfigItemParams contains all the bound params for the delete config item operation

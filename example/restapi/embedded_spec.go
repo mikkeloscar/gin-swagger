@@ -272,6 +272,13 @@ func init() {
             "description": "Filter on region.",
             "name": "region",
             "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": true,
+            "description": "Include technical data (config items, node pools) in the response, true by default",
+            "name": "verbose",
+            "in": "query"
           }
         ],
         "responses": {
@@ -363,6 +370,13 @@ func init() {
         "parameters": [
           {
             "$ref": "#/parameters/cluster_id"
+          },
+          {
+            "type": "boolean",
+            "default": true,
+            "description": "Include technical data (config items, node pools) in the response, true by default",
+            "name": "verbose",
+            "in": "query"
           }
         ],
         "responses": {

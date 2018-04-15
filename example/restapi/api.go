@@ -20,7 +20,7 @@ import (
 	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/node_pools"
 	"github.com/mikkeloscar/gin-swagger/middleware"
 	"github.com/mikkeloscar/gin-swagger/tracing"
-	"github.com/opentracing/opentracing-go"
+	opentracing "github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
 	ginoauth2 "github.com/zalando/gin-oauth2"
 )

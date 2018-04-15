@@ -19,7 +19,7 @@ import (
 func DeleteClusterEndpoint(handler func(ctx *gin.Context, params *DeleteClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &DeleteClusterParams{}
+		params := NewDeleteClusterParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -41,6 +41,13 @@ func DeleteClusterEndpoint(handler func(ctx *gin.Context, params *DeleteClusterP
 			ctx.JSON(resp.Code, resp.Body)
 		}
 	}
+}
+
+// NewDeleteClusterParams creates a new DeleteClusterParams object
+// with the default values initialized.
+func NewDeleteClusterParams() *DeleteClusterParams {
+	var ()
+	return &DeleteClusterParams{}
 }
 
 // DeleteClusterParams contains all the bound params for the delete cluster operation

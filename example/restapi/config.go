@@ -3,7 +3,7 @@ package restapi
 import (
 	"fmt"
 
-	"github.com/opentracing/opentracing-go"
+	opentracing "github.com/opentracing/opentracing-go"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 

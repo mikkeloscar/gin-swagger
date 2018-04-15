@@ -23,7 +23,7 @@ import (
 func UpdateClusterEndpoint(handler func(ctx *gin.Context, params *UpdateClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &UpdateClusterParams{}
+		params := NewUpdateClusterParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -45,6 +45,13 @@ func UpdateClusterEndpoint(handler func(ctx *gin.Context, params *UpdateClusterP
 			ctx.JSON(resp.Code, resp.Body)
 		}
 	}
+}
+
+// NewUpdateClusterParams creates a new UpdateClusterParams object
+// with the default values initialized.
+func NewUpdateClusterParams() *UpdateClusterParams {
+	var ()
+	return &UpdateClusterParams{}
 }
 
 // UpdateClusterParams contains all the bound params for the update cluster operation

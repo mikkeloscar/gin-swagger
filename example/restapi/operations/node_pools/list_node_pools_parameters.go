@@ -19,7 +19,7 @@ import (
 func ListNodePoolsEndpoint(handler func(ctx *gin.Context, params *ListNodePoolsParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &ListNodePoolsParams{}
+		params := NewListNodePoolsParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -41,6 +41,13 @@ func ListNodePoolsEndpoint(handler func(ctx *gin.Context, params *ListNodePoolsP
 			ctx.JSON(resp.Code, resp.Body)
 		}
 	}
+}
+
+// NewListNodePoolsParams creates a new ListNodePoolsParams object
+// with the default values initialized.
+func NewListNodePoolsParams() *ListNodePoolsParams {
+	var ()
+	return &ListNodePoolsParams{}
 }
 
 // ListNodePoolsParams contains all the bound params for the list node pools operation

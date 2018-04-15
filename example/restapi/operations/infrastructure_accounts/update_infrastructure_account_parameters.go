@@ -23,7 +23,7 @@ import (
 func UpdateInfrastructureAccountEndpoint(handler func(ctx *gin.Context, params *UpdateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &UpdateInfrastructureAccountParams{}
+		params := NewUpdateInfrastructureAccountParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -45,6 +45,13 @@ func UpdateInfrastructureAccountEndpoint(handler func(ctx *gin.Context, params *
 			ctx.JSON(resp.Code, resp.Body)
 		}
 	}
+}
+
+// NewUpdateInfrastructureAccountParams creates a new UpdateInfrastructureAccountParams object
+// with the default values initialized.
+func NewUpdateInfrastructureAccountParams() *UpdateInfrastructureAccountParams {
+	var ()
+	return &UpdateInfrastructureAccountParams{}
 }
 
 // UpdateInfrastructureAccountParams contains all the bound params for the update infrastructure account operation

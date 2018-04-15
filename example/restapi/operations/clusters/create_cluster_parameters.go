@@ -22,7 +22,7 @@ import (
 func CreateClusterEndpoint(handler func(ctx *gin.Context, params *CreateClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &CreateClusterParams{}
+		params := NewCreateClusterParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -44,6 +44,13 @@ func CreateClusterEndpoint(handler func(ctx *gin.Context, params *CreateClusterP
 			ctx.JSON(resp.Code, resp.Body)
 		}
 	}
+}
+
+// NewCreateClusterParams creates a new CreateClusterParams object
+// with the default values initialized.
+func NewCreateClusterParams() *CreateClusterParams {
+	var ()
+	return &CreateClusterParams{}
 }
 
 // CreateClusterParams contains all the bound params for the create cluster operation

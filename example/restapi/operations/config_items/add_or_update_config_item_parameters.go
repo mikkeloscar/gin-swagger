@@ -23,7 +23,7 @@ import (
 func AddOrUpdateConfigItemEndpoint(handler func(ctx *gin.Context, params *AddOrUpdateConfigItemParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &AddOrUpdateConfigItemParams{}
+		params := NewAddOrUpdateConfigItemParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -45,6 +45,13 @@ func AddOrUpdateConfigItemEndpoint(handler func(ctx *gin.Context, params *AddOrU
 			ctx.JSON(resp.Code, resp.Body)
 		}
 	}
+}
+
+// NewAddOrUpdateConfigItemParams creates a new AddOrUpdateConfigItemParams object
+// with the default values initialized.
+func NewAddOrUpdateConfigItemParams() *AddOrUpdateConfigItemParams {
+	var ()
+	return &AddOrUpdateConfigItemParams{}
 }
 
 // AddOrUpdateConfigItemParams contains all the bound params for the add or update config item operation

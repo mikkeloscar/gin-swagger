@@ -21,7 +21,7 @@ import (
 func ListClustersEndpoint(handler func(ctx *gin.Context, params *ListClustersParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &ListClustersParams{}
+		params := NewListClustersParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -42,6 +42,17 @@ func ListClustersEndpoint(handler func(ctx *gin.Context, params *ListClustersPar
 		default:
 			ctx.JSON(resp.Code, resp.Body)
 		}
+	}
+}
+
+// NewListClustersParams creates a new ListClustersParams object
+// with the default values initialized.
+func NewListClustersParams() *ListClustersParams {
+	var (
+		verboseDefault = bool(true)
+	)
+	return &ListClustersParams{
+		Verbose: &verboseDefault,
 	}
 }
 
@@ -91,6 +102,11 @@ type ListClustersParams struct {
 	  In: query
 	*/
 	Region *string
+	/*Include technical data (config items, node pools) in the response, true by default
+	  In: query
+	  Default: true
+	*/
+	Verbose *bool
 }
 
 // readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -148,6 +164,11 @@ func (o *ListClustersParams) readRequest(ctx *gin.Context) error {
 
 	qRegion, qhkRegion, _ := qs.GetOK("region")
 	if err := o.bindRegion(qRegion, qhkRegion, formats); err != nil {
+		res = append(res, err)
+	}
+
+	qVerbose, qhkVerbose, _ := qs.GetOK("verbose")
+	if err := o.bindVerbose(qVerbose, qhkVerbose, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -310,6 +331,26 @@ func (o *ListClustersParams) bindRegion(rawData []string, hasKey bool, formats s
 	}
 
 	o.Region = &raw
+
+	return nil
+}
+
+func (o *ListClustersParams) bindVerbose(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+	if raw == "" { // empty values pass all other validations
+		var verboseDefault bool = bool(true)
+		o.Verbose = &verboseDefault
+		return nil
+	}
+
+	value, err := swag.ConvertBool(raw)
+	if err != nil {
+		return errors.InvalidType("verbose", "query", "bool", raw)
+	}
+	o.Verbose = &value
 
 	return nil
 }

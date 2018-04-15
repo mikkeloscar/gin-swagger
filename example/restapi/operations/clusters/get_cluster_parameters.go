@@ -8,6 +8,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/swag"
 	"github.com/go-openapi/validate"
 	"github.com/mikkeloscar/gin-swagger/api"
 
@@ -19,7 +21,7 @@ import (
 func GetClusterEndpoint(handler func(ctx *gin.Context, params *GetClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &GetClusterParams{}
+		params := NewGetClusterParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -43,6 +45,17 @@ func GetClusterEndpoint(handler func(ctx *gin.Context, params *GetClusterParams)
 	}
 }
 
+// NewGetClusterParams creates a new GetClusterParams object
+// with the default values initialized.
+func NewGetClusterParams() *GetClusterParams {
+	var (
+		verboseDefault = bool(true)
+	)
+	return &GetClusterParams{
+		Verbose: &verboseDefault,
+	}
+}
+
 // GetClusterParams contains all the bound params for the get cluster operation
 // typically these are obtained from a http.Request
 //
@@ -55,6 +68,11 @@ type GetClusterParams struct {
 	  In: path
 	*/
 	ClusterID string
+	/*Include technical data (config items, node pools) in the response, true by default
+	  In: query
+	  Default: true
+	*/
+	Verbose *bool
 }
 
 // readRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -63,8 +81,15 @@ func (o *GetClusterParams) readRequest(ctx *gin.Context) error {
 	var res []error
 	formats := strfmt.NewFormats()
 
+	qs := runtime.Values(ctx.Request.URL.Query())
+
 	rClusterID := []string{ctx.Param("cluster_id")}
 	if err := o.bindClusterID(rClusterID, true, formats); err != nil {
+		res = append(res, err)
+	}
+
+	qVerbose, qhkVerbose, _ := qs.GetOK("verbose")
+	if err := o.bindVerbose(qVerbose, qhkVerbose, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -94,6 +119,26 @@ func (o *GetClusterParams) validateClusterID(formats strfmt.Registry) error {
 	if err := validate.Pattern("cluster_id", "path", o.ClusterID, `^[a-z][a-z0-9-:]*[a-z0-9]$`); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (o *GetClusterParams) bindVerbose(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+	if raw == "" { // empty values pass all other validations
+		var verboseDefault bool = bool(true)
+		o.Verbose = &verboseDefault
+		return nil
+	}
+
+	value, err := swag.ConvertBool(raw)
+	if err != nil {
+		return errors.InvalidType("verbose", "query", "bool", raw)
+	}
+	o.Verbose = &value
 
 	return nil
 }

@@ -204,6 +204,12 @@ paths:
           required: false
           type: string
           description: Filter on region.
+        - name: verbose
+          in: query
+          required: false
+          type: boolean
+          default: true
+          description: Include technical data (config items, node pools) in the response, true by default
       responses:
         200:
           description: List of all Kubernetes clusters.
@@ -294,6 +300,12 @@ paths:
       operationId: getCluster
       parameters:
         - $ref: '#/parameters/cluster_id'
+        - name: verbose
+          in: query
+          required: false
+          type: boolean
+          default: true
+          description: Include technical data (config items, node pools) in the response, true by default
       responses:
         200:
           description: Cluster information.

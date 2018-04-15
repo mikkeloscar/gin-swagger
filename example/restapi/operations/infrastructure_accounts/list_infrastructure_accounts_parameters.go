@@ -26,6 +26,13 @@ func ListInfrastructureAccountsEndpoint(handler func(ctx *gin.Context) *api.Resp
 	}
 }
 
+// NewListInfrastructureAccountsParams creates a new ListInfrastructureAccountsParams object
+// with the default values initialized.
+func NewListInfrastructureAccountsParams() *ListInfrastructureAccountsParams {
+	var ()
+	return &ListInfrastructureAccountsParams{}
+}
+
 // ListInfrastructureAccountsParams contains all the bound params for the list infrastructure accounts operation
 // typically these are obtained from a http.Request
 //

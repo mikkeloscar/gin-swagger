@@ -22,7 +22,7 @@ import (
 func CreateInfrastructureAccountEndpoint(handler func(ctx *gin.Context, params *CreateInfrastructureAccountParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &CreateInfrastructureAccountParams{}
+		params := NewCreateInfrastructureAccountParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -44,6 +44,13 @@ func CreateInfrastructureAccountEndpoint(handler func(ctx *gin.Context, params *
 			ctx.JSON(resp.Code, resp.Body)
 		}
 	}
+}
+
+// NewCreateInfrastructureAccountParams creates a new CreateInfrastructureAccountParams object
+// with the default values initialized.
+func NewCreateInfrastructureAccountParams() *CreateInfrastructureAccountParams {
+	var ()
+	return &CreateInfrastructureAccountParams{}
 }
 
 // CreateInfrastructureAccountParams contains all the bound params for the create infrastructure account operation

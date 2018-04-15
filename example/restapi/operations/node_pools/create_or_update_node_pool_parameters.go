@@ -23,7 +23,7 @@ import (
 func CreateOrUpdateNodePoolEndpoint(handler func(ctx *gin.Context, params *CreateOrUpdateNodePoolParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// generate params from request
-		params := &CreateOrUpdateNodePoolParams{}
+		params := NewCreateOrUpdateNodePoolParams()
 		err := params.readRequest(ctx)
 		if err != nil {
 			errObj := err.(*errors.CompositeError)
@@ -45,6 +45,13 @@ func CreateOrUpdateNodePoolEndpoint(handler func(ctx *gin.Context, params *Creat
 			ctx.JSON(resp.Code, resp.Body)
 		}
 	}
+}
+
+// NewCreateOrUpdateNodePoolParams creates a new CreateOrUpdateNodePoolParams object
+// with the default values initialized.
+func NewCreateOrUpdateNodePoolParams() *CreateOrUpdateNodePoolParams {
+	var ()
+	return &CreateOrUpdateNodePoolParams{}
 }
 
 // CreateOrUpdateNodePoolParams contains all the bound params for the create or update node pool operation
