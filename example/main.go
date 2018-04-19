@@ -7,11 +7,9 @@ import (
 )
 
 func main() {
-
 	var apiConfig restapi.Config
-	apiConfig.WithDefaultFlags()
 
-	err := apiConfig.Parse()
+	err := apiConfig.WithDefaultFlags().Parse()
 	if err != nil {
 		log.Fatal(err)
 	}

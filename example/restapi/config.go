@@ -24,7 +24,7 @@ type Config struct {
 	Tracer            opentracing.Tracer
 }
 
-func (c *Config) WithDefaultFlags() {
+func (c *Config) WithDefaultFlags() *Config {
 	kingpin.Flag("debug", "Enable debug logging and pprof metrics.").BoolVar(&c.Debug)
 	kingpin.Flag("address", "Address to listen on, e.g. :8080 or 0.0.0.0:8080.").
 		Default(defaultAddress).StringVar(&c.Address)
@@ -39,6 +39,8 @@ func (c *Config) WithDefaultFlags() {
 		BoolVar(&c.AuthDisabled)
 	kingpin.Flag("token-url", "Set TokenURL used to validate oauth2 tokens.").
 		StringVar(&c.TokenURL)
+
+	return c
 }
 
 // Parse parses configuration from commandline flags.
