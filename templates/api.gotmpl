@@ -101,7 +101,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	if tracer != nil {
 		routes.{{ pascalize .Name }}.RouterGroup.Use(tracing.InitSpan(tracer, "{{ snakize .Name }}"))
 	}
-	{{ if ne .Method "GET" }}routes.{{ pascalize .Name }}.RouterGroup.Use(middleware.ContentTypes({{range $index, $typ := .ConsumesMediaTypes}}{{if $index}},{{end}}"{{$typ}}"{{end}}))
+	{{ if and (ne .Method "GET") .HasBodyParams }}routes.{{ pascalize .Name }}.RouterGroup.Use(middleware.ContentTypes({{range $index, $typ := .ConsumesMediaTypes}}{{if $index}},{{end}}"{{$typ}}"{{end}}))
 {{ end }}	{{ if .Authorized }}if enableAuth {
 		{{ $routeName := (pascalize .Name) }}
 		{{ $securityDefinitions := .SecurityDefinitions }}
