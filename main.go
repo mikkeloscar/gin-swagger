@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path"
@@ -39,7 +38,6 @@ func main() {
 
 func run(application, specPath string) error {
 	for _, asset := range AssetNames() {
-		fmt.Println("adding asset:", asset)
 		data, err := Asset(asset)
 		if err != nil {
 			return err
