@@ -7,6 +7,7 @@ package models
 
 import (
 	"encoding/json"
+	"strconv"
 
 	strfmt "github.com/go-openapi/strfmt"
 
@@ -59,6 +60,7 @@ type Cluster struct {
 
 	// Status of the cluster.
 	// Required: true
+	// Enum: [requested creating ready decommission-requested decommissioned]
 	LifecycleStatus *string `json:"lifecycle_status"`
 
 	// Cluster identifier which is local to the region
@@ -66,7 +68,7 @@ type Cluster struct {
 	LocalID *string `json:"local_id"`
 
 	// node pools
-	NodePools ClusterNodePools `json:"node_pools"`
+	NodePools []*NodePool `json:"node_pools"`
 
 	// The provider of the cluster. Possible values are "zalando-aws", "GKE", ...
 	// Required: true
@@ -85,62 +87,54 @@ func (m *Cluster) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateAlias(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateAPIServerURL(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateChannel(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateCriticalityLevel(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateEnvironment(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateID(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateInfrastructureAccount(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateLifecycleStatus(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateLocalID(formats); err != nil {
-		// prop
+		res = append(res, err)
+	}
+
+	if err := m.validateNodePools(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateProvider(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateRegion(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateStatus(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
@@ -230,14 +224,19 @@ func init() {
 }
 
 const (
+
 	// ClusterLifecycleStatusRequested captures enum value "requested"
 	ClusterLifecycleStatusRequested string = "requested"
+
 	// ClusterLifecycleStatusCreating captures enum value "creating"
 	ClusterLifecycleStatusCreating string = "creating"
+
 	// ClusterLifecycleStatusReady captures enum value "ready"
 	ClusterLifecycleStatusReady string = "ready"
+
 	// ClusterLifecycleStatusDecommissionRequested captures enum value "decommission-requested"
 	ClusterLifecycleStatusDecommissionRequested string = "decommission-requested"
+
 	// ClusterLifecycleStatusDecommissioned captures enum value "decommissioned"
 	ClusterLifecycleStatusDecommissioned string = "decommissioned"
 )
@@ -273,6 +272,31 @@ func (m *Cluster) validateLocalID(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Cluster) validateNodePools(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.NodePools) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.NodePools); i++ {
+		if swag.IsZero(m.NodePools[i]) { // not required
+			continue
+		}
+
+		if m.NodePools[i] != nil {
+			if err := m.NodePools[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("node_pools" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 func (m *Cluster) validateProvider(formats strfmt.Registry) error {
 
 	if err := validate.Required("provider", "body", m.Provider); err != nil {
@@ -298,7 +322,6 @@ func (m *Cluster) validateStatus(formats strfmt.Registry) error {
 	}
 
 	if m.Status != nil {
-
 		if err := m.Status.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("status")

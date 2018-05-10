@@ -1,22 +1,18 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path"
-	"text/template"
-	"time"
 
+	"github.com/go-swagger/go-swagger/generator"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-//go:generate go-bindata -pkg main -o bindata.go config.yaml templates
+//go:generate go-bindata -pkg main -o bindata.go templates
 
 const (
-	swaggerTmplConfig  = "config.yaml"
 	defaultSwaggerPath = "./swagger.json"
 )
 
@@ -41,66 +37,110 @@ func main() {
 	}
 }
 
-func run(application, swagger string) error {
-	tmpDir, err := writeAssets()
+func run(application, specPath string) error {
+	for _, asset := range AssetNames() {
+		fmt.Println("adding asset:", asset)
+		data, err := Asset(asset)
+		if err != nil {
+			return err
+		}
+
+		err = generator.AddFile(asset, string(data))
+		if err != nil {
+			return err
+		}
+	}
+
+	opts := &generator.GenOpts{
+		Spec:              specPath,
+		Target:            "./",
+		APIPackage:        "operations",
+		ModelPackage:      "models",
+		ServerPackage:     "restapi",
+		ClientPackage:     "client",
+		Principal:         "",
+		DefaultScheme:     "http",
+		IncludeModel:      true,
+		IncludeValidator:  true,
+		IncludeHandler:    true,
+		IncludeParameters: true,
+		IncludeResponses:  true,
+		IncludeURLBuilder: true,
+		IncludeMain:       true,
+		IncludeSupport:    true,
+		ValidateSpec:      true,
+		FlattenSpec:       true,
+		ExcludeSpec:       false,
+		TemplateDir:       "",
+		WithContext:       false,
+		DumpData:          false,
+		Models:            nil,
+		Operations:        nil,
+		Tags:              nil,
+		Name:              application,
+		FlagStrategy:      "go-flags",
+		CompatibilityMode: "modern",
+		ExistingModels:    "",
+		Copyright:         "",
+		Sections: generator.SectionOpts{
+			Application: []generator.TemplateOpts{
+				{
+					Name:       "configure",
+					Source:     "templates/config.gotmpl",
+					Target:     "{{ joinFilePath .Target .ServerPackage }}",
+					FileName:   "config.go",
+					SkipExists: false,
+					SkipFormat: false,
+				},
+				{
+					Name:       "embedded_spec",
+					Source:     "asset:swaggerJsonEmbed",
+					Target:     "{{ joinFilePath .Target .ServerPackage }}",
+					FileName:   "embedded_spec.go",
+					SkipExists: false,
+					SkipFormat: false,
+				},
+				{
+					Name:       "server",
+					Source:     "templates/api.gotmpl",
+					Target:     "{{ joinFilePath .Target .ServerPackage }}",
+					FileName:   "api.go",
+					SkipExists: false,
+					SkipFormat: false,
+				},
+			},
+			Operations: []generator.TemplateOpts{
+				{
+					Name:       "parameters",
+					Source:     "templates/parameter.gotmpl",
+					Target:     "{{ if gt (len .Tags) 0 }}{{ joinFilePath .Target .ServerPackage .APIPackage .Package  }}{{ else }}{{ joinFilePath .Target .ServerPackage .Package  }}{{ end }}",
+					FileName:   "{{ (snakize (pascalize .Name)) }}_parameters.go",
+					SkipExists: false,
+					SkipFormat: false,
+				},
+			},
+			Models: []generator.TemplateOpts{
+				{
+					Name:       "definition",
+					Source:     "asset:model",
+					Target:     "{{ joinFilePath .Target .ModelPackage }}",
+					FileName:   "{{ (snakize (pascalize .Name)) }}.go",
+					SkipExists: false,
+					SkipFormat: false,
+				},
+			},
+		},
+	}
+
+	err := opts.EnsureDefaults()
 	if err != nil {
 		return err
 	}
-	defer func() error {
-		return os.RemoveAll(tmpDir)
-	}()
 
-	cmd := exec.Command("swagger",
-		"generate",
-		"server",
-		"-A",
-		application,
-		"-f",
-		swagger,
-		"-C",
-		path.Join(tmpDir, swaggerTmplConfig),
-	)
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	return cmd.Run()
-}
-
-func writeAssets() (string, error) {
-	tmp := fmt.Sprintf(assetDirFmt, time.Now().UTC().UnixNano())
-	err := RestoreAssets(tmp, "templates")
+	err = generator.GenerateServer(application, nil, nil, opts)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	d, err := Asset(swaggerTmplConfig)
-	if err != nil {
-		return "", err
-	}
-
-	t, err := template.New(swaggerTmplConfig).Parse(string(d))
-	if err != nil {
-		return "", err
-	}
-
-	fd, err := os.Create(path.Join(tmp, swaggerTmplConfig))
-	if err != nil {
-		return "", err
-	}
-	defer fd.Close()
-
-	w := bufio.NewWriter(fd)
-
-	err = t.Execute(w, map[string]string{"TmpDir": tmp})
-	if err != nil {
-		return "", err
-	}
-
-	err = w.Flush()
-	if err != nil {
-		return "", err
-	}
-
-	return tmp, nil
+	return nil
 }

@@ -6,6 +6,8 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"strconv"
+
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/go-openapi/errors"
@@ -17,16 +19,45 @@ import (
 type ListClustersOKBody struct {
 
 	// items
-	Items ListClustersOKBodyItems `json:"items"`
+	Items []*Cluster `json:"items"`
 }
 
 // Validate validates this list clusters o k body
 func (m *ListClustersOKBody) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateItems(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *ListClustersOKBody) validateItems(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Items) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Items); i++ {
+		if swag.IsZero(m.Items[i]) { // not required
+			continue
+		}
+
+		if m.Items[i] != nil {
+			if err := m.Items[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("items" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 

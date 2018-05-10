@@ -14,7 +14,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/mikkeloscar/gin-swagger/example/models"
+	models "github.com/mikkeloscar/gin-swagger/example/models"
 )
 
 // CreateClusterEndpoint executes the core logic of the related

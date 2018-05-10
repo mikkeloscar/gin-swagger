@@ -194,12 +194,10 @@ func (m *ClusterStatusProblemsItems) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateTitle(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateType(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 

@@ -11,7 +11,6 @@ It is based on [go-swagger][go-swagger] which is used for the code generation.
 
 ### Dependencies
 
-* [go-swagger >= v0.13.0](https://github.com/go-swagger/go-swagger/releases/tag/0.13.0) - The `swagger` binary must be in your `PATH`.
 * [go-bindata](https://github.com/jteeuwen/go-bindata) - *Optional* only needed
     if you are changing gin-swagger.
 
