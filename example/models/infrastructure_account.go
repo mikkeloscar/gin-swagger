@@ -37,6 +37,7 @@ type InfrastructureAccount struct {
 
 	// Lifecycle Status is used to describe the current status of the account.
 	// Required: true
+	// Enum: [requested creating ready decommissioned]
 	LifecycleStatus *string `json:"lifecycle_status"`
 
 	// Name of the infrastructure account
@@ -57,42 +58,34 @@ func (m *InfrastructureAccount) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCriticalityLevel(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateEnvironment(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateExternalID(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateID(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateLifecycleStatus(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateName(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateOwner(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateType(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
@@ -151,12 +144,16 @@ func init() {
 }
 
 const (
+
 	// InfrastructureAccountLifecycleStatusRequested captures enum value "requested"
 	InfrastructureAccountLifecycleStatusRequested string = "requested"
+
 	// InfrastructureAccountLifecycleStatusCreating captures enum value "creating"
 	InfrastructureAccountLifecycleStatusCreating string = "creating"
+
 	// InfrastructureAccountLifecycleStatusReady captures enum value "ready"
 	InfrastructureAccountLifecycleStatusReady string = "ready"
+
 	// InfrastructureAccountLifecycleStatusDecommissioned captures enum value "decommissioned"
 	InfrastructureAccountLifecycleStatusDecommissioned string = "decommissioned"
 )

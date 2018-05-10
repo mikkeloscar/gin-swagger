@@ -20,6 +20,7 @@ import (
 type InfrastructureAccountUpdate struct {
 
 	// Lifecycle Status is used to describe the current status of the account.
+	// Enum: [requested creating ready decommissioned]
 	LifecycleStatus string `json:"lifecycle_status,omitempty"`
 
 	// Name of the infrastructure account
@@ -34,7 +35,6 @@ func (m *InfrastructureAccountUpdate) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateLifecycleStatus(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
@@ -57,12 +57,16 @@ func init() {
 }
 
 const (
+
 	// InfrastructureAccountUpdateLifecycleStatusRequested captures enum value "requested"
 	InfrastructureAccountUpdateLifecycleStatusRequested string = "requested"
+
 	// InfrastructureAccountUpdateLifecycleStatusCreating captures enum value "creating"
 	InfrastructureAccountUpdateLifecycleStatusCreating string = "creating"
+
 	// InfrastructureAccountUpdateLifecycleStatusReady captures enum value "ready"
 	InfrastructureAccountUpdateLifecycleStatusReady string = "ready"
+
 	// InfrastructureAccountUpdateLifecycleStatusDecommissioned captures enum value "decommissioned"
 	InfrastructureAccountUpdateLifecycleStatusDecommissioned string = "decommissioned"
 )

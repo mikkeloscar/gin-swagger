@@ -101,11 +101,11 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	if tracer != nil {
 		routes.{{ pascalize .Name }}.RouterGroup.Use(tracing.InitSpan(tracer, "{{ snakize .Name }}"))
 	}
-	{{ if ne .Method "GET" }}routes.{{ pascalize .Name }}.RouterGroup.Use(middleware.ContentTypes({{range $index, $typ := .ConsumesMediaTypes}}{{if $index}},{{end}}"{{$typ}}"{{end}}))
+	{{ if and (ne .Method "GET") .HasBodyParams }}routes.{{ pascalize .Name }}.RouterGroup.Use(middleware.ContentTypes({{range $index, $typ := .ConsumesMediaTypes}}{{if $index}},{{end}}"{{$typ}}"{{end}}))
 {{ end }}	{{ if .Authorized }}if enableAuth {
 		{{ $routeName := (pascalize .Name) }}
 		{{ $securityDefinitions := .SecurityDefinitions }}
-		{{ range .Security }}{{ $def := index $securityDefinitions .Name }}
+		{{ range .Security }}{{ range . }}{{ $def := index $securityDefinitions .Name }}
 		{{ if eq $def.SecuritySchemeProps.Type "oauth2" }}
 		routeTokenURL := tokenURL
 		if routeTokenURL == "" {
@@ -119,7 +119,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 		{{ end }}
 		routes.{{ $routeName }}.RouterGroup.Use(routes.{{ $routeName }}.Auth)
-		{{ end }}
+		{{ end }}{{ end }}
 	}
 {{end}}	routes.{{ pascalize .Name }}.Post = routes.{{ pascalize .Name }}.Group("")
 	routes.{{ pascalize .Name }}.Post.{{.Method}}(ginizePath({{printf "%q" .Path}}), {{.Package}}.{{ pascalize .Name }}Endpoint(service.{{ pascalize .Name }}))

@@ -6,6 +6,8 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"strconv"
+
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/go-openapi/errors"
@@ -35,16 +37,45 @@ type ClusterStatus struct {
 	NextVersion string `json:"next_version,omitempty"`
 
 	// problems
-	Problems ClusterStatusProblems `json:"problems"`
+	Problems []*ClusterStatusProblemsItems `json:"problems"`
 }
 
 // Validate validates this cluster status
 func (m *ClusterStatus) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateProblems(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *ClusterStatus) validateProblems(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Problems) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Problems); i++ {
+		if swag.IsZero(m.Problems[i]) { // not required
+			continue
+		}
+
+		if m.Problems[i] != nil {
+			if err := m.Problems[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("problems" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 

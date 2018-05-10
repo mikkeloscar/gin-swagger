@@ -36,6 +36,7 @@ type ClusterUpdate struct {
 	ConfigItems map[string]string `json:"config_items,omitempty"`
 
 	// Status of the cluster.
+	// Enum: [requested creating ready decommission-requested decommissioned]
 	LifecycleStatus string `json:"lifecycle_status,omitempty"`
 
 	// The provider of the cluster. Possible values are "zalando-aws", "GKE", ...
@@ -50,12 +51,10 @@ func (m *ClusterUpdate) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateLifecycleStatus(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
 	if err := m.validateStatus(formats); err != nil {
-		// prop
 		res = append(res, err)
 	}
 
@@ -78,14 +77,19 @@ func init() {
 }
 
 const (
+
 	// ClusterUpdateLifecycleStatusRequested captures enum value "requested"
 	ClusterUpdateLifecycleStatusRequested string = "requested"
+
 	// ClusterUpdateLifecycleStatusCreating captures enum value "creating"
 	ClusterUpdateLifecycleStatusCreating string = "creating"
+
 	// ClusterUpdateLifecycleStatusReady captures enum value "ready"
 	ClusterUpdateLifecycleStatusReady string = "ready"
+
 	// ClusterUpdateLifecycleStatusDecommissionRequested captures enum value "decommission-requested"
 	ClusterUpdateLifecycleStatusDecommissionRequested string = "decommission-requested"
+
 	// ClusterUpdateLifecycleStatusDecommissioned captures enum value "decommissioned"
 	ClusterUpdateLifecycleStatusDecommissioned string = "decommissioned"
 )
@@ -119,7 +123,6 @@ func (m *ClusterUpdate) validateStatus(formats strfmt.Registry) error {
 	}
 
 	if m.Status != nil {
-
 		if err := m.Status.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("status")

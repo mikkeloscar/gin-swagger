@@ -23,7 +23,7 @@ if err := validate.Enum({{ .Path }}, {{ printf "%q" .Location }}, {{ if and (not
 }
 {{ end }}
 {{ end }}
-{{ define "validationPrimitive" }}
+{{ define "customValidationPrimitive" }}
 {{if .MinLength}}
 if err := validate.MinLength({{ if .Path }}{{ .Path }}{{else}}""{{end}}, {{ printf "%q" .Location }}, {{ if .IsNullable }}(*{{ end }}{{.ValueExpression}}{{ if .IsNullable }}){{ end }}{{ if .IsCustomFormatter }}.String(){{ end }}, {{.MinLength}}); err != nil {
   return err
@@ -61,7 +61,7 @@ if err := validate.Enum({{ if .Path }}{{ .Path }}{{else}}""{{end}}, {{ printf "%
 {{end}}
 {{end}}
 {{ define "propertyparamvalidator" }}
-{{ if .IsPrimitive }}{{ template "validationPrimitive" . }}{{ end }}
+{{ if .IsPrimitive }}{{ template "customValidationPrimitive" . }}{{ end }}
 {{ if .IsCustomFormatter }}
 if err := validate.FormatOf({{.Path}}, "{{.Location}}", "{{.SwaggerFormat}}", {{.ValueExpression}}.String(), formats); err != nil {
   return err

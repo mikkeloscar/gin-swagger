@@ -277,7 +277,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	if tracer != nil {
 		routes.DeleteCluster.RouterGroup.Use(tracing.InitSpan(tracer, "delete_cluster"))
 	}
-	routes.DeleteCluster.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
 		routeTokenURL := tokenURL
@@ -302,7 +301,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	if tracer != nil {
 		routes.DeleteConfigItem.RouterGroup.Use(tracing.InitSpan(tracer, "delete_config_item"))
 	}
-	routes.DeleteConfigItem.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
 		routeTokenURL := tokenURL
@@ -327,7 +325,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 	if tracer != nil {
 		routes.DeleteNodePool.RouterGroup.Use(tracing.InitSpan(tracer, "delete_node_pool"))
 	}
-	routes.DeleteNodePool.RouterGroup.Use(middleware.ContentTypes("application/json"))
 	if enableAuth {
 
 		routeTokenURL := tokenURL
