@@ -10,9 +10,10 @@ matrix:
 
 before_install:
 - go get github.com/alecthomas/gometalinter
+- go get -u golang.org/x/vgo
 
 install:
 - gometalinter --install
 
 script:
-- make test
+- GO=vgo make test
