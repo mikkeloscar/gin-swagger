@@ -191,8 +191,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 			},
 		)
 
-		routes.AddOrUpdateConfigItem.RouterGroup.Use(routes.AddOrUpdateConfigItem.Auth)
-
 	}
 	routes.AddOrUpdateConfigItem.Post = routes.AddOrUpdateConfigItem.Group("")
 	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.AddOrUpdateConfigItemEndpoint(service.AddOrUpdateConfigItem))
@@ -215,8 +213,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 				TokenURL: routeTokenURL,
 			},
 		)
-
-		routes.CreateCluster.RouterGroup.Use(routes.CreateCluster.Auth)
 
 	}
 	routes.CreateCluster.Post = routes.CreateCluster.Group("")
@@ -241,8 +237,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 			},
 		)
 
-		routes.CreateInfrastructureAccount.RouterGroup.Use(routes.CreateInfrastructureAccount.Auth)
-
 	}
 	routes.CreateInfrastructureAccount.Post = routes.CreateInfrastructureAccount.Group("")
 	routes.CreateInfrastructureAccount.Post.POST(ginizePath("/infrastructure-accounts"), infrastructure_accounts.CreateInfrastructureAccountEndpoint(service.CreateInfrastructureAccount))
@@ -266,8 +260,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 			},
 		)
 
-		routes.CreateOrUpdateNodePool.RouterGroup.Use(routes.CreateOrUpdateNodePool.Auth)
-
 	}
 	routes.CreateOrUpdateNodePool.Post = routes.CreateOrUpdateNodePool.Group("")
 	routes.CreateOrUpdateNodePool.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.CreateOrUpdateNodePoolEndpoint(service.CreateOrUpdateNodePool))
@@ -289,8 +281,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 				TokenURL: routeTokenURL,
 			},
 		)
-
-		routes.DeleteCluster.RouterGroup.Use(routes.DeleteCluster.Auth)
 
 	}
 	routes.DeleteCluster.Post = routes.DeleteCluster.Group("")
@@ -314,8 +304,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 			},
 		)
 
-		routes.DeleteConfigItem.RouterGroup.Use(routes.DeleteConfigItem.Auth)
-
 	}
 	routes.DeleteConfigItem.Post = routes.DeleteConfigItem.Group("")
 	routes.DeleteConfigItem.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.DeleteConfigItemEndpoint(service.DeleteConfigItem))
@@ -337,8 +325,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 				TokenURL: routeTokenURL,
 			},
 		)
-
-		routes.DeleteNodePool.RouterGroup.Use(routes.DeleteNodePool.Auth)
 
 	}
 	routes.DeleteNodePool.Post = routes.DeleteNodePool.Group("")
@@ -362,8 +348,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 			},
 		)
 
-		routes.GetCluster.RouterGroup.Use(routes.GetCluster.Auth)
-
 	}
 	routes.GetCluster.Post = routes.GetCluster.Group("")
 	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.GetClusterEndpoint(service.GetCluster))
@@ -385,8 +369,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 				TokenURL: routeTokenURL,
 			},
 		)
-
-		routes.GetInfrastructureAccount.RouterGroup.Use(routes.GetInfrastructureAccount.Auth)
 
 	}
 	routes.GetInfrastructureAccount.Post = routes.GetInfrastructureAccount.Group("")
@@ -410,8 +392,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 			},
 		)
 
-		routes.ListClusters.RouterGroup.Use(routes.ListClusters.Auth)
-
 	}
 	routes.ListClusters.Post = routes.ListClusters.Group("")
 	routes.ListClusters.Post.GET(ginizePath("/kubernetes-clusters"), clusters.ListClustersEndpoint(service.ListClusters))
@@ -434,8 +414,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 			},
 		)
 
-		routes.ListInfrastructureAccounts.RouterGroup.Use(routes.ListInfrastructureAccounts.Auth)
-
 	}
 	routes.ListInfrastructureAccounts.Post = routes.ListInfrastructureAccounts.Group("")
 	routes.ListInfrastructureAccounts.Post.GET(ginizePath("/infrastructure-accounts"), infrastructure_accounts.ListInfrastructureAccountsEndpoint(service.ListInfrastructureAccounts))
@@ -457,8 +435,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 				TokenURL: routeTokenURL,
 			},
 		)
-
-		routes.ListNodePools.RouterGroup.Use(routes.ListNodePools.Auth)
 
 	}
 	routes.ListNodePools.Post = routes.ListNodePools.Group("")
@@ -483,8 +459,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 			},
 		)
 
-		routes.UpdateCluster.RouterGroup.Use(routes.UpdateCluster.Auth)
-
 	}
 	routes.UpdateCluster.Post = routes.UpdateCluster.Group("")
 	routes.UpdateCluster.Post.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.UpdateClusterEndpoint(service.UpdateCluster))
@@ -507,8 +481,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 				TokenURL: routeTokenURL,
 			},
 		)
-
-		routes.UpdateInfrastructureAccount.RouterGroup.Use(routes.UpdateInfrastructureAccount.Auth)
 
 	}
 	routes.UpdateInfrastructureAccount.Post = routes.UpdateInfrastructureAccount.Group("")

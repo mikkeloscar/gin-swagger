@@ -118,7 +118,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 			},
 		)
 		{{ end }}
-		routes.{{ $routeName }}.RouterGroup.Use(routes.{{ $routeName }}.Auth)
 		{{ end }}{{ end }}
 	}
 {{end}}	routes.{{ pascalize .Name }}.Post = routes.{{ pascalize .Name }}.Group("")
