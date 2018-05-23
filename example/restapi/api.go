@@ -524,6 +524,7 @@ type Server struct {
 	server           *http.Server
 	healthy          bool
 	serviceHealthyFn func() bool
+	authDisabled     bool
 	Title            string
 	Version          string
 }
@@ -541,9 +542,10 @@ func NewServer(svc Service, config *Config) *Server {
 			config.TokenURL,
 			config.Tracer,
 		),
-		config:  config,
-		Title:   "Cluster Registry",
-		Version: "0.0.1",
+		config:       config,
+		Title:        "Cluster Registry",
+		Version:      "0.0.1",
+		authDisabled: config.AuthDisabled,
 	}
 
 	// enable pprof http endpoints in debug mode
@@ -578,9 +580,33 @@ func (s *Server) isHealthy() bool {
 	return s.healthy && s.serviceHealthyFn()
 }
 
-// Run runs the Server server it will listen on either HTTP or HTTPS depending on
-// the config passed to NewServer.
+// configureAuth configures auth for the routes if auth is not disabled for the
+// server.
+func (s *Server) configureAuth() {
+	if !s.authDisabled {
+		s.Routes.AddOrUpdateConfigItem.RouterGroup.Use(s.Routes.AddOrUpdateConfigItem.Auth)
+		s.Routes.CreateCluster.RouterGroup.Use(s.Routes.CreateCluster.Auth)
+		s.Routes.CreateInfrastructureAccount.RouterGroup.Use(s.Routes.CreateInfrastructureAccount.Auth)
+		s.Routes.CreateOrUpdateNodePool.RouterGroup.Use(s.Routes.CreateOrUpdateNodePool.Auth)
+		s.Routes.DeleteCluster.RouterGroup.Use(s.Routes.DeleteCluster.Auth)
+		s.Routes.DeleteConfigItem.RouterGroup.Use(s.Routes.DeleteConfigItem.Auth)
+		s.Routes.DeleteNodePool.RouterGroup.Use(s.Routes.DeleteNodePool.Auth)
+		s.Routes.GetCluster.RouterGroup.Use(s.Routes.GetCluster.Auth)
+		s.Routes.GetInfrastructureAccount.RouterGroup.Use(s.Routes.GetInfrastructureAccount.Auth)
+		s.Routes.ListClusters.RouterGroup.Use(s.Routes.ListClusters.Auth)
+		s.Routes.ListInfrastructureAccounts.RouterGroup.Use(s.Routes.ListInfrastructureAccounts.Auth)
+		s.Routes.ListNodePools.RouterGroup.Use(s.Routes.ListNodePools.Auth)
+		s.Routes.UpdateCluster.RouterGroup.Use(s.Routes.UpdateCluster.Auth)
+		s.Routes.UpdateInfrastructureAccount.RouterGroup.Use(s.Routes.UpdateInfrastructureAccount.Auth)
+	}
+}
+
+// Run runs the Server. It will listen on either HTTP or HTTPS depending on the
+// config passed to NewServer.
 func (s *Server) Run() error {
+	// configure auth before starting the server
+	s.configureAuth()
+
 	log.Infof("Serving '%s - %s' on address %s", s.Title, s.Version, s.server.Addr)
 	// server is set to healthy when started.
 	s.healthy = true

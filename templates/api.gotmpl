@@ -135,6 +135,7 @@ type Server struct {
 	server *http.Server
 	healthy bool
 	serviceHealthyFn func() bool
+	authDisabled bool
 	Title string
 	Version string
 }
@@ -155,6 +156,7 @@ func NewServer(svc Service, config *Config) *Server {
 		config: config,
 		Title: "{{ .Info.Title }}",
 		Version: "{{ .Info.Version }}",
+		authDisabled: config.AuthDisabled,
 	}
 
 	// enable pprof http endpoints in debug mode
@@ -189,9 +191,20 @@ func (s *Server) isHealthy() bool {
 	return s.healthy && s.serviceHealthyFn()
 }
 
-// Run runs the Server server it will listen on either HTTP or HTTPS depending on
-// the config passed to NewServer.
+// configureAuth configures auth for the routes if auth is not disabled for the
+// server.
+func (s *Server) configureAuth() {
+	if !s.authDisabled {
+	{{range .Operations}}{{ if .Authorized }}s.Routes.{{ pascalize .Name }}.RouterGroup.Use(s.Routes.{{ pascalize .Name }}.Auth){{end}}
+	{{end}}}
+}
+
+// Run runs the Server. It will listen on either HTTP or HTTPS depending on the
+// config passed to NewServer.
 func (s *Server) Run() error {
+	// configure auth before starting the server
+	s.configureAuth()
+
 	log.Infof("Serving '%s - %s' on address %s", s.Title, s.Version, s.server.Addr)
 	// server is set to healthy when started.
 	s.healthy = true
