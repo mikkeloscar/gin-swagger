@@ -519,11 +519,13 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 
 // Server defines the Server service.
 type Server struct {
-	Routes  *Routes
-	config  *Config
-	server  *http.Server
-	Title   string
-	Version string
+	Routes           *Routes
+	config           *Config
+	server           *http.Server
+	healthy          bool
+	serviceHealthyFn func() bool
+	Title            string
+	Version          string
 }
 
 // NewServer initializes a new Server service.
@@ -532,7 +534,7 @@ func NewServer(svc Service, config *Config) *Server {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	api := &Server{
+	server := &Server{
 		Routes: configureRoutes(
 			svc,
 			!config.AuthDisabled,
@@ -546,42 +548,53 @@ func NewServer(svc Service, config *Config) *Server {
 
 	// enable pprof http endpoints in debug mode
 	if config.Debug {
-		pprof.Register(api.Routes.Engine, nil)
+		pprof.Register(server.Routes.Engine, nil)
 	}
 
 	// set logrus logger to TextFormatter with no colors
 	log.SetFormatter(&log.TextFormatter{DisableColors: true})
 
-	api.server = &http.Server{
+	server.server = &http.Server{
 		Addr:         config.Address,
-		Handler:      api.Routes.Engine,
+		Handler:      server.Routes.Engine,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
 
+	server.serviceHealthyFn = svc.Healthy
+
 	if !config.WellKnownDisabled {
-		api.Routes.configureWellKnown(svc.Healthy)
+		server.Routes.configureWellKnown(server.isHealthy)
 	}
 
 	// configure healthz endpoint
-	api.Routes.GET("/healthz", healthHandler(svc.Healthy))
+	server.Routes.GET("/healthz", healthHandler(server.isHealthy))
 
-	return api
+	return server
+}
+
+// isHealthy returns true if both the server and the service reports healthy.
+func (s *Server) isHealthy() bool {
+	return s.healthy && s.serviceHealthyFn()
 }
 
 // Run runs the Server server it will listen on either HTTP or HTTPS depending on
 // the config passed to NewServer.
-func (a *Server) Run() error {
-	log.Infof("Serving '%s - %s' on address %s", a.Title, a.Version, a.server.Addr)
-	if a.config.InsecureHTTP {
-		return a.server.ListenAndServe()
+func (s *Server) Run() error {
+	log.Infof("Serving '%s - %s' on address %s", s.Title, s.Version, s.server.Addr)
+	// server is set to healthy when started.
+	s.healthy = true
+	if s.config.InsecureHTTP {
+		return s.server.ListenAndServe()
 	}
-	return a.server.ListenAndServeTLS(a.config.TLSCertFile, a.config.TLSKeyFile)
+	return s.server.ListenAndServeTLS(s.config.TLSCertFile, s.config.TLSKeyFile)
 }
 
 // Shutdown will gracefully shutdown the Server server.
-func (a *Server) Shutdown() error {
-	return a.server.Shutdown(context.Background())
+func (s *Server) Shutdown() error {
+	// server is set to unhealthy when shutting down
+	s.healthy = false
+	return s.server.Shutdown(context.Background())
 }
 
 // RunWithSigHandler runs the Server server with SIGTERM handling automatically
@@ -589,16 +602,16 @@ func (a *Server) Shutdown() error {
 // the web server.
 // It's possible to optionally pass any number shutdown functions which will
 // execute one by one after the webserver has been shutdown successfully.
-func (a *Server) RunWithSigHandler(shutdown ...func() error) error {
+func (s *Server) RunWithSigHandler(shutdown ...func() error) error {
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGTERM)
 
 	go func() {
 		<-sigCh
-		a.Shutdown()
+		s.Shutdown()
 	}()
 
-	err := a.Run()
+	err := s.Run()
 	if err != nil {
 		if err != http.ErrServerClosed {
 			return err
