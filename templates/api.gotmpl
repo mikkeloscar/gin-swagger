@@ -31,7 +31,6 @@ type Routes struct {
 	{{range .Operations}}{{ pascalize .Name }} struct {
 		*gin.RouterGroup
 		{{ if .Authorized }}Auth gin.HandlerFunc {{end}}
-		Post *gin.RouterGroup
 	}
 {{end}}
 }
@@ -90,8 +89,8 @@ func ginizePath(path string) string {
 	return strings.Replace(strings.Replace(path, "{", ":", -1), "}", "", -1)
 }
 
-// configureRoutes configures the routes for the Server service.
-func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer opentracing.Tracer) *Routes {
+// initializeRoutes initializes the route structure for the Server service.
+func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Tracer) *Routes {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	routes := &Routes{Engine: engine}
@@ -120,9 +119,7 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		{{ end }}
 		{{ end }}{{ end }}
 	}
-{{end}}	routes.{{ pascalize .Name }}.Post = routes.{{ pascalize .Name }}.Group("")
-	routes.{{ pascalize .Name }}.Post.{{.Method}}(ginizePath({{printf "%q" .Path}}), {{.Package}}.{{ pascalize .Name }}Endpoint(service.{{ pascalize .Name }}))
-
+{{end}}
 {{end}}
 	return routes
 }
@@ -132,6 +129,7 @@ type Server struct {
 	Routes *Routes
 	config *Config
 	server *http.Server
+	service Service
 	healthy bool
 	serviceHealthyFn func() bool
 	authDisabled bool
@@ -146,12 +144,12 @@ func NewServer(svc Service, config *Config) *Server {
 	}
 
 	server := &Server{
-		Routes: configureRoutes(
-			svc,
+		Routes: initializeRoutes(
 			!config.AuthDisabled,
 			config.TokenURL,
 			config.Tracer,
 		),
+		service: svc,
 		config: config,
 		Title: "{{ .Info.Title }}",
 		Version: "{{ .Info.Version }}",
@@ -190,19 +188,23 @@ func (s *Server) isHealthy() bool {
 	return s.healthy && s.serviceHealthyFn()
 }
 
-// configureAuth configures auth for the routes if auth is not disabled for the
-// server.
-func (s *Server) configureAuth() {
+// configureRoutes configures the routes for the Server service.
+// Configuring of routes includes setting up Auth if it is enabled.
+func (s *Server) configureRoutes() {
 	if !s.authDisabled {
-	{{range .Operations}}{{ if .Authorized }}s.Routes.{{ pascalize .Name }}.RouterGroup.Use(s.Routes.{{ pascalize .Name }}.Auth){{end}}
-	{{end}}}
-}
+	{{range .Operations}}{{ if .Authorized }}s.Routes.{{ pascalize .Name }}.Use(s.Routes.{{ pascalize .Name }}.Auth)
+	{{end}}{{end}}}
+
+	// setup all service routes after the authenticate middleware has been
+	// initialized.
+	{{range .Operations}}s.Routes.{{ pascalize .Name }}.{{.Method}}(ginizePath({{printf "%q" .Path}}), {{.Package}}.{{ pascalize .Name }}Endpoint(s.service.{{ pascalize .Name }}))
+{{end}}}
 
 // Run runs the Server. It will listen on either HTTP or HTTPS depending on the
 // config passed to NewServer.
 func (s *Server) Run() error {
-	// configure auth before starting the server
-	s.configureAuth()
+	// configure service routes
+	s.configureRoutes()
 
 	log.Infof("Serving '%s - %s' on address %s", s.Title, s.Version, s.server.Addr)
 	// server is set to healthy when started.

@@ -31,72 +31,58 @@ type Routes struct {
 	AddOrUpdateConfigItem struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	CreateCluster struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	CreateInfrastructureAccount struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	CreateOrUpdateNodePool struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	DeleteCluster struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	DeleteConfigItem struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	DeleteNodePool struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	GetCluster struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	GetInfrastructureAccount struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	ListClusters struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	ListInfrastructureAccounts struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	ListNodePools struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	UpdateCluster struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 	UpdateInfrastructureAccount struct {
 		*gin.RouterGroup
 		Auth gin.HandlerFunc
-		Post *gin.RouterGroup
 	}
 }
 
@@ -166,8 +152,8 @@ func ginizePath(path string) string {
 	return strings.Replace(strings.Replace(path, "{", ":", -1), "}", "", -1)
 }
 
-// configureRoutes configures the routes for the Server service.
-func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer opentracing.Tracer) *Routes {
+// initializeRoutes initializes the route structure for the Server service.
+func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Tracer) *Routes {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	routes := &Routes{Engine: engine}
@@ -192,8 +178,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.AddOrUpdateConfigItem.Post = routes.AddOrUpdateConfigItem.Group("")
-	routes.AddOrUpdateConfigItem.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.AddOrUpdateConfigItemEndpoint(service.AddOrUpdateConfigItem))
 
 	routes.CreateCluster.RouterGroup = routes.Group("")
 	routes.CreateCluster.RouterGroup.Use(middleware.LogrusLogger())
@@ -215,8 +199,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.CreateCluster.Post = routes.CreateCluster.Group("")
-	routes.CreateCluster.Post.POST(ginizePath("/kubernetes-clusters"), clusters.CreateClusterEndpoint(service.CreateCluster))
 
 	routes.CreateInfrastructureAccount.RouterGroup = routes.Group("")
 	routes.CreateInfrastructureAccount.RouterGroup.Use(middleware.LogrusLogger())
@@ -238,8 +220,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.CreateInfrastructureAccount.Post = routes.CreateInfrastructureAccount.Group("")
-	routes.CreateInfrastructureAccount.Post.POST(ginizePath("/infrastructure-accounts"), infrastructure_accounts.CreateInfrastructureAccountEndpoint(service.CreateInfrastructureAccount))
 
 	routes.CreateOrUpdateNodePool.RouterGroup = routes.Group("")
 	routes.CreateOrUpdateNodePool.RouterGroup.Use(middleware.LogrusLogger())
@@ -261,8 +241,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.CreateOrUpdateNodePool.Post = routes.CreateOrUpdateNodePool.Group("")
-	routes.CreateOrUpdateNodePool.Post.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.CreateOrUpdateNodePoolEndpoint(service.CreateOrUpdateNodePool))
 
 	routes.DeleteCluster.RouterGroup = routes.Group("")
 	routes.DeleteCluster.RouterGroup.Use(middleware.LogrusLogger())
@@ -283,8 +261,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.DeleteCluster.Post = routes.DeleteCluster.Group("")
-	routes.DeleteCluster.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.DeleteClusterEndpoint(service.DeleteCluster))
 
 	routes.DeleteConfigItem.RouterGroup = routes.Group("")
 	routes.DeleteConfigItem.RouterGroup.Use(middleware.LogrusLogger())
@@ -305,8 +281,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.DeleteConfigItem.Post = routes.DeleteConfigItem.Group("")
-	routes.DeleteConfigItem.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.DeleteConfigItemEndpoint(service.DeleteConfigItem))
 
 	routes.DeleteNodePool.RouterGroup = routes.Group("")
 	routes.DeleteNodePool.RouterGroup.Use(middleware.LogrusLogger())
@@ -327,8 +301,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.DeleteNodePool.Post = routes.DeleteNodePool.Group("")
-	routes.DeleteNodePool.Post.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.DeleteNodePoolEndpoint(service.DeleteNodePool))
 
 	routes.GetCluster.RouterGroup = routes.Group("")
 	routes.GetCluster.RouterGroup.Use(middleware.LogrusLogger())
@@ -349,8 +321,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.GetCluster.Post = routes.GetCluster.Group("")
-	routes.GetCluster.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.GetClusterEndpoint(service.GetCluster))
 
 	routes.GetInfrastructureAccount.RouterGroup = routes.Group("")
 	routes.GetInfrastructureAccount.RouterGroup.Use(middleware.LogrusLogger())
@@ -371,8 +341,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.GetInfrastructureAccount.Post = routes.GetInfrastructureAccount.Group("")
-	routes.GetInfrastructureAccount.Post.GET(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.GetInfrastructureAccountEndpoint(service.GetInfrastructureAccount))
 
 	routes.ListClusters.RouterGroup = routes.Group("")
 	routes.ListClusters.RouterGroup.Use(middleware.LogrusLogger())
@@ -393,8 +361,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.ListClusters.Post = routes.ListClusters.Group("")
-	routes.ListClusters.Post.GET(ginizePath("/kubernetes-clusters"), clusters.ListClustersEndpoint(service.ListClusters))
 
 	routes.ListInfrastructureAccounts.RouterGroup = routes.Group("")
 	routes.ListInfrastructureAccounts.RouterGroup.Use(middleware.LogrusLogger())
@@ -415,8 +381,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.ListInfrastructureAccounts.Post = routes.ListInfrastructureAccounts.Group("")
-	routes.ListInfrastructureAccounts.Post.GET(ginizePath("/infrastructure-accounts"), infrastructure_accounts.ListInfrastructureAccountsEndpoint(service.ListInfrastructureAccounts))
 
 	routes.ListNodePools.RouterGroup = routes.Group("")
 	routes.ListNodePools.RouterGroup.Use(middleware.LogrusLogger())
@@ -437,8 +401,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.ListNodePools.Post = routes.ListNodePools.Group("")
-	routes.ListNodePools.Post.GET(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools"), node_pools.ListNodePoolsEndpoint(service.ListNodePools))
 
 	routes.UpdateCluster.RouterGroup = routes.Group("")
 	routes.UpdateCluster.RouterGroup.Use(middleware.LogrusLogger())
@@ -460,8 +422,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.UpdateCluster.Post = routes.UpdateCluster.Group("")
-	routes.UpdateCluster.Post.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.UpdateClusterEndpoint(service.UpdateCluster))
 
 	routes.UpdateInfrastructureAccount.RouterGroup = routes.Group("")
 	routes.UpdateInfrastructureAccount.RouterGroup.Use(middleware.LogrusLogger())
@@ -483,8 +443,6 @@ func configureRoutes(service Service, enableAuth bool, tokenURL string, tracer o
 		)
 
 	}
-	routes.UpdateInfrastructureAccount.Post = routes.UpdateInfrastructureAccount.Group("")
-	routes.UpdateInfrastructureAccount.Post.PATCH(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.UpdateInfrastructureAccountEndpoint(service.UpdateInfrastructureAccount))
 
 	return routes
 }
@@ -494,6 +452,7 @@ type Server struct {
 	Routes           *Routes
 	config           *Config
 	server           *http.Server
+	service          Service
 	healthy          bool
 	serviceHealthyFn func() bool
 	authDisabled     bool
@@ -508,12 +467,12 @@ func NewServer(svc Service, config *Config) *Server {
 	}
 
 	server := &Server{
-		Routes: configureRoutes(
-			svc,
+		Routes: initializeRoutes(
 			!config.AuthDisabled,
 			config.TokenURL,
 			config.Tracer,
 		),
+		service:      svc,
 		config:       config,
 		Title:        "Cluster Registry",
 		Version:      "0.0.1",
@@ -552,32 +511,49 @@ func (s *Server) isHealthy() bool {
 	return s.healthy && s.serviceHealthyFn()
 }
 
-// configureAuth configures auth for the routes if auth is not disabled for the
-// server.
-func (s *Server) configureAuth() {
+// configureRoutes configures the routes for the Server service.
+// Configuring of routes includes setting up Auth if it is enabled.
+func (s *Server) configureRoutes() {
 	if !s.authDisabled {
-		s.Routes.AddOrUpdateConfigItem.RouterGroup.Use(s.Routes.AddOrUpdateConfigItem.Auth)
-		s.Routes.CreateCluster.RouterGroup.Use(s.Routes.CreateCluster.Auth)
-		s.Routes.CreateInfrastructureAccount.RouterGroup.Use(s.Routes.CreateInfrastructureAccount.Auth)
-		s.Routes.CreateOrUpdateNodePool.RouterGroup.Use(s.Routes.CreateOrUpdateNodePool.Auth)
-		s.Routes.DeleteCluster.RouterGroup.Use(s.Routes.DeleteCluster.Auth)
-		s.Routes.DeleteConfigItem.RouterGroup.Use(s.Routes.DeleteConfigItem.Auth)
-		s.Routes.DeleteNodePool.RouterGroup.Use(s.Routes.DeleteNodePool.Auth)
-		s.Routes.GetCluster.RouterGroup.Use(s.Routes.GetCluster.Auth)
-		s.Routes.GetInfrastructureAccount.RouterGroup.Use(s.Routes.GetInfrastructureAccount.Auth)
-		s.Routes.ListClusters.RouterGroup.Use(s.Routes.ListClusters.Auth)
-		s.Routes.ListInfrastructureAccounts.RouterGroup.Use(s.Routes.ListInfrastructureAccounts.Auth)
-		s.Routes.ListNodePools.RouterGroup.Use(s.Routes.ListNodePools.Auth)
-		s.Routes.UpdateCluster.RouterGroup.Use(s.Routes.UpdateCluster.Auth)
-		s.Routes.UpdateInfrastructureAccount.RouterGroup.Use(s.Routes.UpdateInfrastructureAccount.Auth)
+		s.Routes.AddOrUpdateConfigItem.Use(s.Routes.AddOrUpdateConfigItem.Auth)
+		s.Routes.CreateCluster.Use(s.Routes.CreateCluster.Auth)
+		s.Routes.CreateInfrastructureAccount.Use(s.Routes.CreateInfrastructureAccount.Auth)
+		s.Routes.CreateOrUpdateNodePool.Use(s.Routes.CreateOrUpdateNodePool.Auth)
+		s.Routes.DeleteCluster.Use(s.Routes.DeleteCluster.Auth)
+		s.Routes.DeleteConfigItem.Use(s.Routes.DeleteConfigItem.Auth)
+		s.Routes.DeleteNodePool.Use(s.Routes.DeleteNodePool.Auth)
+		s.Routes.GetCluster.Use(s.Routes.GetCluster.Auth)
+		s.Routes.GetInfrastructureAccount.Use(s.Routes.GetInfrastructureAccount.Auth)
+		s.Routes.ListClusters.Use(s.Routes.ListClusters.Auth)
+		s.Routes.ListInfrastructureAccounts.Use(s.Routes.ListInfrastructureAccounts.Auth)
+		s.Routes.ListNodePools.Use(s.Routes.ListNodePools.Auth)
+		s.Routes.UpdateCluster.Use(s.Routes.UpdateCluster.Auth)
+		s.Routes.UpdateInfrastructureAccount.Use(s.Routes.UpdateInfrastructureAccount.Auth)
 	}
+
+	// setup all service routes after the authenticate middleware has been
+	// initialized.
+	s.Routes.AddOrUpdateConfigItem.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.AddOrUpdateConfigItemEndpoint(s.service.AddOrUpdateConfigItem))
+	s.Routes.CreateCluster.POST(ginizePath("/kubernetes-clusters"), clusters.CreateClusterEndpoint(s.service.CreateCluster))
+	s.Routes.CreateInfrastructureAccount.POST(ginizePath("/infrastructure-accounts"), infrastructure_accounts.CreateInfrastructureAccountEndpoint(s.service.CreateInfrastructureAccount))
+	s.Routes.CreateOrUpdateNodePool.PUT(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.CreateOrUpdateNodePoolEndpoint(s.service.CreateOrUpdateNodePool))
+	s.Routes.DeleteCluster.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.DeleteClusterEndpoint(s.service.DeleteCluster))
+	s.Routes.DeleteConfigItem.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/config-items/{config_key}"), config_items.DeleteConfigItemEndpoint(s.service.DeleteConfigItem))
+	s.Routes.DeleteNodePool.DELETE(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools/{node_pool_name}"), node_pools.DeleteNodePoolEndpoint(s.service.DeleteNodePool))
+	s.Routes.GetCluster.GET(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.GetClusterEndpoint(s.service.GetCluster))
+	s.Routes.GetInfrastructureAccount.GET(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.GetInfrastructureAccountEndpoint(s.service.GetInfrastructureAccount))
+	s.Routes.ListClusters.GET(ginizePath("/kubernetes-clusters"), clusters.ListClustersEndpoint(s.service.ListClusters))
+	s.Routes.ListInfrastructureAccounts.GET(ginizePath("/infrastructure-accounts"), infrastructure_accounts.ListInfrastructureAccountsEndpoint(s.service.ListInfrastructureAccounts))
+	s.Routes.ListNodePools.GET(ginizePath("/kubernetes-clusters/{cluster_id}/node-pools"), node_pools.ListNodePoolsEndpoint(s.service.ListNodePools))
+	s.Routes.UpdateCluster.PATCH(ginizePath("/kubernetes-clusters/{cluster_id}"), clusters.UpdateClusterEndpoint(s.service.UpdateCluster))
+	s.Routes.UpdateInfrastructureAccount.PATCH(ginizePath("/infrastructure-accounts/{account_id}"), infrastructure_accounts.UpdateInfrastructureAccountEndpoint(s.service.UpdateInfrastructureAccount))
 }
 
 // Run runs the Server. It will listen on either HTTP or HTTPS depending on the
 // config passed to NewServer.
 func (s *Server) Run() error {
-	// configure auth before starting the server
-	s.configureAuth()
+	// configure service routes
+	s.configureRoutes()
 
 	log.Infof("Serving '%s - %s' on address %s", s.Title, s.Version, s.server.Addr)
 	// server is set to healthy when started.
