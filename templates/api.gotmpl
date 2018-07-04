@@ -252,4 +252,12 @@ func (s *Server) RunWithSigHandler(shutdown ...func() error) error {
 
 	return nil
 }
+
+// GinEngine creates a gin.Engine with generated routes
+// to make it easier to use https://github.com/appleboy/gofight
+func GinEngine(svc Service, config *Config) *gin.Engine {
+    server := NewServer(svc, config)
+    server.ConfigureRoutes()
+    return server.Routes.Engine
+}
 // vim: ft=go

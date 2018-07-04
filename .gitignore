@@ -1,1 +1,4 @@
 gin-swagger
+vendor
+
+.idea
