@@ -199,6 +199,22 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/mikkeloscar/gin-swagger"
+  packages = [
+    "api",
+    "example/models",
+    "example/restapi",
+    "example/restapi/operations/clusters",
+    "example/restapi/operations/config_items",
+    "example/restapi/operations/infrastructure_accounts",
+    "example/restapi/operations/node_pools",
+    "middleware",
+    "tracing"
+  ]
+  revision = "b3389341c3cbbd6c6924c4921c869fdec373e6f2"
+
+[[projects]]
+  branch = "master"
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
   revision = "00c29f56e2386353d58c599509e8dc3801b0d716"
@@ -379,6 +395,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3a4facaa2b4e6720a9646b9ec0054458a8256815e779f041c99e7db9866bb015"
+  inputs-digest = "588c64910666c44f8ace358d01714409f3898d57bd518fae8483ba63c65de89c"
   solver-name = "gps-cdcl"
   solver-version = 1
