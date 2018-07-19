@@ -229,7 +229,7 @@ func (s *Server) Shutdown() error {
 // execute one by one after the webserver has been shutdown successfully.
 func (s *Server) RunWithSigHandler(shutdown ...func() error) error {
 	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGTERM)
+	signal.Notify(sigCh, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		<-sigCh
