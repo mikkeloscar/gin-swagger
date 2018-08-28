@@ -1,7 +1,7 @@
 language: go
 
 go:
-- 1.x
+- "1.11"
 - tip
 
 matrix:
@@ -10,10 +10,9 @@ matrix:
 
 before_install:
 - go get github.com/alecthomas/gometalinter
-- go get -u golang.org/x/vgo
 
 install:
 - gometalinter --install
 
 script:
-- GO=vgo make test
+- make test
