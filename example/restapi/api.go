@@ -511,6 +511,11 @@ func (s *Server) isHealthy() bool {
 	return s.healthy && s.serviceHealthyFn()
 }
 
+// ConfigureRoutes starts the internal configureRoutes methode.
+func (s *Server) ConfigureRoutes() {
+	s.configureRoutes()
+}
+
 // configureRoutes configures the routes for the Server service.
 // Configuring of routes includes setting up Auth if it is enabled.
 func (s *Server) configureRoutes() {
