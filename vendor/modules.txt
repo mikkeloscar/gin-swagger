@@ -1,0 +1,136 @@
+# github.com/PuerkitoBio/purell v1.1.0
+github.com/PuerkitoBio/purell
+# github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578
+github.com/PuerkitoBio/urlesc
+# github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc
+github.com/alecthomas/template
+github.com/alecthomas/template/parse
+# github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf
+github.com/alecthomas/units
+# github.com/asaskevich/govalidator v0.0.0-20180720115003-f9ffefc3facf
+github.com/asaskevich/govalidator
+# github.com/fsnotify/fsnotify v1.4.7
+github.com/fsnotify/fsnotify
+# github.com/gin-contrib/pprof v0.0.0-20170318162705-cea200e02ddddca4b843d75d32aa13c413549de9
+github.com/gin-contrib/pprof
+# github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7
+github.com/gin-contrib/sse
+# github.com/gin-gonic/gin v0.0.0-20170702092826-d459835d2b077e44f7c9b453505ee29881d5d12d
+github.com/gin-gonic/gin
+github.com/gin-gonic/gin/binding
+github.com/gin-gonic/gin/render
+# github.com/go-openapi/analysis v0.0.0-20180825180245-b006789cd277
+github.com/go-openapi/analysis
+github.com/go-openapi/analysis/internal
+# github.com/go-openapi/errors v0.0.0-20180827163446-87bb65328877
+github.com/go-openapi/errors
+# github.com/go-openapi/inflect v0.0.0-20130829110746-b1f6470ffb9c
+github.com/go-openapi/inflect
+# github.com/go-openapi/jsonpointer v0.0.0-20180825180259-52eb3d4b47c6
+github.com/go-openapi/jsonpointer
+# github.com/go-openapi/jsonreference v0.0.0-20180825180305-1c6a3fa339f2
+github.com/go-openapi/jsonreference
+# github.com/go-openapi/loads v0.0.0-20180825180312-fd899182a268
+github.com/go-openapi/loads
+# github.com/go-openapi/runtime v0.0.0-20180825180317-95364c1e5610
+github.com/go-openapi/runtime
+# github.com/go-openapi/spec v0.0.0-20180825180323-f1468acb3b29
+github.com/go-openapi/spec
+# github.com/go-openapi/strfmt v0.0.0-20180825180330-6292e8b5de3b
+github.com/go-openapi/strfmt
+# github.com/go-openapi/swag v0.0.0-20180825180336-0dc164b7900e
+github.com/go-openapi/swag
+# github.com/go-openapi/validate v0.0.0-20180825180342-e0648ff40507
+github.com/go-openapi/validate
+# github.com/go-swagger/go-swagger v0.0.0-20180507164814-58db231575b5190593c74b0cc917d2b3192ff6cf
+github.com/go-swagger/go-swagger/generator
+# github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+github.com/golang/glog
+# github.com/golang/protobuf v1.2.0
+github.com/golang/protobuf/proto
+# github.com/hashicorp/hcl v1.0.0
+github.com/hashicorp/hcl
+github.com/hashicorp/hcl/hcl/printer
+github.com/hashicorp/hcl/hcl/ast
+github.com/hashicorp/hcl/hcl/parser
+github.com/hashicorp/hcl/hcl/token
+github.com/hashicorp/hcl/json/parser
+github.com/hashicorp/hcl/hcl/scanner
+github.com/hashicorp/hcl/hcl/strconv
+github.com/hashicorp/hcl/json/scanner
+github.com/hashicorp/hcl/json/token
+# github.com/kr/pretty v0.1.0
+github.com/kr/pretty
+# github.com/kr/text v0.1.0
+github.com/kr/text
+# github.com/magiconair/properties v1.8.0
+github.com/magiconair/properties
+# github.com/mailru/easyjson v0.0.0-20180823135443-60711f1a8329
+github.com/mailru/easyjson/jlexer
+github.com/mailru/easyjson/jwriter
+github.com/mailru/easyjson/buffer
+# github.com/mattn/go-isatty v0.0.4
+github.com/mattn/go-isatty
+# github.com/mitchellh/mapstructure v1.0.0
+github.com/mitchellh/mapstructure
+# github.com/opentracing/opentracing-go v1.0.2
+github.com/opentracing/opentracing-go
+github.com/opentracing/opentracing-go/log
+# github.com/pelletier/go-toml v1.2.0
+github.com/pelletier/go-toml
+# github.com/sirupsen/logrus v1.0.5
+github.com/sirupsen/logrus
+# github.com/spf13/afero v1.1.1
+github.com/spf13/afero
+github.com/spf13/afero/mem
+# github.com/spf13/cast v1.2.0
+github.com/spf13/cast
+# github.com/spf13/jwalterweatherman v0.0.0-20180814060501-14d3d4c51834
+github.com/spf13/jwalterweatherman
+# github.com/spf13/pflag v1.0.2
+github.com/spf13/pflag
+# github.com/spf13/viper v1.1.0
+github.com/spf13/viper
+# github.com/ugorji/go/codec v0.0.0-20180831062425-e253f1f20942
+github.com/ugorji/go/codec
+# github.com/zalando/gin-oauth2 v1.5.0
+github.com/zalando/gin-oauth2
+# golang.org/x/crypto v0.0.0-20180830192347-182538f80094
+golang.org/x/crypto/ssh/terminal
+# golang.org/x/net v0.0.0-20180826012351-8a410e7b638d
+golang.org/x/net/context
+golang.org/x/net/context/ctxhttp
+golang.org/x/net/idna
+# golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
+golang.org/x/oauth2
+golang.org/x/oauth2/internal
+# golang.org/x/sys v0.0.0-20180831094639-fa5fdf94c789
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# golang.org/x/text v0.3.0
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
+golang.org/x/text/width
+golang.org/x/text/secure/bidirule
+golang.org/x/text/unicode/bidi
+# golang.org/x/tools v0.0.0-20180831211245-7ca132754999
+golang.org/x/tools/imports
+golang.org/x/tools/go/ast/astutil
+golang.org/x/tools/internal/fastwalk
+# google.golang.org/appengine v1.1.0
+google.golang.org/appengine/urlfetch
+google.golang.org/appengine/internal
+google.golang.org/appengine/internal/urlfetch
+google.golang.org/appengine/internal/base
+google.golang.org/appengine/internal/datastore
+google.golang.org/appengine/internal/log
+google.golang.org/appengine/internal/remote_api
+# gopkg.in/alecthomas/kingpin.v2 v2.2.6
+gopkg.in/alecthomas/kingpin.v2
+# gopkg.in/go-playground/validator.v8 v8.18.2
+gopkg.in/go-playground/validator.v8
+# gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
+gopkg.in/mgo.v2/bson
+gopkg.in/mgo.v2/internal/json
+# gopkg.in/yaml.v2 v2.2.1
+gopkg.in/yaml.v2
