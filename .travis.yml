@@ -4,15 +4,12 @@ go:
 - "1.11"
 - tip
 
+env:
+- GO111MODULE=on
+
 matrix:
   allow_failures:
   - go: tip
-
-before_install:
-- go get github.com/alecthomas/gometalinter
-
-install:
-- gometalinter --install
 
 script:
 - make test
