@@ -41,19 +41,20 @@ func InitSpan(tracer opentracing.Tracer, operationName string, opts ...opentraci
 	}
 }
 
-// Context returns the current tracing context for the request.
-func Context(ctx *gin.Context) (context.Context, bool) {
+// Context returns the current tracing context for the request. If no span is
+// set on the gin.Context it will return a context.Background().
+func Context(ctx *gin.Context) context.Context {
 	span, ok := ctx.Get(spanContextKey)
 	if !ok {
-		return nil, false
+		return context.Background()
 	}
 
 	parentSpan, ok := span.(opentracing.Span)
 	if !ok {
-		return nil, false
+		return context.Background()
 	}
 
-	return opentracing.ContextWithSpan(context.Background(), parentSpan), true
+	return opentracing.ContextWithSpan(context.Background(), parentSpan)
 }
 
 // StartSpanFromContextWithTracer starts and returns a Span with

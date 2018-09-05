@@ -9,14 +9,30 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-openapi/errors"
 	"github.com/mikkeloscar/gin-swagger/api"
+	"github.com/mikkeloscar/gin-swagger/tracing"
+	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 )
 
 // ListInfrastructureAccountsEndpoint executes the core logic of the related
 // route endpoint.
 func ListInfrastructureAccountsEndpoint(handler func(ctx *gin.Context) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		span := opentracing.SpanFromContext(tracing.Context(ctx))
+
+		// attach tags to opentracing span
+		if span != nil {
+			ext.HTTPMethod.Set(span, ctx.Request.Method)
+			ext.HTTPUrl.Set(span, ctx.Request.URL.String())
+		}
 
 		resp := handler(ctx)
+
+		// attach tags to opentracing span
+		if span != nil {
+			ext.HTTPStatusCode.Set(span, uint16(resp.Code))
+		}
+
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
