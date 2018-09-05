@@ -11,6 +11,9 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/mikkeloscar/gin-swagger/api"
+	"github.com/mikkeloscar/gin-swagger/tracing"
+	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 
 	strfmt "github.com/go-openapi/strfmt"
 
@@ -21,6 +24,14 @@ import (
 // route endpoint.
 func CreateClusterEndpoint(handler func(ctx *gin.Context, params *CreateClusterParams) *api.Response) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		span := opentracing.SpanFromContext(tracing.Context(ctx))
+
+		// attach tags to opentracing span
+		if span != nil {
+			ext.HTTPMethod.Set(span, ctx.Request.Method)
+			ext.HTTPUrl.Set(span, ctx.Request.URL.String())
+		}
+
 		// generate params from request
 		params := NewCreateClusterParams()
 		err := params.readRequest(ctx)
@@ -31,12 +42,24 @@ func CreateClusterEndpoint(handler func(ctx *gin.Context, params *CreateClusterP
 				Status: int(errObj.Code()),
 				Detail: errObj.Error(),
 			}
+
+			// attach tags to opentracing span
+			if span != nil {
+				ext.HTTPStatusCode.Set(span, uint16(problem.Status))
+			}
+
 			ctx.Writer.Header().Set("Content-Type", "application/problem+json")
 			ctx.JSON(problem.Status, problem)
 			return
 		}
 
 		resp := handler(ctx, params)
+
+		// attach tags to opentracing span
+		if span != nil {
+			ext.HTTPStatusCode.Set(span, uint16(resp.Code))
+		}
+
 		switch resp.Code {
 		case http.StatusNoContent:
 			ctx.AbortWithStatus(resp.Code)
