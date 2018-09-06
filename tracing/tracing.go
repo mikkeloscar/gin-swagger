@@ -11,17 +11,6 @@ const (
 	spanContextKey = "opentracing_span"
 )
 
-// ContextTracer is a wrapper around an opentracing.Tracer adding a convenience
-// method for starting spans from a context.
-type ContextTracer struct {
-	opentracing.Tracer
-}
-
-// StartSpanFromContext starts a new span from the given context.
-func (c *ContextTracer) StartSpanFromContext(ctx context.Context, operationName string, opts ...opentracing.StartSpanOption) (opentracing.Span, context.Context) {
-	return StartSpanFromContextWithTracer(ctx, c.Tracer, operationName, opts...)
-}
-
 // InitSpan initializes a new span. It tries to extract parent span from the
 // HTTP headers of the request and will be initialized as a child span if it
 // succeeds. Otherwise it will start a new span which is not a child.
