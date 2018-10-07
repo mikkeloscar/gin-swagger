@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/go-openapi/loads"
@@ -51,6 +50,7 @@ const (
 	xNullable    = "x-nullable" // turns the schema into a pointer
 	xOmitEmpty   = "x-omitempty"
 	xSchemes     = "x-schemes" // additional schemes supported for operations (server generation)
+	xOrder       = "x-order"   // sort order for properties (or any schema)
 )
 
 // swaggerTypeMapping contains a mapping from go type to swagger type or format
@@ -66,26 +66,27 @@ func init() {
 func simpleResolvedType(tn, fmt string, items *spec.Items) (result resolvedType) {
 	result.SwaggerType = tn
 	result.SwaggerFormat = fmt
-	//_, result.IsPrimitive = primitives[tn]
 
 	if tn == file {
 		// special case of swagger type "file", rendered as io.ReadCloser interface
 		result.IsPrimitive = true
-		result.GoType = typeMapping[binary]
+		result.GoType = formatMapping[str][binary]
 		result.IsStream = true
 		return
 	}
 
 	if fmt != "" {
 		fmtn := strings.Replace(fmt, "-", "", -1)
-		if tpe, ok := typeMapping[fmtn]; ok {
-			result.GoType = tpe
-			result.IsPrimitive = true
-			_, result.IsCustomFormatter = customFormatters[tpe]
-			// special case of swagger format "binary", rendered as io.ReadCloser interface
-			// TODO(fredbi): should set IsCustomFormatter=false when binary
-			result.IsStream = fmt == binary
-			return
+		if fmm, ok := formatMapping[tn]; ok {
+			if tpe, ok := fmm[fmtn]; ok {
+				result.GoType = tpe
+				result.IsPrimitive = true
+				_, result.IsCustomFormatter = customFormatters[tpe]
+				// special case of swagger format "binary", rendered as io.ReadCloser interface
+				// TODO(fredbi): should set IsCustomFormatter=false when binary
+				result.IsStream = fmt == binary
+				return
+			}
 		}
 	}
 
@@ -120,19 +121,12 @@ func typeForHeader(header spec.Header) resolvedType {
 
 func newTypeResolver(pkg string, doc *loads.Document) *typeResolver {
 	resolver := typeResolver{ModelsPackage: pkg, Doc: doc}
-	resolver.KnownDefs = make(map[string]struct{}, 64)
+	resolver.KnownDefs = make(map[string]struct{}, len(doc.Spec().Definitions))
 	for k, sch := range doc.Spec().Definitions {
 		tpe, _, _ := knownDefGoType(k, sch, nil)
 		resolver.KnownDefs[tpe] = struct{}{}
 	}
 	return &resolver
-}
-
-func debugLog(format string, args ...interface{}) {
-	if Debug {
-		_, file, pos, _ := runtime.Caller(2)
-		log.Printf("%s:%d: "+format, append([]interface{}{filepath.Base(file), pos}, args...)...)
-	}
 }
 
 // knownDefGoType returns go type, package and package alias for definition
@@ -176,15 +170,31 @@ type typeResolver struct {
 	ModelsPackage string
 	ModelName     string
 	KnownDefs     map[string]struct{}
+	// unexported fields
+	keepDefinitionsPkg string
+	knownDefsKept      map[string]struct{}
 }
 
+// NewWithModelName clones a type resolver and specifies a new model name
 func (t *typeResolver) NewWithModelName(name string) *typeResolver {
-	return &typeResolver{
-		Doc:           t.Doc,
-		ModelsPackage: t.ModelsPackage,
-		ModelName:     name,
-		KnownDefs:     t.KnownDefs,
+	tt := newTypeResolver(t.ModelsPackage, t.Doc)
+	tt.ModelName = name
+
+	// propagates kept definitions
+	tt.keepDefinitionsPkg = t.keepDefinitionsPkg
+	tt.knownDefsKept = t.knownDefsKept
+	return tt
+}
+
+// withKeepDefinitionsPackage instructs the type resolver to keep previously resolved package name for
+// definitions known at the moment it is first called.
+func (t *typeResolver) withKeepDefinitionsPackage(definitionsPackage string) *typeResolver {
+	t.keepDefinitionsPkg = definitionsPackage
+	t.knownDefsKept = make(map[string]struct{}, len(t.KnownDefs))
+	for k := range t.KnownDefs {
+		t.knownDefsKept[k] = struct{}{}
 	}
+	return t
 }
 
 // IsNullable hints the generator as to render the type with a pointer or not.
@@ -202,19 +212,14 @@ func (t *typeResolver) IsNullable(schema *spec.Schema) bool {
 
 func (t *typeResolver) resolveSchemaRef(schema *spec.Schema, isRequired bool) (returns bool, result resolvedType, err error) {
 	if schema.Ref.String() != "" {
-		if Debug {
-			_, file, pos, _ := runtime.Caller(1)
-			log.Printf("%s:%d: resolving ref (anon: %t, req: %t) %s\n", filepath.Base(file), pos, false, isRequired, schema.Ref.String())
-		}
+		debugLog("resolving ref (anon: %t, req: %t) %s", false, isRequired, schema.Ref.String())
 		returns = true
 		var ref *spec.Schema
 		var er error
 
 		ref, er = spec.ResolveRef(t.Doc.Spec(), &schema.Ref)
 		if er != nil {
-			if Debug {
-				log.Printf("error resolving ref %s: %v", schema.Ref.String(), er)
-			}
+			debugLog("error resolving ref %s: %v", schema.Ref.String(), er)
 			err = er
 			return
 		}
@@ -227,9 +232,7 @@ func (t *typeResolver) resolveSchemaRef(schema *spec.Schema, isRequired bool) (r
 
 		tn := filepath.Base(schema.Ref.GetURL().Fragment)
 		tpe, pkg, alias := knownDefGoType(tn, *ref, t.goTypeName)
-		if Debug {
-			log.Printf("type name %s, package %s, alias %s", tpe, pkg, alias)
-		}
+		debugLog("type name %s, package %s, alias %s", tpe, pkg, alias)
 		if tpe != "" {
 			result.GoType = tpe
 			result.Pkg = pkg
@@ -256,37 +259,43 @@ func (t *typeResolver) inferAliasing(result *resolvedType, schema *spec.Schema, 
 func (t *typeResolver) resolveFormat(schema *spec.Schema, isAnonymous bool, isRequired bool) (returns bool, result resolvedType, err error) {
 
 	if schema.Format != "" {
-		if Debug {
-			_, file, pos, _ := runtime.Caller(1)
-			log.Printf("%s:%d: resolving format (anon: %t, req: %t)\n", filepath.Base(file), pos, isAnonymous, isRequired) //, bbb)
+		// defaults to string
+		result.SwaggerType = str
+		if len(schema.Type) > 0 {
+			result.SwaggerType = schema.Type[0]
 		}
-		schFmt := strings.Replace(schema.Format, "-", "", -1)
-		if tpe, ok := typeMapping[schFmt]; ok {
-			returns = true
-			result.SwaggerType = str
-			if len(schema.Type) > 0 {
-				result.SwaggerType = schema.Type[0]
-			}
-			result.SwaggerFormat = schema.Format
-			result.GoType = tpe
-			t.inferAliasing(&result, schema, isAnonymous, isRequired)
-			// special case of swagger format "binary", rendered as io.ReadCloser interface and is therefore not a primitive type
-			// TODO: should set IsCustomFormatter=false in this case.
-			result.IsPrimitive = schFmt != binary
-			result.IsStream = schFmt == binary
-			_, result.IsCustomFormatter = customFormatters[tpe]
-			// propagate extensions in resolvedType
-			result.Extensions = schema.Extensions
 
-			switch result.SwaggerType {
-			case str:
-				result.IsNullable = nullableStrfmt(schema, isRequired)
-			case number, integer:
-				result.IsNullable = nullableNumber(schema, isRequired)
-			default:
-				result.IsNullable = t.IsNullable(schema)
+		debugLog("resolving format (anon: %t, req: %t)", isAnonymous, isRequired)
+		schFmt := strings.Replace(schema.Format, "-", "", -1)
+		if fmm, ok := formatMapping[result.SwaggerType]; ok {
+			if tpe, ok := fmm[schFmt]; ok {
+				returns = true
+				result.GoType = tpe
+				_, result.IsCustomFormatter = customFormatters[tpe]
 			}
-			return
+		}
+		if tpe, ok := typeMapping[schFmt]; !returns && ok {
+			returns = true
+			result.GoType = tpe
+			_, result.IsCustomFormatter = customFormatters[tpe]
+		}
+
+		result.SwaggerFormat = schema.Format
+		t.inferAliasing(&result, schema, isAnonymous, isRequired)
+		// special case of swagger format "binary", rendered as io.ReadCloser interface and is therefore not a primitive type
+		// TODO: should set IsCustomFormatter=false in this case.
+		result.IsPrimitive = schFmt != binary
+		result.IsStream = schFmt == binary
+		// propagate extensions in resolvedType
+		result.Extensions = schema.Extensions
+
+		switch result.SwaggerType {
+		case str:
+			result.IsNullable = nullableStrfmt(schema, isRequired)
+		case number, integer:
+			result.IsNullable = nullableNumber(schema, isRequired)
+		default:
+			result.IsNullable = t.IsNullable(schema)
 		}
 	}
 	return
@@ -320,20 +329,19 @@ func (t *typeResolver) firstType(schema *spec.Schema) string {
 	}
 	if len(schema.Type) > 1 {
 		// JSON-Schema multiple types, e.g. {"type": [ "object", "array" ]} are not supported.
+		// TODO: should keep the first _supported_ type, e.g. skip null
 		log.Printf("warning: JSON-Schema type definition as array with several types is not supported in %#v. Taking the first type: %s", schema.Type, schema.Type[0])
 	}
 	return schema.Type[0]
 }
 
 func (t *typeResolver) resolveArray(schema *spec.Schema, isAnonymous, isRequired bool) (result resolvedType, err error) {
-	if Debug {
-		_, file, pos, _ := runtime.Caller(1)
-		log.Printf("%s:%d: resolving array (anon: %t, req: %t)\n", filepath.Base(file), pos, isAnonymous, isRequired) //, bbb)
-	}
+	debugLog("resolving array (anon: %t, req: %t)", isAnonymous, isRequired)
 
 	result.IsArray = true
 	result.IsNullable = false
 	result.IsEmptyOmitted = t.IsEmptyOmitted(schema)
+
 	if schema.AdditionalItems != nil {
 		result.HasAdditionalItems = (schema.AdditionalItems.Allows || schema.AdditionalItems.Schema != nil)
 	}
@@ -362,6 +370,8 @@ func (t *typeResolver) resolveArray(schema *spec.Schema, isAnonymous, isRequired
 		err = er
 		return
 	}
+	// override the general nullability rule from ResolveSchema():
+	// only complex items are nullable (when not discriminated, not forced by x-nullable)
 	rt.IsNullable = t.IsNullable(schema.Items.Schema) && !rt.HasDiscriminator
 	result.GoType = "[]" + rt.GoType
 	if rt.IsNullable && !strings.HasPrefix(rt.GoType, "*") {
@@ -378,6 +388,16 @@ func (t *typeResolver) resolveArray(schema *spec.Schema, isAnonymous, isRequired
 }
 
 func (t *typeResolver) goTypeName(nm string) string {
+	if len(t.knownDefsKept) > 0 {
+		// if a definitions package has been defined, already resolved definitions are
+		// always resolved against their original package (e.g. "models"), and not the
+		// current package.
+		// This allows complex anonymous extra schemas to reuse known definitions generated in another package.
+		if _, ok := t.knownDefsKept[nm]; ok {
+			return strings.Join([]string{t.keepDefinitionsPkg, swag.ToGoName(nm)}, ".")
+		}
+	}
+
 	if t.ModelsPackage == "" {
 		return swag.ToGoName(nm)
 	}
@@ -388,10 +408,7 @@ func (t *typeResolver) goTypeName(nm string) string {
 }
 
 func (t *typeResolver) resolveObject(schema *spec.Schema, isAnonymous bool) (result resolvedType, err error) {
-	if Debug {
-		_, file, pos, _ := runtime.Caller(1)
-		log.Printf("%s:%d: resolving object %s (anon: %t, req: %t)\n", filepath.Base(file), pos, t.ModelName, isAnonymous, false) //, bbb)
-	}
+	debugLog("resolving object %s (anon: %t, req: %t)", t.ModelName, isAnonymous, false)
 
 	result.IsAnonymous = isAnonymous
 
@@ -439,25 +456,27 @@ func (t *typeResolver) resolveObject(schema *spec.Schema, isAnonymous bool) (res
 
 		result.SwaggerType = object
 
+		// only complex map elements are nullable (when not forced by x-nullable)
+		// TODO: figure out if required to check when not discriminated like arrays?
 		et.IsNullable = t.isNullable(schema.AdditionalProperties.Schema)
 		if et.IsNullable {
 			result.GoType = "map[string]*" + et.GoType
 		} else {
 			result.GoType = "map[string]" + et.GoType
-
 		}
 
 		// Resolving nullability conflicts for:
 		// - map[][]...[]{items}
 		// - map[]{aliased type}
 		//
-		// when IsMap is true.
+		// when IsMap is true and the type is a distinct definition,
+		// aliased type or anonymous construct generated independently.
 		//
-		// IsMapNullOverride is to be handled by generator for special cases
+		// IsMapNullOverride is to be handled by the generator for special cases
 		// where the map element is considered non nullable and the element itself is.
 		//
-		// This allows to appreciate nullability according to the context.
-		needsOverride := result.IsMap && (et.IsArray || (sch.Ref.String() != "" || et.IsAliased || et.IsAnonymous)) //*&& !et.IsPrimitive*/
+		// This allows to appreciate nullability according to the context
+		needsOverride := result.IsMap && (et.IsArray || (sch.Ref.String() != "" || et.IsAliased || et.IsAnonymous))
 
 		if needsOverride {
 			var er error
@@ -491,7 +510,7 @@ func (t *typeResolver) resolveObject(schema *spec.Schema, isAnonymous bool) (res
 		return
 	}
 
-	// an object without property is rendered as interface{}
+	// an object without property and without AdditionalProperties schema is rendered as interface{}
 	result.GoType = iface
 	result.IsMap = true
 	result.SwaggerType = object
@@ -500,6 +519,12 @@ func (t *typeResolver) resolveObject(schema *spec.Schema, isAnonymous bool) (res
 	return
 }
 
+// nullableBool makes a boolean a pointer when we want to distinguish the zero value from no value set.
+// This is the case when:
+// - a x-nullable extension says so in the spec
+// - it is **not** a read-only property
+// - it is a required property
+// - it has a default value
 func nullableBool(schema *spec.Schema, isRequired bool) bool {
 	if nullable := nullableExtension(schema.Extensions); nullable != nil {
 		return *nullable
@@ -510,6 +535,14 @@ func nullableBool(schema *spec.Schema, isRequired bool) bool {
 	return required || optional
 }
 
+// nullableNumber makes a number a pointer when we want to distinguish the zero value from no value set.
+// This is the case when:
+// - a x-nullable extension says so in the spec
+// - it is **not** a read-only property
+// - it is a required property
+// - boundaries defines the zero value as a valid value:
+//   - there is a non-exclusive boundary set at the zero value of the type
+//   - the [min,max] range crosses the zero value of the type
 func nullableNumber(schema *spec.Schema, isRequired bool) bool {
 	if nullable := nullableExtension(schema.Extensions); nullable != nil {
 		return *nullable
@@ -527,6 +560,13 @@ func nullableNumber(schema *spec.Schema, isRequired bool) bool {
 	return nullable
 }
 
+// nullableString makes a string nullable when we want to distinguish the zero value from no value set.
+// This is the case when:
+// - a x-nullable extension says so in the spec
+// - it is **not** a read-only property
+// - it is a required property
+// - it has a MinLength property set to 0
+// - it has a default other than "" (the zero for strings) and no MinLength or zero MinLength
 func nullableString(schema *spec.Schema, isRequired bool) bool {
 	if nullable := nullableExtension(schema.Extensions); nullable != nil {
 		return *nullable
@@ -573,7 +613,7 @@ func boolExtension(ext spec.Extensions, key string) *bool {
 }
 
 func (t *typeResolver) ResolveSchema(schema *spec.Schema, isAnonymous, isRequired bool) (result resolvedType, err error) {
-	logDebug("resolving schema (anon: %t, req: %t) %s\n", isAnonymous, isRequired, t.ModelName)
+	debugLog("resolving schema (anon: %t, req: %t) %s", isAnonymous, isRequired, t.ModelName)
 	if schema == nil {
 		result.IsInterface = true
 		result.GoType = iface
@@ -586,9 +626,9 @@ func (t *typeResolver) ResolveSchema(schema *spec.Schema, isAnonymous, isRequire
 		if !isAnonymous {
 			result.IsMap = false
 			result.IsComplexObject = true
-			logDebug("not anonymous ref")
+			debugLog("not anonymous ref")
 		}
-		logDebug("returning after ref")
+		debugLog("returning after ref")
 		return
 	}
 
@@ -597,14 +637,14 @@ func (t *typeResolver) ResolveSchema(schema *spec.Schema, isAnonymous, isRequire
 		result.SwaggerType = file
 		result.IsPrimitive = true
 		result.IsNullable = false
-		result.GoType = typeMapping[binary]
+		result.GoType = formatMapping[str][binary]
 		result.IsStream = true
 		return
 	}
 
 	returns, result, err = t.resolveFormat(schema, isAnonymous, isRequired)
 	if returns {
-		logDebug("returning after resolve format: %s", pretty.Sprint(result))
+		debugLog("returning after resolve format: %s", pretty.Sprint(result))
 		return
 	}
 

@@ -5,8 +5,9 @@ import (
 	"os"
 	"path"
 
+	"github.com/alecthomas/kingpin"
+	"github.com/go-openapi/analysis"
 	"github.com/go-swagger/go-swagger/generator"
-	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 //go:generate go-bindata -pkg main -o bindata.go templates
@@ -67,7 +68,12 @@ func run(application, specPath string) error {
 		IncludeMain:       true,
 		IncludeSupport:    true,
 		ValidateSpec:      true,
-		FlattenSpec:       true,
+		FlattenOpts: &analysis.FlattenOpts{
+			Minimal:      true,
+			Verbose:      true,
+			RemoveUnused: false,
+			Expand:       false,
+		},
 		ExcludeSpec:       false,
 		TemplateDir:       "",
 		WithContext:       false,

@@ -127,9 +127,7 @@ func (m *definitionGenerator) Generate() error {
 }
 
 func (m *definitionGenerator) generateModel(g *GenDefinition) error {
-	if Debug {
-		log.Printf("rendering definitions for %+v", *g)
-	}
+	debugLog("rendering definitions for %+v", *g)
 	return m.opts.renderDefinition(g)
 }
 
@@ -205,12 +203,11 @@ func shallowValidationLookup(sch GenSchema) bool {
 }
 
 func makeGenDefinitionHierarchy(name, pkg, container string, schema spec.Schema, specDoc *loads.Document, opts *GenOpts) (*GenDefinition, error) {
-	_, ok := schema.Extensions[xGoType]
-	if ok {
-		return nil, nil
-	}
+	// Check if model is imported from external package using x-go-type
+	_, external := schema.Extensions[xGoType]
 
 	receiver := "m"
+	// models are resolved in the current package
 	resolver := newTypeResolver("", specDoc)
 	resolver.ModelName = name
 	analyzed := analysis.New(specDoc.Spec())
@@ -332,20 +329,6 @@ func makeGenDefinitionHierarchy(name, pkg, container string, schema spec.Schema,
 		"github.com/go-openapi/validate",
 	}
 
-	// ExtraSchemas are inlined types rendered in the same model file
-	var extras []GenSchema
-	var extraKeys []string
-	for k := range pg.ExtraSchemas {
-		extraKeys = append(extraKeys, k)
-	}
-	sort.Strings(extraKeys)
-	for _, k := range extraKeys {
-		// figure out if top level validations are needed
-		p := pg.ExtraSchemas[k]
-		p.HasValidations = shallowValidationLookup(p)
-		extras = append(extras, p)
-	}
-
 	return &GenDefinition{
 		GenCommon: GenCommon{
 			Copyright:        opts.Copyright,
@@ -355,8 +338,9 @@ func makeGenDefinitionHierarchy(name, pkg, container string, schema spec.Schema,
 		GenSchema:      pg.GenSchema,
 		DependsOn:      pg.Dependencies,
 		DefaultImports: defaultImports,
-		ExtraSchemas:   extras,
+		ExtraSchemas:   gatherExtraSchemas(pg.ExtraSchemas),
 		Imports:        findImports(&pg.GenSchema),
+		External:       external,
 	}, nil
 }
 
@@ -442,9 +426,7 @@ type schemaGenContext struct {
 }
 
 func (sg *schemaGenContext) NewSliceBranch(schema *spec.Schema) *schemaGenContext {
-	if Debug {
-		log.Printf("new slice branch %s (model: %s)", sg.Name, sg.TypeResolver.ModelName)
-	}
+	debugLog("new slice branch %s (model: %s)", sg.Name, sg.TypeResolver.ModelName)
 	pg := sg.shallowClone()
 	indexVar := pg.IndexVar
 	if pg.Path == "" {
@@ -469,9 +451,7 @@ func (sg *schemaGenContext) NewSliceBranch(schema *spec.Schema) *schemaGenContex
 	pg.Schema = *schema
 	pg.Required = false
 	if sg.IsVirtual {
-		resolver := newTypeResolver(sg.TypeResolver.ModelsPackage, sg.TypeResolver.Doc)
-		resolver.ModelName = sg.TypeResolver.ModelName
-		pg.TypeResolver = resolver
+		pg.TypeResolver = sg.TypeResolver.NewWithModelName(sg.TypeResolver.ModelName)
 	}
 
 	// when this is an anonymous complex object, this needs to become a ref
@@ -479,9 +459,7 @@ func (sg *schemaGenContext) NewSliceBranch(schema *spec.Schema) *schemaGenContex
 }
 
 func (sg *schemaGenContext) NewAdditionalItems(schema *spec.Schema) *schemaGenContext {
-	if Debug {
-		log.Printf("new additional items\n")
-	}
+	debugLog("new additional items\n")
 
 	pg := sg.shallowClone()
 	indexVar := pg.IndexVar
@@ -510,9 +488,7 @@ func (sg *schemaGenContext) NewAdditionalItems(schema *spec.Schema) *schemaGenCo
 }
 
 func (sg *schemaGenContext) NewTupleElement(schema *spec.Schema, index int) *schemaGenContext {
-	if Debug {
-		log.Printf("New tuple element\n")
-	}
+	debugLog("New tuple element\n")
 
 	pg := sg.shallowClone()
 	if pg.Path == "" {
@@ -530,9 +506,7 @@ func (sg *schemaGenContext) NewTupleElement(schema *spec.Schema, index int) *sch
 }
 
 func (sg *schemaGenContext) NewStructBranch(name string, schema spec.Schema) *schemaGenContext {
-	if Debug {
-		log.Printf("new struct branch %s (parent %s)", sg.Name, sg.Container)
-	}
+	debugLog("new struct branch %s (parent %s)", sg.Name, sg.Container)
 	pg := sg.shallowClone()
 	if sg.Path == "" {
 		pg.Path = fmt.Sprintf("%q", name)
@@ -548,16 +522,12 @@ func (sg *schemaGenContext) NewStructBranch(name string, schema spec.Schema) *sc
 			break
 		}
 	}
-	if Debug {
-		log.Printf("made new struct branch %s (parent %s)", pg.Name, pg.Container)
-	}
+	debugLog("made new struct branch %s (parent %s)", pg.Name, pg.Container)
 	return pg
 }
 
 func (sg *schemaGenContext) shallowClone() *schemaGenContext {
-	if Debug {
-		log.Printf("cloning context %s\n", sg.Name)
-	}
+	debugLog("cloning context %s\n", sg.Name)
 	pg := new(schemaGenContext)
 	*pg = *sg
 	if pg.Container == "" {
@@ -574,9 +544,7 @@ func (sg *schemaGenContext) shallowClone() *schemaGenContext {
 }
 
 func (sg *schemaGenContext) NewCompositionBranch(schema spec.Schema, index int) *schemaGenContext {
-	if Debug {
-		log.Printf("new composition branch %s (parent: %s, index: %d)", sg.Name, sg.Container, index)
-	}
+	debugLog("new composition branch %s (parent: %s, index: %d)", sg.Name, sg.Container, index)
 	pg := sg.shallowClone()
 	pg.Schema = schema
 	pg.Name = "AO" + strconv.Itoa(index)
@@ -584,16 +552,12 @@ func (sg *schemaGenContext) NewCompositionBranch(schema spec.Schema, index int) 
 		pg.Name = sg.Name + pg.Name
 	}
 	pg.Index = index
-	if Debug {
-		log.Printf("made new composition branch %s (parent: %s)", pg.Name, pg.Container)
-	}
+	debugLog("made new composition branch %s (parent: %s)", pg.Name, pg.Container)
 	return pg
 }
 
 func (sg *schemaGenContext) NewAdditionalProperty(schema spec.Schema) *schemaGenContext {
-	if Debug {
-		log.Printf("new additional property %s (expr: %s)", sg.Name, sg.ValueExpr)
-	}
+	debugLog("new additional property %s (expr: %s)", sg.Name, sg.ValueExpr)
 	pg := sg.shallowClone()
 	pg.Schema = schema
 	if pg.KeyVar == "" {
@@ -612,11 +576,15 @@ func (sg *schemaGenContext) NewAdditionalProperty(schema spec.Schema) *schemaGen
 	return pg
 }
 
+func hasSliceValidations(model *spec.Schema) (hasSliceValidations bool) {
+	hasSliceValidations = model.MaxItems != nil || model.MinItems != nil || model.UniqueItems || len(model.Enum) > 0
+	return
+}
+
 func hasValidations(model *spec.Schema, isRequired bool) (hasValidation bool) {
 	// NOTE: needsValidation has gone deprecated and is replaced by top-level's shallowValidationLookup()
 	hasNumberValidation := model.Maximum != nil || model.Minimum != nil || model.MultipleOf != nil
 	hasStringValidation := model.MaxLength != nil || model.MinLength != nil || model.Pattern != ""
-	hasSliceValidations := model.MaxItems != nil || model.MinItems != nil || model.UniqueItems
 	hasEnum := len(model.Enum) > 0
 
 	// since this was added to deal with discriminator, we'll fix this when testing discriminated types
@@ -632,7 +600,7 @@ func hasValidations(model *spec.Schema, isRequired bool) (hasValidation bool) {
 		}
 	}
 
-	hasValidation = hasNumberValidation || hasStringValidation || hasSliceValidations || hasEnum || simpleObject || hasAllOfValidation || isRequired
+	hasValidation = hasNumberValidation || hasStringValidation || hasSliceValidations(model) || hasEnum || simpleObject || hasAllOfValidation || isRequired
 
 	return
 }
@@ -655,29 +623,16 @@ func (sg *schemaGenContext) schemaValidations() sharedValidations {
 
 	isRequired := sg.Required
 	if model.Default != nil || model.ReadOnly {
-		// when readOnly or default is specified, this disables Required (Swagger-specific)
+		// when readOnly or default is specified, this disables Required validation (Swagger-specific)
 		isRequired = false
 	}
-	hasSliceValidations := model.MaxItems != nil || model.MinItems != nil || model.UniqueItems
-	hasValidation := hasValidations(&model, isRequired)
+	hasSliceValidations := model.MaxItems != nil || model.MinItems != nil || model.UniqueItems || len(model.Enum) > 0
+	hasValidations := hasValidations(&model, isRequired)
 
-	return sharedValidations{
-		Required:            sg.Required,
-		Maximum:             model.Maximum,
-		ExclusiveMaximum:    model.ExclusiveMaximum,
-		Minimum:             model.Minimum,
-		ExclusiveMinimum:    model.ExclusiveMinimum,
-		MaxLength:           model.MaxLength,
-		MinLength:           model.MinLength,
-		Pattern:             model.Pattern,
-		MaxItems:            model.MaxItems,
-		MinItems:            model.MinItems,
-		UniqueItems:         model.UniqueItems,
-		MultipleOf:          model.MultipleOf,
-		Enum:                model.Enum,
-		HasValidations:      hasValidation,
-		HasSliceValidations: hasSliceValidations,
-	}
+	s := sharedValidationsFromSchema(model, sg.Required)
+	s.HasValidations = hasValidations
+	s.HasSliceValidations = hasSliceValidations
+	return s
 }
 
 func mergeValidation(other *schemaGenContext) bool {
@@ -693,10 +648,7 @@ func mergeValidation(other *schemaGenContext) bool {
 			return true
 		}
 	}
-	if other.GenSchema.HasValidations {
-		return true
-	}
-	return false
+	return other.GenSchema.HasValidations
 }
 
 func (sg *schemaGenContext) MergeResult(other *schemaGenContext, liftsRequired bool) {
@@ -725,17 +677,13 @@ func (sg *schemaGenContext) MergeResult(other *schemaGenContext, liftsRequired b
 }
 
 func (sg *schemaGenContext) buildProperties() error {
-
-	if Debug {
-		log.Printf("building properties %s (parent: %s)", sg.Name, sg.Container)
-	}
+	debugLog("building properties %s (parent: %s)", sg.Name, sg.Container)
 
 	for k, v := range sg.Schema.Properties {
-		if Debug {
-			bbb, _ := json.MarshalIndent(sg.Schema, "", "  ")
-			log.Printf("building property %s[%q] (tup: %t) (BaseType: %t) %s\n", sg.Name, k, sg.IsTuple, sg.GenSchema.IsBaseType, bbb)
-			log.Printf("property %s[%q] (tup: %t) HasValidations: %t)", sg.Name, k, sg.IsTuple, sg.GenSchema.HasValidations)
-		}
+		debugLogAsJSON("building property %s[%q] (tup: %t) (BaseType: %t) %s",
+			sg.Name, k, sg.IsTuple, sg.GenSchema.IsBaseType, sg.Schema)
+		debugLog("property %s[%q] (tup: %t) HasValidations: %t)",
+			sg.Name, k, sg.IsTuple, sg.GenSchema.HasValidations)
 
 		// check if this requires de-anonymizing, if so lift this as a new struct and extra schema
 		tpe, err := sg.TypeResolver.ResolveSchema(&v, true, sg.IsTuple || containsString(sg.Schema.Required, k))
@@ -784,7 +732,7 @@ func (sg *schemaGenContext) buildProperties() error {
 		// NOTE: this may be the case when the type is left empty and we get a Enum validation.
 		if emprop.GenSchema.IsInterface || emprop.GenSchema.IsStream {
 			emprop.GenSchema.HasValidations = false
-		} else if hasValidation || emprop.GenSchema.HasValidations || emprop.GenSchema.Required || len(emprop.GenSchema.AllOf) > 0 {
+		} else if hasValidation || emprop.GenSchema.HasValidations || emprop.GenSchema.Required || emprop.GenSchema.IsAliased || len(emprop.GenSchema.AllOf) > 0 {
 			emprop.GenSchema.HasValidations = true
 			sg.GenSchema.HasValidations = true
 		}
@@ -827,8 +775,7 @@ func (sg *schemaGenContext) buildProperties() error {
 			// set property name
 			var nm = filepath.Base(emprop.Schema.Ref.GetURL().Fragment)
 
-			tr := newTypeResolver(sg.TypeResolver.ModelsPackage, sg.TypeResolver.Doc)
-			tr.ModelName = goName(&emprop.Schema, swag.ToGoName(nm))
+			tr := sg.TypeResolver.NewWithModelName(goName(&emprop.Schema, swag.ToGoName(nm)))
 			ttpe, err := tr.ResolveSchema(sch, false, true)
 			if err != nil {
 				return err
@@ -889,6 +836,8 @@ func (sg *schemaGenContext) buildProperties() error {
 			emprop.GenSchema.ValueExpression += "()"
 		}
 
+		emprop.GenSchema.Extensions = emprop.Schema.Extensions
+
 		// set custom serializer tag
 		if customTag, found := emprop.Schema.Extensions[xGoCustomTag]; found {
 			emprop.GenSchema.CustomTag = customTag.(string)
@@ -911,15 +860,11 @@ func (sg *schemaGenContext) buildAllOf() error {
 	if sg.Container == "" {
 		sg.Container = sg.Name
 	}
-	if Debug {
-		log.Printf("building all of for %d entries", len(sg.Schema.AllOf))
-		b, _ := json.MarshalIndent(sg.Schema, "", "  ")
-		log.Println(string(b))
-	}
+	debugLogAsJSON("building all of for %d entries", len(sg.Schema.AllOf), sg.Schema)
 	for i, sch := range sg.Schema.AllOf {
-		tpe, err := sg.TypeResolver.ResolveSchema(&sch, sch.Ref.String() == "", false)
-		if err != nil {
-			return err
+		tpe, ert := sg.TypeResolver.ResolveSchema(&sch, sch.Ref.String() == "", false)
+		if ert != nil {
+			return ert
 		}
 
 		// check for multiple arrays in allOf branches.
@@ -931,19 +876,14 @@ func (sg *schemaGenContext) buildAllOf() error {
 		} else {
 			hasNonArray++
 		}
-		if Debug {
-			b, _ := json.MarshalIndent(sch, "", "  ")
-			log.Println("trying", string(b))
-		}
+		debugLogAsJSON("trying", sch)
 		if (tpe.IsAnonymous && len(sch.AllOf) > 0) || (sch.Ref.String() == "" && !tpe.IsComplexObject && (tpe.IsArray || tpe.IsInterface || tpe.IsPrimitive)) {
 			// cases where anonymous structures cause the creation of a new type:
 			// - nested allOf: this one is itself a AllOf: build a new type for it
 			// - anonymous simple types for edge cases: array, primitive, interface{}
 			// NOTE: when branches are aliased or anonymous, the nullable property in the branch type is lost.
 			name := swag.ToVarName(goName(&sch, sg.Name+"AllOf"+strconv.Itoa(i)))
-			if Debug {
-				log.Printf("building anonymous nested allOf in %s: %s", sg.Name, name)
-			}
+			debugLog("building anonymous nested allOf in %s: %s", sg.Name, name)
 			ng := sg.makeNewStruct(name, sch)
 			if err := ng.makeGenSchema(); err != nil {
 				return err
@@ -1103,9 +1043,15 @@ func (mt *mapStack) Build() error {
 		mt.Context.MergeResult(cp, false)
 		mt.Context.GenSchema.AdditionalProperties = &cp.GenSchema
 
-		if Debug {
-			log.Printf("early mapstack exit, nullable: %t for %s", cp.GenSchema.IsNullable, cp.GenSchema.Name)
+		// lift validations
+		if (csch.Ref.String() != "" || cp.GenSchema.IsAliased) && !(cp.GenSchema.IsInterface || cp.GenSchema.IsStream) {
+			// - we stopped on a ref, or anything else that require we call its Validate() method
+			// - if the alias / ref is on an interface (or stream) type: no validation
+			mt.Context.GenSchema.HasValidations = true
+			mt.Context.GenSchema.AdditionalProperties.HasValidations = true
 		}
+
+		debugLog("early mapstack exit, nullable: %t for %s", cp.GenSchema.IsNullable, cp.GenSchema.Name)
 		return nil
 	}
 	cur := mt
@@ -1170,7 +1116,7 @@ func (mt *mapStack) Build() error {
 		}
 
 		if cur.Context.GenSchema.AdditionalProperties != nil {
-			// propagate overrides up the resolved schemas, but leave any ExtraSchema untouched
+			// propagate overrides up the resolved schemas, but leaves any ExtraSchema untouched
 			cur.Context.GenSchema.AdditionalProperties.IsMapNullOverride = cur.Context.GenSchema.IsMapNullOverride
 		}
 		cur = cur.Previous
@@ -1183,6 +1129,7 @@ func (mt *mapStack) HasMore() bool {
 	return mt.Type.AdditionalProperties != nil && (mt.Type.AdditionalProperties.Schema != nil || mt.Type.AdditionalProperties.Allows)
 }
 
+/* currently unused:
 func (mt *mapStack) Dict() map[string]interface{} {
 	res := make(map[string]interface{})
 	res["context"] = mt.Context.Schema
@@ -1197,6 +1144,7 @@ func (mt *mapStack) Dict() map[string]interface{} {
 	}
 	return res
 }
+*/
 
 func (sg *schemaGenContext) buildAdditionalProperties() error {
 	if sg.Schema.AdditionalProperties == nil {
@@ -1237,14 +1185,50 @@ func (sg *schemaGenContext) buildAdditionalProperties() error {
 			}
 			sg.MergeResult(cp, false)
 			sg.GenSchema.AdditionalProperties = &cp.GenSchema
-			if Debug {
-				log.Println("added interface{} schema for additionalProperties[allows == true]", cp.GenSchema.IsInterface)
-			}
+			debugLog("added interface{} schema for additionalProperties[allows == true]", cp.GenSchema.IsInterface)
 		}
 		return nil
 	}
 
 	if !sg.GenSchema.IsMap && (sg.GenSchema.IsAdditionalProperties && sg.Named) {
+		// we have a complex object with an AdditionalProperties schema
+
+		tpe, ert := sg.TypeResolver.ResolveSchema(addp.Schema, addp.Schema.Ref.String() == "", false)
+		if ert != nil {
+			return ert
+		}
+
+		if tpe.IsComplexObject && tpe.IsAnonymous {
+			// if the AdditionalProperties is an anonymous complex object, generate a new type for it
+			pg := sg.makeNewStruct(sg.Name+" Anon", *addp.Schema)
+			if err := pg.makeGenSchema(); err != nil {
+				return err
+			}
+			sg.MergeResult(pg, false)
+			sg.ExtraSchemas[pg.Name] = pg.GenSchema
+
+			sg.Schema.AdditionalProperties.Schema = spec.RefProperty("#/definitions/" + pg.Name)
+			sg.IsVirtual = true
+
+			comprop := sg.NewAdditionalProperty(*sg.Schema.AdditionalProperties.Schema)
+			if err := comprop.makeGenSchema(); err != nil {
+				return err
+			}
+
+			comprop.GenSchema.Required = true
+			comprop.GenSchema.HasValidations = true
+
+			comprop.GenSchema.ValueExpression = sg.GenSchema.ValueExpression + "." + swag.ToGoName(sg.GenSchema.Name) + "[" + comprop.KeyVar + "]"
+
+			sg.GenSchema.AdditionalProperties = &comprop.GenSchema
+			sg.GenSchema.HasAdditionalProperties = true
+			sg.GenSchema.ValueExpression += "." + swag.ToGoName(sg.GenSchema.Name)
+
+			sg.MergeResult(comprop, false)
+
+			return nil
+		}
+
 		// this is a regular named schema for AdditionalProperties
 		sg.GenSchema.ValueExpression += "." + swag.ToGoName(sg.GenSchema.Name)
 		comprop := sg.NewAdditionalProperty(*addp.Schema)
@@ -1298,11 +1282,7 @@ func (sg *schemaGenContext) buildAdditionalProperties() error {
 		if err != nil {
 			return err
 		}
-		if err := ls.Build(); err != nil {
-			return err
-		}
-
-		return nil
+		return ls.Build()
 	}
 
 	if sg.GenSchema.IsAdditionalProperties && !sg.Named {
@@ -1335,9 +1315,7 @@ func (sg *schemaGenContext) buildAdditionalProperties() error {
 }
 
 func (sg *schemaGenContext) makeNewStruct(name string, schema spec.Schema) *schemaGenContext {
-	if Debug {
-		log.Println("making new struct", name, sg.Container)
-	}
+	debugLog("making new struct", name, sg.Container)
 	sp := sg.TypeResolver.Doc.Spec()
 	name = swag.ToGoName(name)
 	if sg.TypeResolver.ModelName != sg.Name {
@@ -1363,9 +1341,7 @@ func (sg *schemaGenContext) makeNewStruct(name string, schema spec.Schema) *sche
 		IncludeModel:     sg.IncludeModel,
 	}
 	if schema.Ref.String() == "" {
-		resolver := newTypeResolver(sg.TypeResolver.ModelsPackage, sg.TypeResolver.Doc)
-		resolver.ModelName = name
-		pg.TypeResolver = resolver
+		pg.TypeResolver = sg.TypeResolver.NewWithModelName(name)
 	}
 	pg.GenSchema.IsVirtual = true
 
@@ -1411,19 +1387,18 @@ func (sg *schemaGenContext) buildArray() error {
 	sg.GenSchema.IsBaseType = elProp.GenSchema.IsBaseType
 	sg.GenSchema.ItemsEnum = elProp.GenSchema.Enum
 	elProp.GenSchema.Suffix = "Items"
-	sg.GenSchema.GoType = "[]" + elProp.GenSchema.GoType
 
 	elProp.GenSchema.IsNullable = tpe.IsNullable && !tpe.HasDiscriminator
 	if elProp.GenSchema.IsNullable {
 		sg.GenSchema.GoType = "[]*" + elProp.GenSchema.GoType
+	} else {
+		sg.GenSchema.GoType = "[]" + elProp.GenSchema.GoType
 	}
 
 	sg.GenSchema.IsArray = true
 
-	// all types are exported but the ones based on discriminator
-	sg.GenSchema.IsExported = !sg.GenSchema.ElemType.HasDiscriminator
-
 	schemaCopy := elProp.GenSchema
+
 	schemaCopy.Required = false
 
 	// validations of items
@@ -1432,10 +1407,22 @@ func (sg *schemaGenContext) buildArray() error {
 	// include format validation, excluding binary
 	hv = hv || (schemaCopy.IsCustomFormatter && !schemaCopy.IsStream) || (schemaCopy.IsArray && schemaCopy.ElemType.IsCustomFormatter && !schemaCopy.ElemType.IsStream)
 
-	schemaCopy.HasValidations = schemaCopy.HasValidations || elProp.GenSchema.IsNullable || hv || elProp.GenSchema.IsBaseType
+	// base types of polymorphic types must be validated
+	// NOTE: IsNullable is not useful to figure out a validation: we use Refed and IsAliased below instead
+	if hv || elProp.GenSchema.IsBaseType {
+		schemaCopy.HasValidations = true
+	}
+
+	if (elProp.Schema.Ref.String() != "" || elProp.GenSchema.IsAliased) && !(elProp.GenSchema.IsInterface || elProp.GenSchema.IsStream) {
+		schemaCopy.HasValidations = true
+	}
 
 	// lift validations
 	sg.GenSchema.HasValidations = sg.GenSchema.HasValidations || schemaCopy.HasValidations
+	sg.GenSchema.HasSliceValidations = hasSliceValidations(&sg.Schema)
+
+	// prevents bubbling custom formatter flag
+	sg.GenSchema.IsCustomFormatter = false
 
 	sg.GenSchema.Items = &schemaCopy
 	if sg.Named {
@@ -1466,6 +1453,24 @@ func (sg *schemaGenContext) buildItems() error {
 		sg.GenSchema.GoType = sg.TypeResolver.goTypeName(sg.Name)
 		for i, s := range sg.Schema.Items.Schemas {
 			elProp := sg.NewTupleElement(&s, i)
+
+			if s.Ref.String() == "" {
+				tpe, err := sg.TypeResolver.ResolveSchema(&s, s.Ref.String() == "", true)
+				if err != nil {
+					return err
+				}
+				if tpe.IsComplexObject && tpe.IsAnonymous {
+					// if the tuple element is an anonymous complex object, build a new type for it
+					pg := sg.makeNewStruct(sg.Name+" Items"+strconv.Itoa(i), s)
+					if err := pg.makeGenSchema(); err != nil {
+						return err
+					}
+					elProp.Schema = *spec.RefProperty("#/definitions/" + pg.Name)
+					elProp.MergeResult(pg, false)
+					elProp.ExtraSchemas[pg.Name] = pg.GenSchema
+				}
+			}
+
 			if err := elProp.makeGenSchema(); err != nil {
 				return err
 			}
@@ -1486,7 +1491,7 @@ func (sg *schemaGenContext) buildItems() error {
 	// new tuple object
 	var sch spec.Schema
 	sch.Typed("object", "")
-	sch.Properties = make(map[string]spec.Schema)
+	sch.Properties = make(map[string]spec.Schema, len(sg.Schema.Items.Schemas))
 	for i, v := range sg.Schema.Items.Schemas {
 		sch.Required = append(sch.Required, "P"+strconv.Itoa(i))
 		sch.Properties["P"+strconv.Itoa(i)] = v
@@ -1535,6 +1540,10 @@ func (sg *schemaGenContext) buildAdditionalItems() error {
 		}
 
 		it := sg.NewAdditionalItems(sg.Schema.AdditionalItems.Schema)
+		// if AdditionalItems are themselves arrays, bump the index var
+		if tpe.IsArray {
+			it.IndexVar += "i"
+		}
 
 		if tpe.IsInterface {
 			it.Untyped = true
@@ -1577,11 +1586,7 @@ func (sg *schemaGenContext) shortCircuitNamedRef() (bool, error) {
 	if sg.RefHandled || !sg.Named || sg.Schema.Ref.String() == "" {
 		return false, nil
 	}
-	if Debug {
-		log.Printf("short circuit named ref: %q", sg.Schema.Ref.String())
-		b, _ := json.MarshalIndent(sg.Schema, "", "  ")
-		log.Println(string(b))
-	}
+	debugLogAsJSON("short circuit named ref: %q", sg.Schema.Ref.String(), sg.Schema)
 
 	nullableOverride := sg.GenSchema.IsNullable
 	tpe := resolvedType{}
@@ -1644,9 +1649,7 @@ func (sg *schemaGenContext) liftSpecialAllOf() error {
 
 	if seenSchema == 1 {
 		// when there only a single schema to lift in allOf, replace the schema by its allOf definition
-		if Debug {
-			log.Printf("lifted schema in allOf for %s", sg.Name)
-		}
+		debugLog("lifted schema in allOf for %s", sg.Name)
 		sg.Schema = schemaToLift
 		sg.GenSchema.IsNullable = seenNullable
 	}
@@ -1670,9 +1673,11 @@ func (sg *schemaGenContext) buildAliased() error {
 	if sg.GenSchema.IsInterface {
 		sg.GenSchema.IsAliased = sg.GenSchema.GoType != iface
 	}
+
 	if sg.GenSchema.IsMap {
 		sg.GenSchema.IsAliased = !strings.HasPrefix(sg.GenSchema.GoType, "map[")
 	}
+
 	if sg.GenSchema.IsArray {
 		sg.GenSchema.IsAliased = !strings.HasPrefix(sg.GenSchema.GoType, "[]")
 	}
@@ -1691,12 +1696,61 @@ func goName(sch *spec.Schema, orig string) string {
 	return orig
 }
 
-func (sg *schemaGenContext) makeGenSchema() error {
-	if Debug {
-		log.Printf("making gen schema (anon: %t, req: %t, tuple: %t) %s\n", !sg.Named, sg.Required, sg.IsTuple, sg.Name)
-		b, _ := json.MarshalIndent(sg.Schema, "", "  ")
-		log.Println(string(b))
+func (sg *schemaGenContext) checkNeedsPointer(outer *GenSchema, sch *GenSchema, elem *GenSchema) {
+	derefType := strings.TrimPrefix(elem.GoType, "*")
+	if outer.IsAliased && !strings.HasSuffix(outer.AliasedType, "*"+derefType) {
+		// override nullability of map of primitive elements: render element of aliased or anonymous map as a pointer
+		outer.AliasedType = strings.TrimSuffix(outer.AliasedType, derefType) + "*" + derefType
+	} else if sch != nil {
+		// nullable primitive
+		if sch.IsAnonymous && !strings.HasSuffix(outer.GoType, "*"+derefType) {
+			sch.GoType = strings.TrimSuffix(sch.GoType, derefType) + "*" + derefType
+		}
+	} else if outer.IsAnonymous && !strings.HasSuffix(outer.GoType, "*"+derefType) {
+		outer.GoType = strings.TrimSuffix(outer.GoType, derefType) + "*" + derefType
 	}
+}
+
+// buildMapOfNullable equalizes the nullablity status for aliased and anonymous maps of simple things,
+// with the nullability of its innermost element.
+//
+// NOTE: at the moment, we decide to align the type of the outer element (map) to the type of the inner element
+// The opposite could be done and result in non nullable primitive elements. If we do so, the validation
+// code needs to be adapted by removing IsZero() and Required() calls in codegen.
+func (sg *schemaGenContext) buildMapOfNullable(sch *GenSchema) {
+	outer := &sg.GenSchema
+	if outer == nil {
+		return
+	}
+	if sch == nil {
+		sch = outer
+	}
+	if sch.IsMap && (outer.IsAliased || outer.IsAnonymous) {
+		elem := sch.AdditionalProperties
+		for elem != nil {
+			if elem.IsPrimitive && elem.IsNullable {
+				sg.checkNeedsPointer(outer, nil, elem)
+			} else if elem.IsArray {
+				// override nullability of array of primitive elements:
+				// render element of aliased or anonyous map as a pointer
+				it := elem.Items
+				for it != nil {
+					if it.IsPrimitive && it.IsNullable {
+						sg.checkNeedsPointer(outer, sch, it)
+					} else if it.IsMap {
+						sg.buildMapOfNullable(it)
+					}
+					it = it.Items
+				}
+			}
+			elem = elem.AdditionalProperties
+		}
+	}
+}
+
+func (sg *schemaGenContext) makeGenSchema() error {
+	debugLogAsJSON("making gen schema (anon: %t, req: %t, tuple: %t) %s\n",
+		!sg.Named, sg.Required, sg.IsTuple, sg.Name, sg.Schema)
 
 	ex := ""
 	if sg.Schema.Example != nil {
@@ -1728,21 +1782,13 @@ func (sg *schemaGenContext) makeGenSchema() error {
 	if returns {
 		return nil
 	}
-	if Debug {
-		log.Println("after short circuit named ref")
-		b, _ := json.MarshalIndent(sg.Schema, "", "  ")
-		log.Println(string(b))
-	}
+	debugLogAsJSON("after short circuit named ref", sg.Schema)
 
 	if e := sg.liftSpecialAllOf(); e != nil {
 		return e
 	}
 	nullableOverride := sg.GenSchema.IsNullable
-	if Debug {
-		log.Println("after lifting special all of")
-		b, _ := json.MarshalIndent(sg.Schema, "", "  ")
-		log.Println(string(b))
-	}
+	debugLogAsJSON("after lifting special all of", sg.Schema)
 
 	if sg.Container == "" {
 		sg.Container = sg.GenSchema.Name
@@ -1761,9 +1807,7 @@ func (sg *schemaGenContext) makeGenSchema() error {
 		return err
 	}
 
-	if Debug {
-		log.Println("gschema rrequired", sg.GenSchema.Required, "nullable", sg.GenSchema.IsNullable)
-	}
+	debugLog("gschema rrequired: %t, nullable: %t", sg.GenSchema.Required, sg.GenSchema.IsNullable)
 	tpe.IsNullable = tpe.IsNullable || nullableOverride
 	sg.GenSchema.resolvedType = tpe
 	sg.GenSchema.IsBaseType = tpe.IsBaseType
@@ -1778,33 +1822,32 @@ func (sg *schemaGenContext) makeGenSchema() error {
 		sg.GenSchema.ValueExpression += "()"
 	}
 
-	if Debug {
-		log.Println("gschema nullable", sg.GenSchema.IsNullable)
-	}
+	debugLog("gschema nullable: %t", sg.GenSchema.IsNullable)
 	if e := sg.buildAdditionalProperties(); e != nil {
 		return e
 	}
 
+	// rewrite value expression from top-down
+	cur := &sg.GenSchema
+	for cur.AdditionalProperties != nil {
+		cur.AdditionalProperties.ValueExpression = cur.ValueExpression + "[" + cur.AdditionalProperties.KeyVar + "]"
+		cur = cur.AdditionalProperties
+	}
+
 	prev := sg.GenSchema
 	if sg.Untyped {
-		if Debug {
-			log.Println("untyped resolve", sg.Named || sg.IsTuple || sg.Required || sg.GenSchema.Required)
-			b, _ := json.MarshalIndent(sg.Schema, "", "  ")
-			log.Println(string(b))
-		}
+		debugLogAsJSON("untyped resolve:%t", sg.Named || sg.IsTuple || sg.Required || sg.GenSchema.Required, sg.Schema)
 		tpe, err = sg.TypeResolver.ResolveSchema(nil, !sg.Named, sg.Named || sg.IsTuple || sg.Required || sg.GenSchema.Required)
 	} else {
-		if Debug {
-			log.Printf("typed resolve, isAnonymous(%t), n: %t, t: %t, sgr: %t, sr: %t, isRequired(%t), BaseType(%t)", !sg.Named, sg.Named, sg.IsTuple, sg.Required, sg.GenSchema.Required, sg.Named || sg.IsTuple || sg.Required || sg.GenSchema.Required, sg.GenSchema.IsBaseType)
-			b, _ := json.MarshalIndent(sg.Schema, "", "  ")
-			log.Println(string(b))
-		}
+		debugLogAsJSON("typed resolve, isAnonymous(%t), n: %t, t: %t, sgr: %t, sr: %t, isRequired(%t), BaseType(%t)",
+			!sg.Named, sg.Named, sg.IsTuple, sg.Required, sg.GenSchema.Required,
+			sg.Named || sg.IsTuple || sg.Required || sg.GenSchema.Required, sg.GenSchema.IsBaseType, sg.Schema)
 		tpe, err = sg.TypeResolver.ResolveSchema(&sg.Schema, !sg.Named, sg.Named || sg.IsTuple || sg.Required || sg.GenSchema.Required)
 	}
 	if err != nil {
 		return err
 	}
-	otn := tpe.IsNullable
+	otn := tpe.IsNullable // for debug only
 	tpe.IsNullable = tpe.IsNullable || nullableOverride
 	sg.GenSchema.resolvedType = tpe
 	sg.GenSchema.IsComplexObject = prev.IsComplexObject
@@ -1812,11 +1855,8 @@ func (sg *schemaGenContext) makeGenSchema() error {
 	sg.GenSchema.IsAdditionalProperties = prev.IsAdditionalProperties
 	sg.GenSchema.IsBaseType = sg.GenSchema.HasDiscriminator
 
-	if Debug {
-		log.Println("gschema nnullable", sg.GenSchema.IsNullable, otn, nullableOverride)
-		b, _ := json.MarshalIndent(sg.Schema, "", "  ")
-		log.Println(string(b))
-	}
+	debugLogAsJSON("gschema nnullable:IsNullable:%t,resolver.IsNullable:%t,nullableOverride:%t",
+		sg.GenSchema.IsNullable, otn, nullableOverride, sg.Schema)
 	if err := sg.buildProperties(); err != nil {
 		return err
 	}
@@ -1837,8 +1877,8 @@ func (sg *schemaGenContext) makeGenSchema() error {
 		return err
 	}
 
-	if Debug {
-		log.Printf("finished gen schema for %q\n", sg.Name)
-	}
+	sg.buildMapOfNullable(nil)
+
+	debugLog("finished gen schema for %q", sg.Name)
 	return nil
 }
