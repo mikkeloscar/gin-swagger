@@ -23,6 +23,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 	"text/template"
@@ -38,7 +39,7 @@ import (
 	"golang.org/x/tools/imports"
 )
 
-//go:generate go-bindata -mode 420 -modtime 1482416923 -pkg=generator -ignore=.*\.sw? ./templates/...
+//go:generate go-bindata -mode 420 -modtime 1482416923 -pkg=generator -ignore=.*\.sw? -ignore=.*\.md ./templates/...
 
 // LanguageOpts to describe a language to the code generator
 type LanguageOpts struct {
@@ -47,6 +48,7 @@ type LanguageOpts struct {
 	reservedWordsSet map[string]struct{}
 	initialized      bool
 	formatFunc       func(string, []byte) ([]byte, error)
+	fileNameFunc     func(string) string
 }
 
 // Init the language option
@@ -77,6 +79,14 @@ func (l *LanguageOpts) MangleVarName(name string) string {
 	return nm + "Var"
 }
 
+// MangleFileName makes sure a file name gets a safe name
+func (l *LanguageOpts) MangleFileName(name string) string {
+	if l.fileNameFunc != nil {
+		return l.fileNameFunc(name)
+	}
+	return swag.ToFileName(name)
+}
+
 // FormatContent formats a file with a language specific formatter
 func (l *LanguageOpts) FormatContent(name string, content []byte) ([]byte, error) {
 	if l.formatFunc != nil {
@@ -96,6 +106,49 @@ var golang = GoLangOpts()
 
 // GoLangOpts for rendering items as golang code
 func GoLangOpts() *LanguageOpts {
+	var goOtherReservedSuffixes = map[string]bool{
+		// see:
+		// https://golang.org/src/go/build/syslist.go
+		// https://golang.org/doc/install/source#environment
+
+		// goos
+		"android":   true,
+		"darwin":    true,
+		"dragonfly": true,
+		"freebsd":   true,
+		"linux":     true,
+		"nacl":      true,
+		"netbsd":    true,
+		"openbsd":   true,
+		"plan9":     true,
+		"solaris":   true,
+		"windows":   true,
+		"zos":       true,
+
+		// arch
+		"386":         true,
+		"amd64":       true,
+		"amd64p32":    true,
+		"arm":         true,
+		"armbe":       true,
+		"arm64":       true,
+		"arm64be":     true,
+		"mips":        true,
+		"mipsle":      true,
+		"mips64":      true,
+		"mips64le":    true,
+		"mips64p32":   true,
+		"mips64p32le": true,
+		"ppc":         true,
+		"s390":        true,
+		"s390x":       true,
+		"sparc":       true,
+		"sparc64":     true,
+
+		// other reserved suffixes
+		"test": true,
+	}
+
 	opts := new(LanguageOpts)
 	opts.ReservedWords = []string{
 		"break", "default", "func", "interface", "select",
@@ -112,7 +165,21 @@ func GoLangOpts() *LanguageOpts {
 		opts.Comments = true
 		return imports.Process(ffn, content, opts)
 	}
+	opts.fileNameFunc = func(name string) string {
+		// whenever a generated file name ends with a suffix
+		// that is meaningful to go build, adds a "swagger"
+		// suffix
+		parts := strings.Split(swag.ToFileName(name), "_")
+		if goOtherReservedSuffixes[parts[len(parts)-1]] {
+			// file name ending with a reserved arch or os name
+			// are appended an innocuous suffix "swagger"
+			parts = append(parts, "swagger")
+		}
+		return strings.Join(parts, "_")
+	}
+
 	opts.BaseImportFunc = func(tgt string) string {
+		tgt = filepath.Clean(tgt)
 		// On Windows, filepath.Abs("") behaves differently than on Unix.
 		// Windows: yields an error, since Abs() does not know the volume.
 		// UNIX: returns current working directory
@@ -123,6 +190,7 @@ func GoLangOpts() *LanguageOpts {
 		if err != nil {
 			log.Fatalf("could not evaluate base import path with target \"%s\": %v", tgt, err)
 		}
+
 		var tgtAbsPathExtended string
 		tgtAbsPathExtended, err = filepath.EvalSymlinks(tgtAbsPath)
 		if err != nil {
@@ -182,13 +250,77 @@ func GoLangOpts() *LanguageOpts {
 
 		}
 
+		mod, goModuleAbsPath, err := tryResolveModule(tgtAbsPath)
+		switch {
+		case err != nil:
+			log.Fatalf("Failed to resolve module using go.mod file: %s", err)
+		case mod != "":
+			relTgt := relPathToRelGoPath(goModuleAbsPath, tgtAbsPath)
+			if !strings.HasSuffix(mod, relTgt) {
+				return mod + relTgt
+			}
+			return mod
+		}
+
 		if pth == "" {
-			log.Fatalln("target must reside inside a location in the $GOPATH/src")
+			log.Fatalln("target must reside inside a location in the $GOPATH/src or be a module")
 		}
 		return pth
 	}
 	opts.Init()
 	return opts
+}
+
+var moduleRe = regexp.MustCompile(`module[ \t]+([^\s]+)`)
+
+// resolveGoModFile walks up the directory tree starting from 'dir' until it
+// finds a go.mod file. If go.mod is found it will return the related file
+// object. If no go.mod file is found it will return an error.
+func resolveGoModFile(dir string) (*os.File, string, error) {
+	goModPath := filepath.Join(dir, "go.mod")
+	f, err := os.Open(goModPath)
+	if err != nil {
+		if os.IsNotExist(err) && dir != filepath.Dir(dir) {
+			return resolveGoModFile(filepath.Dir(dir))
+		}
+		return nil, "", err
+	}
+	return f, dir, nil
+}
+
+// relPathToRelGoPath takes a relative os path and returns the relative go
+// package path. For unix nothing will change but for windows \ will be
+// converted to /.
+func relPathToRelGoPath(modAbsPath, absPath string) string {
+	if absPath == "." {
+		return ""
+	}
+
+	path := strings.TrimPrefix(absPath, modAbsPath)
+	pathItems := strings.Split(path, string(filepath.Separator))
+	return strings.Join(pathItems, "/")
+}
+
+func tryResolveModule(baseTargetPath string) (string, string, error) {
+	f, goModAbsPath, err := resolveGoModFile(baseTargetPath)
+	switch {
+	case os.IsNotExist(err):
+		return "", "", nil
+	case err != nil:
+		return "", "", err
+	}
+
+	src, err := ioutil.ReadAll(f)
+	if err != nil {
+		return "", "", err
+	}
+
+	match := moduleRe.FindSubmatch(src)
+	if len(match) != 2 {
+		return "", "", nil
+	}
+
+	return string(match[1]), goModAbsPath, nil
 }
 
 func findSwaggerSpec(nm string) (string, error) {
@@ -319,7 +451,7 @@ func DefaultSectionOpts(gen *GenOpts) {
 					Source:     "asset:serverConfigureapi",
 					Target:     "{{ joinFilePath .Target .ServerPackage }}",
 					FileName:   "configure_{{ (snakize (pascalize .Name)) }}.go",
-					SkipExists: true,
+					SkipExists: !gen.RegenerateConfigureAPI,
 				},
 				{
 					Name:     "main",
@@ -378,46 +510,47 @@ type SectionOpts struct {
 
 // GenOpts the options for the generator
 type GenOpts struct {
-	IncludeModel       bool
-	IncludeValidator   bool
-	IncludeHandler     bool
-	IncludeParameters  bool
-	IncludeResponses   bool
-	IncludeURLBuilder  bool
-	IncludeMain        bool
-	IncludeSupport     bool
-	ExcludeSpec        bool
-	DumpData           bool
-	WithContext        bool
-	ValidateSpec       bool
-	FlattenSpec        bool
-	FlattenDefinitions bool
-	IsClient           bool
-	defaultsEnsured    bool
+	IncludeModel      bool
+	IncludeValidator  bool
+	IncludeHandler    bool
+	IncludeParameters bool
+	IncludeResponses  bool
+	IncludeURLBuilder bool
+	IncludeMain       bool
+	IncludeSupport    bool
+	ExcludeSpec       bool
+	DumpData          bool
+	WithContext       bool
+	ValidateSpec      bool
+	FlattenOpts       *analysis.FlattenOpts
+	IsClient          bool
+	defaultsEnsured   bool
 
-	Spec              string
-	APIPackage        string
-	ModelPackage      string
-	ServerPackage     string
-	ClientPackage     string
-	Principal         string
-	Target            string
-	Sections          SectionOpts
-	LanguageOpts      *LanguageOpts
-	TypeMapping       map[string]string
-	Imports           map[string]string
-	DefaultScheme     string
-	DefaultProduces   string
-	DefaultConsumes   string
-	TemplateDir       string
-	Operations        []string
-	Models            []string
-	Tags              []string
-	Name              string
-	FlagStrategy      string
-	CompatibilityMode string
-	ExistingModels    string
-	Copyright         string
+	Spec                   string
+	APIPackage             string
+	ModelPackage           string
+	ServerPackage          string
+	ClientPackage          string
+	Principal              string
+	Target                 string
+	Sections               SectionOpts
+	LanguageOpts           *LanguageOpts
+	TypeMapping            map[string]string
+	Imports                map[string]string
+	DefaultScheme          string
+	DefaultProduces        string
+	DefaultConsumes        string
+	TemplateDir            string
+	Template               string
+	RegenerateConfigureAPI bool
+	Operations             []string
+	Models                 []string
+	Tags                   []string
+	Name                   string
+	FlagStrategy           string
+	CompatibilityMode      string
+	ExistingModels         string
+	Copyright              string
 }
 
 // TargetPath returns the target generation path relative to the server package
@@ -482,6 +615,13 @@ func (g *GenOpts) EnsureDefaults() error {
 	DefaultSectionOpts(g)
 	if g.LanguageOpts == nil {
 		g.LanguageOpts = GoLangOpts()
+	}
+	// set defaults for flattening options
+	g.FlattenOpts = &analysis.FlattenOpts{
+		Minimal:      true,
+		Verbose:      true,
+		RemoveUnused: false,
+		Expand:       false,
 	}
 	g.defaultsEnsured = true
 	return nil
@@ -594,9 +734,7 @@ func (g *GenOpts) render(t *TemplateOpts, data interface{}) ([]byte, error) {
 	if err := templ.Execute(&tBuf, data); err != nil {
 		return nil, fmt.Errorf("template execution failed for template %s: %v", t.Name, err)
 	}
-	//if Debug {
 	log.Printf("executed template %s", t.Source)
-	//}
 
 	return tBuf.Bytes(), nil
 }
@@ -612,9 +750,8 @@ func (g *GenOpts) write(t *TemplateOpts, data interface{}) error {
 	}
 
 	if t.SkipExists && fileExists(dir, fname) {
-		if Debug {
-			log.Printf("skipping generation of %s because it already exists and skip_exist directive is set for %s", filepath.Join(dir, fname), t.Name)
-		}
+		debugLog("skipping generation of %s because it already exists and skip_exist directive is set for %s",
+			filepath.Join(dir, fname), t.Name)
 		return nil
 	}
 
@@ -627,9 +764,7 @@ func (g *GenOpts) write(t *TemplateOpts, data interface{}) error {
 	if dir != "" {
 		_, exists := os.Stat(dir)
 		if os.IsNotExist(exists) {
-			if Debug {
-				log.Printf("creating directory %q for \"%s\"", dir, t.Name)
-			}
+			debugLog("creating directory %q for \"%s\"", dir, t.Name)
 			// Directory settings consistent with file privileges.
 			// Environment's umask may alter this setup
 			if e := os.MkdirAll(dir, 0755); e != nil {
@@ -916,8 +1051,9 @@ func validateAndFlattenSpec(opts *GenOpts, specDoc *loads.Document) (*loads.Docu
 
 	// Validate if needed
 	if opts.ValidateSpec {
-		if err := validateSpec(opts.Spec, specDoc); err != nil {
-			return specDoc, err
+		log.Printf("validating spec %v", opts.Spec)
+		if erv := validateSpec(opts.Spec, specDoc); erv != nil {
+			return specDoc, erv
 		}
 	}
 
@@ -933,26 +1069,137 @@ func validateAndFlattenSpec(opts *GenOpts, specDoc *loads.Document) (*loads.Docu
 		absBasePath = filepath.Join(cwd, absBasePath)
 	}
 
-	/********************************************************************************************/
-	/* Either flatten or expand should be called here before moving on the code generation part */
-	/********************************************************************************************/
-	if opts.FlattenSpec {
-		flattenOpts := analysis.FlattenOpts{
-			Expand: false,
-			// BasePath must be absolute. This is guaranteed because opts.Spec is absolute
-			BasePath: absBasePath,
-			Spec:     analysis.New(specDoc.Spec()),
-		}
-		err = analysis.Flatten(flattenOpts)
+	// Some preprocessing is required before codegen
+	//
+	// This ensures at least that $ref's in the spec document are canonical,
+	// i.e all $ref are local to this file and point to some uniquely named definition.
+	//
+	// Default option is to ensure minimal flattening of $ref, bundling remote $refs and relocating arbitrary JSON
+	// pointers as definitions.
+	// This preprocessing may introduce duplicate names (e.g. remote $ref with same name). In this case, a definition
+	// suffixed with "OAIGen" is produced.
+	//
+	// Full flattening option farther transforms the spec by moving every complex object (e.g. with some properties)
+	// as a standalone definition.
+	//
+	// Eventually, an "expand spec" option is available. It is essentially useful for testing purposes.
+	//
+	// NOTE(fredbi): spec expansion may produce some unsupported constructs and is not yet protected against the
+	// following cases:
+	//  - polymorphic types generation may fail with expansion (expand destructs the reuse intent of the $ref in allOf)
+	//  - name duplicates may occur and result in compilation failures
+	// The right place to fix these shortcomings is go-openapi/analysis.
+
+	opts.FlattenOpts.BasePath = absBasePath // BasePath must be absolute
+	opts.FlattenOpts.Spec = analysis.New(specDoc.Spec())
+
+	var preprocessingOption string
+	if opts.FlattenOpts.Expand {
+		preprocessingOption = "expand"
+	} else if opts.FlattenOpts.Minimal {
+		preprocessingOption = "minimal flattening"
 	} else {
-		err = spec.ExpandSpec(specDoc.Spec(), &spec.ExpandOptions{
-			RelativeBase: absBasePath,
-			SkipSchemas:  false,
-		})
+		preprocessingOption = "full flattening"
 	}
-	if err != nil {
+	log.Printf("preprocessing spec with option:  %s", preprocessingOption)
+
+	if err = analysis.Flatten(*opts.FlattenOpts); err != nil {
 		return nil, err
 	}
 
+	// yields the preprocessed spec document
 	return specDoc, nil
+}
+
+// gatherSecuritySchemes produces a sorted representation from a map of spec security schemes
+func gatherSecuritySchemes(securitySchemes map[string]spec.SecurityScheme, appName, principal, receiver string) (security GenSecuritySchemes) {
+	for scheme, req := range securitySchemes {
+		isOAuth2 := strings.ToLower(req.Type) == "oauth2"
+		var scopes []string
+		if isOAuth2 {
+			for k := range req.Scopes {
+				scopes = append(scopes, k)
+			}
+		}
+		sort.Strings(scopes)
+
+		security = append(security, GenSecurityScheme{
+			AppName:      appName,
+			ID:           scheme,
+			ReceiverName: receiver,
+			Name:         req.Name,
+			IsBasicAuth:  strings.ToLower(req.Type) == "basic",
+			IsAPIKeyAuth: strings.ToLower(req.Type) == "apikey",
+			IsOAuth2:     isOAuth2,
+			Scopes:       scopes,
+			Principal:    principal,
+			Source:       req.In,
+			// from original spec
+			Description:      req.Description,
+			Type:             strings.ToLower(req.Type),
+			In:               req.In,
+			Flow:             req.Flow,
+			AuthorizationURL: req.AuthorizationURL,
+			TokenURL:         req.TokenURL,
+			Extensions:       req.Extensions,
+		})
+	}
+	sort.Sort(security)
+	return
+}
+
+// gatherExtraSchemas produces a sorted list of extra schemas.
+//
+// ExtraSchemas are inlined types rendered in the same model file.
+func gatherExtraSchemas(extraMap map[string]GenSchema) (extras GenSchemaList) {
+	var extraKeys []string
+	for k := range extraMap {
+		extraKeys = append(extraKeys, k)
+	}
+	sort.Strings(extraKeys)
+	for _, k := range extraKeys {
+		// figure out if top level validations are needed
+		p := extraMap[k]
+		p.HasValidations = shallowValidationLookup(p)
+		extras = append(extras, p)
+	}
+	return
+}
+
+func sharedValidationsFromSimple(v spec.CommonValidations, isRequired bool) (sh sharedValidations) {
+	sh = sharedValidations{
+		Required:         isRequired,
+		Maximum:          v.Maximum,
+		ExclusiveMaximum: v.ExclusiveMaximum,
+		Minimum:          v.Minimum,
+		ExclusiveMinimum: v.ExclusiveMinimum,
+		MaxLength:        v.MaxLength,
+		MinLength:        v.MinLength,
+		Pattern:          v.Pattern,
+		MaxItems:         v.MaxItems,
+		MinItems:         v.MinItems,
+		UniqueItems:      v.UniqueItems,
+		MultipleOf:       v.MultipleOf,
+		Enum:             v.Enum,
+	}
+	return
+}
+
+func sharedValidationsFromSchema(v spec.Schema, isRequired bool) (sh sharedValidations) {
+	sh = sharedValidations{
+		Required:         isRequired,
+		Maximum:          v.Maximum,
+		ExclusiveMaximum: v.ExclusiveMaximum,
+		Minimum:          v.Minimum,
+		ExclusiveMinimum: v.ExclusiveMinimum,
+		MaxLength:        v.MaxLength,
+		MinLength:        v.MinLength,
+		Pattern:          v.Pattern,
+		MaxItems:         v.MaxItems,
+		MinItems:         v.MinItems,
+		UniqueItems:      v.UniqueItems,
+		MultipleOf:       v.MultipleOf,
+		Enum:             v.Enum,
+	}
+	return
 }
