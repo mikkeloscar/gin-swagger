@@ -481,7 +481,7 @@ func NewServer(svc Service, config *Config) *Server {
 
 	// enable pprof http endpoints in debug mode
 	if config.Debug {
-		pprof.Register(server.Routes.Engine, nil)
+		pprof.Register(server.Routes.Engine)
 	}
 
 	// set logrus logger to TextFormatter with no colors
