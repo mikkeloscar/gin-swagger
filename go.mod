@@ -15,7 +15,7 @@ require (
 	github.com/go-openapi/strfmt v0.17.0
 	github.com/go-openapi/swag v0.17.0
 	github.com/go-openapi/validate v0.17.0
-	github.com/go-swagger/go-swagger v0.17.0
+	github.com/go-swagger/go-swagger v0.17.1-0.20181009150033-e06c79d1fcd4
 	github.com/go-swagger/scan-repo-boundary v0.0.0-20180623220736-973b3573c013 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/jessevdk/go-flags v1.4.0 // indirect
@@ -42,5 +42,3 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 )
-
-replace github.com/go-swagger/go-swagger => github.com/mikkeloscar/go-swagger v0.0.0-20181007121832-fd5edab66bbf
