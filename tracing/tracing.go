@@ -16,6 +16,7 @@ const (
 // succeeds. Otherwise it will start a new span which is not a child.
 func InitSpan(tracer opentracing.Tracer, operationName string, opts ...opentracing.StartSpanOption) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		opts := opts
 		spanCtx, err := tracer.Extract(opentracing.TextMap, opentracing.HTTPHeadersCarrier(ctx.Request.Header))
 		if err == nil {
 			// if we got a span context from the headers,
