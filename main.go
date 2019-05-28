@@ -76,7 +76,6 @@ func run(application, specPath string) error {
 		},
 		ExcludeSpec:       false,
 		TemplateDir:       "",
-		WithContext:       false,
 		DumpData:          false,
 		Models:            nil,
 		Operations:        nil,
