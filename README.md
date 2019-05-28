@@ -11,7 +11,7 @@ It is based on [go-swagger][go-swagger] which is used for the code generation.
 
 ### Dependencies
 
-* [go-bindata](https://github.com/jteeuwen/go-bindata) - *Optional* only needed
+* [go-bindata](https://github.com/kevinburke/go-bindata) - *Optional* only needed
     if you are changing gin-swagger.
 
 Once you have the dependencies in place you can simply run `go get` to install
