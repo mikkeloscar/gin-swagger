@@ -18,7 +18,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	models "github.com/mikkeloscar/gin-swagger/example/models"
+	"github.com/mikkeloscar/gin-swagger/example/models"
 )
 
 // AddOrUpdateConfigItemEndpoint executes the core logic of the related

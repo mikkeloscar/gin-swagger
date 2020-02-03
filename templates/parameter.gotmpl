@@ -263,7 +263,7 @@ func ({{ .ReceiverName }} *{{ pascalize .Name }}Params) readRequest(ctx *gin.Con
 
   {{ if and .IsBodyParam .Schema }}if runtime.HasBody(ctx.Request) {
   {{ if .Schema.IsStream }}{{ .ReceiverName }}.{{ pascalize .Name }} = ctx.Request.Body
-  {{ else }}{{ if and .Schema.IsBaseType .Schema.IsExported }}body, err := {{ .ModelsPackage }}.Unmarshal{{ stripPackage .GoType .ModelsPackage }}{{ if .IsArray }}Slice{{ end }}(ctx.Request.Body, route.Consumer)
+  {{ else }}{{ if and .Schema.IsBaseType .Schema.IsExported }}body, err := {{ .ModelsPackage }}.Unmarshal{{ dropPackage .GoType }}{{ if .IsArray }}Slice{{ end }}(ctx.Request.Body, route.Consumer)
   if err != nil { {{ if .Required }}
     if err == io.EOF {
       err = errors.Required({{ .Path }}, {{ printf "%q" .Location }})
