@@ -95,7 +95,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 	engine.Use(gin.Recovery())
 	routes := &Routes{Engine: engine}
 
-	{{range .Operations}}routes.{{ pascalize .Name }}.RouterGroup = routes.Group("")
+	{{range .Operations}}routes.{{ pascalize .Name }}.RouterGroup = routes.Group("{{ .BasePath }}")
 	routes.{{ pascalize .Name }}.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.{{ pascalize .Name }}.RouterGroup.Use(tracing.InitSpan(tracer, "{{ snakize .Name }}"))
