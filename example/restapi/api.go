@@ -158,7 +158,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 	engine.Use(gin.Recovery())
 	routes := &Routes{Engine: engine}
 
-	routes.AddOrUpdateConfigItem.RouterGroup = routes.Group("")
+	routes.AddOrUpdateConfigItem.RouterGroup = routes.Group("/")
 	routes.AddOrUpdateConfigItem.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.AddOrUpdateConfigItem.RouterGroup.Use(tracing.InitSpan(tracer, "add_or_update_config_item"))
@@ -179,7 +179,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.CreateCluster.RouterGroup = routes.Group("")
+	routes.CreateCluster.RouterGroup = routes.Group("/")
 	routes.CreateCluster.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.CreateCluster.RouterGroup.Use(tracing.InitSpan(tracer, "create_cluster"))
@@ -200,7 +200,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.CreateInfrastructureAccount.RouterGroup = routes.Group("")
+	routes.CreateInfrastructureAccount.RouterGroup = routes.Group("/")
 	routes.CreateInfrastructureAccount.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.CreateInfrastructureAccount.RouterGroup.Use(tracing.InitSpan(tracer, "create_infrastructure_account"))
@@ -221,7 +221,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.CreateOrUpdateNodePool.RouterGroup = routes.Group("")
+	routes.CreateOrUpdateNodePool.RouterGroup = routes.Group("/")
 	routes.CreateOrUpdateNodePool.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.CreateOrUpdateNodePool.RouterGroup.Use(tracing.InitSpan(tracer, "create_or_update_node_pool"))
@@ -242,7 +242,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.DeleteCluster.RouterGroup = routes.Group("")
+	routes.DeleteCluster.RouterGroup = routes.Group("/")
 	routes.DeleteCluster.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.DeleteCluster.RouterGroup.Use(tracing.InitSpan(tracer, "delete_cluster"))
@@ -262,7 +262,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.DeleteConfigItem.RouterGroup = routes.Group("")
+	routes.DeleteConfigItem.RouterGroup = routes.Group("/")
 	routes.DeleteConfigItem.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.DeleteConfigItem.RouterGroup.Use(tracing.InitSpan(tracer, "delete_config_item"))
@@ -282,7 +282,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.DeleteNodePool.RouterGroup = routes.Group("")
+	routes.DeleteNodePool.RouterGroup = routes.Group("/")
 	routes.DeleteNodePool.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.DeleteNodePool.RouterGroup.Use(tracing.InitSpan(tracer, "delete_node_pool"))
@@ -302,7 +302,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.GetCluster.RouterGroup = routes.Group("")
+	routes.GetCluster.RouterGroup = routes.Group("/")
 	routes.GetCluster.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.GetCluster.RouterGroup.Use(tracing.InitSpan(tracer, "get_cluster"))
@@ -322,7 +322,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.GetInfrastructureAccount.RouterGroup = routes.Group("")
+	routes.GetInfrastructureAccount.RouterGroup = routes.Group("/")
 	routes.GetInfrastructureAccount.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.GetInfrastructureAccount.RouterGroup.Use(tracing.InitSpan(tracer, "get_infrastructure_account"))
@@ -342,7 +342,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.ListClusters.RouterGroup = routes.Group("")
+	routes.ListClusters.RouterGroup = routes.Group("/")
 	routes.ListClusters.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.ListClusters.RouterGroup.Use(tracing.InitSpan(tracer, "list_clusters"))
@@ -362,7 +362,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.ListInfrastructureAccounts.RouterGroup = routes.Group("")
+	routes.ListInfrastructureAccounts.RouterGroup = routes.Group("/")
 	routes.ListInfrastructureAccounts.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.ListInfrastructureAccounts.RouterGroup.Use(tracing.InitSpan(tracer, "list_infrastructure_accounts"))
@@ -382,7 +382,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.ListNodePools.RouterGroup = routes.Group("")
+	routes.ListNodePools.RouterGroup = routes.Group("/")
 	routes.ListNodePools.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.ListNodePools.RouterGroup.Use(tracing.InitSpan(tracer, "list_node_pools"))
@@ -402,7 +402,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.UpdateCluster.RouterGroup = routes.Group("")
+	routes.UpdateCluster.RouterGroup = routes.Group("/")
 	routes.UpdateCluster.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.UpdateCluster.RouterGroup.Use(tracing.InitSpan(tracer, "update_cluster"))
@@ -423,7 +423,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 
 	}
 
-	routes.UpdateInfrastructureAccount.RouterGroup = routes.Group("")
+	routes.UpdateInfrastructureAccount.RouterGroup = routes.Group("/")
 	routes.UpdateInfrastructureAccount.RouterGroup.Use(middleware.LogrusLogger())
 	if tracer != nil {
 		routes.UpdateInfrastructureAccount.RouterGroup.Use(tracing.InitSpan(tracer, "update_infrastructure_account"))
