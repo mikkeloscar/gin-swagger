@@ -26,4 +26,4 @@ require (
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 )
 
-go 1.13
+go 1.14
