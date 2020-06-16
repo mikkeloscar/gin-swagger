@@ -266,13 +266,13 @@ func ({{ .ReceiverName }} *{{ pascalize .Name }}Params) readRequest(ctx *gin.Con
   {{ else }}{{ if and .Schema.IsBaseType .Schema.IsExported }}body, err := {{ .ModelsPackage }}.Unmarshal{{ dropPackage .GoType }}{{ if .IsArray }}Slice{{ end }}(ctx.Request.Body, route.Consumer)
   if err != nil { {{ if .Required }}
     if err == io.EOF {
-      err = errors.Required({{ .Path }}, {{ printf "%q" .Location }})
+      err = errors.Required({{ .Path }}, {{ printf "%q" .Location }}, "")
     }
     {{ end }}res = append(res, err)
   {{ else }}var body {{ .GoType }}
   if err := ctx.BindJSON(&body); err != nil { {{ if .Required }}
     if err == io.EOF {
-      res = append(res, errors.Required({{ printf "%q" (camelize .Name) }}, {{ printf "%q" .Location }}))
+      res = append(res, errors.Required({{ printf "%q" (camelize .Name) }}, {{ printf "%q" .Location }}, ""))
     } else { {{ end }}
     res = append(res, errors.NewParseError({{ printf "%q" (camelize .Name) }}, {{ printf "%q" .Location }}, "", err)){{ if .Required }}
     }
@@ -294,7 +294,7 @@ func ({{ .ReceiverName }} *{{ pascalize .Name }}Params) readRequest(ctx *gin.Con
   }
   {{ end }}
   }{{ if .Required }} else {
-    res = append(res, errors.Required({{ printf "%q" (camelize .Name) }}, {{ printf "%q" .Location }}))
+    res = append(res, errors.Required({{ printf "%q" (camelize .Name) }}, {{ printf "%q" .Location }}, ""))
   }  {{ end }}
 
   {{ end }}
@@ -311,7 +311,7 @@ func ({{ .ReceiverName }} *{{ pascalize .Name }}Params) readRequest(ctx *gin.Con
 {{ if or .IsPrimitive .IsCustomFormatter }}
 func ({{ .ReceiverName }} *{{ $className }}Params) bind{{ pascalize .ID }}(rawData []string, hasKey bool, formats strfmt.Registry) error {
   {{ if and (not .IsPathParam) .Required }}if !hasKey {
-    return errors.Required({{ .Path }}, {{ printf "%q" .Location }})
+    return errors.Required({{ .Path }}, {{ printf "%q" .Location }}, rawData)
   }
   {{ end }}var raw string
   if len(rawData) > 0 {
@@ -347,7 +347,7 @@ func ({{ .ReceiverName }} *{{ $className }}Params) bind{{ pascalize .ID }}(rawDa
 {{else if .IsArray}}
 func ({{ .ReceiverName }} *{{ $className }}Params) bind{{ pascalize .ID }}(rawData []string, hasKey bool, formats strfmt.Registry) error {
   {{if .Required }}if !hasKey {
-    return errors.Required({{ .Path }}, {{ printf "%q" .Location }})
+    return errors.Required({{ .Path }}, {{ printf "%q" .Location }}, rawData)
   }
   {{ end }}
   {{ if eq .CollectionFormat "multi" }}{{ varname .Child.ValueExpression }}C := rawData{{ else }}var qv{{ pascalize .Name }} string
@@ -358,7 +358,7 @@ func ({{ .ReceiverName }} *{{ $className }}Params) bind{{ pascalize .ID }}(rawDa
   {{ varname .Child.ValueExpression }}C := swag.SplitByFormat(qv{{ pascalize .Name }}, {{ printf "%q" .CollectionFormat }}){{ end }}
   {{if and .Required (not .AllowEmptyValue) }}
   if len({{ varname .Child.ValueExpression }}C) == 0 {
-    return errors.Required({{ .Path }}, {{ printf "%q" .Location }})
+    return errors.Required({{ .Path }}, {{ printf "%q" .Location }}, {{ varname .Child.ValueExpression }}C)
   }
   {{ end }}
   {{ if not .Required }}{{ if .HasDefault }}defValue := swag.SplitByFormat({{ .Default }}, {{ printf "%q" .CollectionFormat }})

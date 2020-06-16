@@ -10,12 +10,13 @@ import (
 	"strconv"
 
 	"github.com/go-openapi/errors"
-	strfmt "github.com/go-openapi/strfmt"
+	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 	"github.com/go-openapi/validate"
 )
 
 // ClusterStatus cluster status
+//
 // swagger:model ClusterStatus
 type ClusterStatus struct {
 
@@ -99,6 +100,7 @@ func (m *ClusterStatus) UnmarshalBinary(b []byte) error {
 }
 
 // ClusterStatusProblemsItems0 cluster status problems items0
+//
 // swagger:model ClusterStatusProblemsItems0
 type ClusterStatusProblemsItems0 struct {
 
@@ -165,15 +167,10 @@ func (m *ClusterStatusProblemsItems0) UnmarshalJSON(data []byte) error {
 	var rcv ClusterStatusProblemsItems0
 
 	rcv.Detail = stage1.Detail
-
 	rcv.Instance = stage1.Instance
-
 	rcv.Status = stage1.Status
-
 	rcv.Title = stage1.Title
-
 	rcv.Type = stage1.Type
-
 	*m = rcv
 
 	// stage 2, remove properties and add to map
@@ -183,15 +180,10 @@ func (m *ClusterStatusProblemsItems0) UnmarshalJSON(data []byte) error {
 	}
 
 	delete(stage2, "detail")
-
 	delete(stage2, "instance")
-
 	delete(stage2, "status")
-
 	delete(stage2, "title")
-
 	delete(stage2, "type")
-
 	// stage 3, add additional properties values
 	if len(stage2) > 0 {
 		result := make(map[string]string)
@@ -238,13 +230,9 @@ func (m ClusterStatusProblemsItems0) MarshalJSON() ([]byte, error) {
 	}
 
 	stage1.Detail = m.Detail
-
 	stage1.Instance = m.Instance
-
 	stage1.Status = m.Status
-
 	stage1.Title = m.Title
-
 	stage1.Type = m.Type
 
 	// make JSON object for known properties

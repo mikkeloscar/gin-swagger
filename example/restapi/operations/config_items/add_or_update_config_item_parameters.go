@@ -122,7 +122,7 @@ func (o *AddOrUpdateConfigItemParams) readRequest(ctx *gin.Context) error {
 		var body models.ConfigValue
 		if err := ctx.BindJSON(&body); err != nil {
 			if err == io.EOF {
-				res = append(res, errors.Required("value", "body"))
+				res = append(res, errors.Required("value", "body", ""))
 			} else {
 				res = append(res, errors.NewParseError("value", "body", "", err))
 			}
@@ -138,7 +138,7 @@ func (o *AddOrUpdateConfigItemParams) readRequest(ctx *gin.Context) error {
 		}
 
 	} else {
-		res = append(res, errors.Required("value", "body"))
+		res = append(res, errors.Required("value", "body", ""))
 	}
 
 	if len(res) > 0 {
