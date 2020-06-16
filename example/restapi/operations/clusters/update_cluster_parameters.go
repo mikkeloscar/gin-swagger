@@ -106,7 +106,7 @@ func (o *UpdateClusterParams) readRequest(ctx *gin.Context) error {
 		var body models.ClusterUpdate
 		if err := ctx.BindJSON(&body); err != nil {
 			if err == io.EOF {
-				res = append(res, errors.Required("cluster", "body"))
+				res = append(res, errors.Required("cluster", "body", ""))
 			} else {
 				res = append(res, errors.NewParseError("cluster", "body", "", err))
 			}
@@ -122,7 +122,7 @@ func (o *UpdateClusterParams) readRequest(ctx *gin.Context) error {
 		}
 
 	} else {
-		res = append(res, errors.Required("cluster", "body"))
+		res = append(res, errors.Required("cluster", "body", ""))
 	}
 
 	rClusterID := []string{ctx.Param("cluster_id")}

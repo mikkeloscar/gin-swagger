@@ -99,7 +99,7 @@ func (o *CreateInfrastructureAccountParams) readRequest(ctx *gin.Context) error 
 		var body models.InfrastructureAccount
 		if err := ctx.BindJSON(&body); err != nil {
 			if err == io.EOF {
-				res = append(res, errors.Required("infrastructureAccount", "body"))
+				res = append(res, errors.Required("infrastructureAccount", "body", ""))
 			} else {
 				res = append(res, errors.NewParseError("infrastructureAccount", "body", "", err))
 			}
@@ -115,7 +115,7 @@ func (o *CreateInfrastructureAccountParams) readRequest(ctx *gin.Context) error 
 		}
 
 	} else {
-		res = append(res, errors.Required("infrastructureAccount", "body"))
+		res = append(res, errors.Required("infrastructureAccount", "body", ""))
 	}
 
 	if len(res) > 0 {

@@ -117,7 +117,7 @@ func (o *CreateOrUpdateNodePoolParams) readRequest(ctx *gin.Context) error {
 		var body models.NodePool
 		if err := ctx.BindJSON(&body); err != nil {
 			if err == io.EOF {
-				res = append(res, errors.Required("nodePool", "body"))
+				res = append(res, errors.Required("nodePool", "body", ""))
 			} else {
 				res = append(res, errors.NewParseError("nodePool", "body", "", err))
 			}
@@ -133,7 +133,7 @@ func (o *CreateOrUpdateNodePoolParams) readRequest(ctx *gin.Context) error {
 		}
 
 	} else {
-		res = append(res, errors.Required("nodePool", "body"))
+		res = append(res, errors.Required("nodePool", "body", ""))
 	}
 
 	rNodePoolName := []string{ctx.Param("node_pool_name")}

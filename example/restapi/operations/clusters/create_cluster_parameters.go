@@ -99,7 +99,7 @@ func (o *CreateClusterParams) readRequest(ctx *gin.Context) error {
 		var body models.Cluster
 		if err := ctx.BindJSON(&body); err != nil {
 			if err == io.EOF {
-				res = append(res, errors.Required("cluster", "body"))
+				res = append(res, errors.Required("cluster", "body", ""))
 			} else {
 				res = append(res, errors.NewParseError("cluster", "body", "", err))
 			}
@@ -115,7 +115,7 @@ func (o *CreateClusterParams) readRequest(ctx *gin.Context) error {
 		}
 
 	} else {
-		res = append(res, errors.Required("cluster", "body"))
+		res = append(res, errors.Required("cluster", "body", ""))
 	}
 
 	if len(res) > 0 {
