@@ -9,16 +9,17 @@ require (
 	github.com/gin-gonic/gin v1.3.0
 	github.com/go-openapi/analysis v0.19.10
 	github.com/go-openapi/errors v0.19.6
-	github.com/go-openapi/runtime v0.19.16
+	github.com/go-openapi/runtime v0.19.20
 	github.com/go-openapi/strfmt v0.19.5
 	github.com/go-openapi/swag v0.19.9
 	github.com/go-openapi/validate v0.19.10
-	github.com/go-swagger/go-swagger v0.24.0
+	github.com/go-swagger/go-swagger v0.25.0
 	github.com/json-iterator/go v1.1.7 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/opentracing/opentracing-go v1.0.2
 	github.com/sirupsen/logrus v1.4.2
 	github.com/ugorji/go v1.1.7 // indirect
+	github.com/vektah/gqlparser v1.1.2 // indirect
 	github.com/zalando/gin-oauth2 v1.5.0
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
