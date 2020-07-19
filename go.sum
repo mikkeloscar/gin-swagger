@@ -447,6 +447,8 @@ github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/zalando/gin-oauth2 v1.5.0 h1:fVM8iFghRmY53Fe0t76UZ5uFRiB/4NJ3VFa/PX60408=
 github.com/zalando/gin-oauth2 v1.5.0/go.mod h1:ji8FkTmYYc32KK9+ZxIi78YefLtcSCRp193jO57yOHc=
+github.com/zalando/gin-oauth2 v1.5.2 h1:qwwosUfM1NhN+TwhhujKzhBnDlnLDXHZa0hLHDrlUVU=
+github.com/zalando/gin-oauth2 v1.5.2/go.mod h1:ji8FkTmYYc32KK9+ZxIi78YefLtcSCRp193jO57yOHc=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.mongodb.org/mongo-driver v1.0.3/go.mod h1:u7ryQJ+DOzQmeO7zB6MHyr8jkEQvC8vH7qLUO4lqsUM=
 go.mongodb.org/mongo-driver v1.1.1/go.mod h1:u7ryQJ+DOzQmeO7zB6MHyr8jkEQvC8vH7qLUO4lqsUM=
