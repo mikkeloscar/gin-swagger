@@ -16,7 +16,7 @@ require (
 	github.com/go-swagger/go-swagger v0.24.0
 	github.com/json-iterator/go v1.1.7 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
-	github.com/opentracing/opentracing-go v1.0.2
+	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/ugorji/go v1.1.7 // indirect
 	github.com/zalando/gin-oauth2 v1.5.0
