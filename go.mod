@@ -17,7 +17,7 @@ require (
 	github.com/json-iterator/go v1.1.7 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/opentracing/opentracing-go v1.2.0
-	github.com/sirupsen/logrus v1.4.2
+	github.com/sirupsen/logrus v1.6.0
 	github.com/ugorji/go v1.1.7 // indirect
 	github.com/zalando/gin-oauth2 v1.5.2
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
