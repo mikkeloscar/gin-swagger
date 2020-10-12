@@ -9,7 +9,7 @@ require (
 	github.com/go-openapi/analysis v0.19.10
 	github.com/go-openapi/errors v0.19.7
 	github.com/go-openapi/runtime v0.19.22
-	github.com/go-openapi/strfmt v0.19.5
+	github.com/go-openapi/strfmt v0.19.6
 	github.com/go-openapi/swag v0.19.9
 	github.com/go-openapi/validate v0.19.11
 	github.com/go-swagger/go-swagger v0.25.0
@@ -18,8 +18,6 @@ require (
 	github.com/zalando/gin-oauth2 v1.5.2
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
-	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 )
 
 go 1.14
