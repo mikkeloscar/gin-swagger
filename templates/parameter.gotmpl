@@ -244,7 +244,7 @@ func ({{ .ReceiverName }} *{{ pascalize .Name }}Params) readRequest(ctx *gin.Con
   if err != nil {
     res = append(res, errors.New(400, "reading file %q failed: %v", {{ printf "%q" (camelize .Name) }}, err))
   } else {
-    {{ .ReceiverName }}.{{ pascalize .Name }} = runtime.File{Data: {{ camelize .Name }}, Header: {{ camelize .Name }}Header}
+    {{ .ReceiverName }}.{{ pascalize .Name }} = &runtime.File{Data: {{ camelize .Name }}, Header: {{ camelize .Name }}Header}
   }
   {{ else }}fd{{ pascalize .Name }}, fdhk{{ pascalize .Name }}, _ := fds.GetOK({{ .Path }})
   if err := {{ .ReceiverName }}.bind{{ pascalize .ID }}(fd{{ pascalize .Name }}, fdhk{{ pascalize .Name }}, formats); err != nil {
