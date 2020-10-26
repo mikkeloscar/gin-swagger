@@ -110,6 +110,8 @@ github.com/go-openapi/errors v0.19.6 h1:xZMThgv5SQ7SMbWtKFkCf9bBdvR2iEyw9k3zGZON
 github.com/go-openapi/errors v0.19.6/go.mod h1:cM//ZKUKyO06HSwqAelJ5NsEMMcpa6VpXe8DOa1Mi1M=
 github.com/go-openapi/errors v0.19.7 h1:Lcq+o0mSwCLKACMxZhreVHigB9ebghJ/lrmeaqASbjo=
 github.com/go-openapi/errors v0.19.7/go.mod h1:cM//ZKUKyO06HSwqAelJ5NsEMMcpa6VpXe8DOa1Mi1M=
+github.com/go-openapi/errors v0.19.8 h1:doM+tQdZbUm9gydV9yR+iQNmztbjj7I3sW4sIcAwIzc=
+github.com/go-openapi/errors v0.19.8/go.mod h1:cM//ZKUKyO06HSwqAelJ5NsEMMcpa6VpXe8DOa1Mi1M=
 github.com/go-openapi/inflect v0.19.0 h1:9jCH9scKIbHeV9m12SmPilScz6krDxKRasNNSNPXu/4=
 github.com/go-openapi/inflect v0.19.0/go.mod h1:lHpZVlpIQqLyKwJ4N+YSc9hchQy/i12fJykb83CRBH4=
 github.com/go-openapi/jsonpointer v0.17.0 h1:nH6xp8XdXHx8dqveo0ZuJBluCO2qGrPbDNZ0dwoRHP0=
