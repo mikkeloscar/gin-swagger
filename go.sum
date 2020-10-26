@@ -99,6 +99,8 @@ github.com/go-openapi/analysis v0.19.5 h1:8b2ZgKfKIUTVQpTb77MoRDIMEIwvDVw40o3aOX
 github.com/go-openapi/analysis v0.19.5/go.mod h1:hkEAkxagaIvIP7VTn8ygJNkd4kAYON2rCu0v0ObL0AU=
 github.com/go-openapi/analysis v0.19.10 h1:5BHISBAXOc/aJK25irLZnx2D3s6WyYaY9D4gmuz9fdE=
 github.com/go-openapi/analysis v0.19.10/go.mod h1:qmhS3VNFxBlquFJ0RGoDtylO9y4pgTAUNE9AEEMdlJQ=
+github.com/go-openapi/analysis v0.19.11 h1:IWit8yDJzyjkN9vSH3KHjAIrRY25zJsLA4uqHjC9PgI=
+github.com/go-openapi/analysis v0.19.11/go.mod h1:qmhS3VNFxBlquFJ0RGoDtylO9y4pgTAUNE9AEEMdlJQ=
 github.com/go-openapi/errors v0.17.0 h1:g5DzIh94VpuR/dd6Ff8KqyHNnw7yBa2xSHIPPzjRDUo=
 github.com/go-openapi/errors v0.17.0/go.mod h1:LcZQpmvG4wyF5j4IhA73wkLFQg+QJXOQHVjmcZxhka0=
 github.com/go-openapi/errors v0.18.0/go.mod h1:LcZQpmvG4wyF5j4IhA73wkLFQg+QJXOQHVjmcZxhka0=
