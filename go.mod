@@ -8,7 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-openapi/analysis v0.19.10
 	github.com/go-openapi/errors v0.19.7
-	github.com/go-openapi/runtime v0.19.22
+	github.com/go-openapi/runtime v0.19.23
 	github.com/go-openapi/strfmt v0.19.6
 	github.com/go-openapi/swag v0.19.9
 	github.com/go-openapi/validate v0.19.11
