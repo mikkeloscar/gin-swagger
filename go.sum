@@ -221,8 +221,8 @@ github.com/go-openapi/validate v0.19.12 h1:mPLM/bfbd00PGOCJlU0yJL7IulkZ+q9VjPv7U
 github.com/go-openapi/validate v0.19.12/go.mod h1:Rzou8hA/CBw8donlS6WNEUQupNvUZ0waH08tGe6kAQ4=
 github.com/go-openapi/validate v0.19.15 h1:oUHZO8jD7p5oRLANlXF0U8ic9ePBUkDQyRZdN0EhL6M=
 github.com/go-openapi/validate v0.19.15/go.mod h1:tbn/fdOwYHgrhPBzidZfJC2MIVvs9GA7monOmWBbeCI=
-github.com/go-openapi/validate v0.20.0 h1:pzutNCCBZGZlE+u8HD3JZyWdc/TVbtVwlWUp8/vgUKk=
-github.com/go-openapi/validate v0.20.0/go.mod h1:b60iJT+xNNLfaQJUqLI7946tYiFEOuE9E4k54HpKcJ0=
+github.com/go-openapi/validate v0.20.1 h1:QGQ5CvK74E28t3DkegGweKR+auemUi5IdpMc4x3UW6s=
+github.com/go-openapi/validate v0.20.1/go.mod h1:b60iJT+xNNLfaQJUqLI7946tYiFEOuE9E4k54HpKcJ0=
 github.com/go-playground/assert/v2 v2.0.1 h1:MsBgLAaY856+nPRTKrp3/OZK38U/wa0CcBYNjji3q3A=
 github.com/go-playground/assert/v2 v2.0.1/go.mod h1:VDjEfimB/XKnb+ZQfWdccd7VUvScMdVu0Titje2rxJ4=
 github.com/go-playground/locales v0.13.0 h1:HyWk6mgj5qFqCT5fjGBuRArbVDfE4hi8+e8ceBS/t7Q=
