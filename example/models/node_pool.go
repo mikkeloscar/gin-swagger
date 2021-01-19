@@ -6,6 +6,8 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"context"
+
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
@@ -20,18 +22,22 @@ type NodePool struct {
 	// A discount strategy indicates the type of discount to be associated with the node pool. This might affect the availability of the nodes in the pools in case of preemptible or spot instances.
 	// Possible values are "none", "aggressive", "moderate", "reasonable" #TODO naming should be "reasonable" :-D
 	//
+	// Example: none
 	// Required: true
 	DiscountStrategy *string `json:"discount_strategy"`
 
 	// Type of the instance to use for the nodes in the pool. All the nodes in the pool share the same instance types
+	// Example: m4.medium
 	// Required: true
 	InstanceType *string `json:"instance_type"`
 
 	// Name of the node pool
+	// Example: pool-1
 	// Required: true
 	Name *string `json:"name"`
 
 	// Profile used for the node pool. Possible values are "worker/default", "worker/database", "worker/gpu", "master". The "master" profile identifies the pool containing the cluster master
+	// Example: worker/default
 	// Required: true
 	Profile *string `json:"profile"`
 }
@@ -95,6 +101,11 @@ func (m *NodePool) validateProfile(formats strfmt.Registry) error {
 		return err
 	}
 
+	return nil
+}
+
+// ContextValidate validates this node pool based on context it is used
+func (m *NodePool) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 

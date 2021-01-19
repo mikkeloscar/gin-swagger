@@ -11,7 +11,7 @@ LDFLAGS      ?= -X main.version=$(VERSION) -w -s
 default: build
 
 clean:
-	@rm $(BINARY)
+	@rm -f $(BINARY)
 
 test:
 	$(GO) test -v $(GOPKGS)

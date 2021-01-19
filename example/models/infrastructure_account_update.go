@@ -6,6 +6,7 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/go-openapi/errors"
@@ -24,9 +25,11 @@ type InfrastructureAccountUpdate struct {
 	LifecycleStatus string `json:"lifecycle_status,omitempty"`
 
 	// Name of the infrastructure account
+	// Example: foo
 	Name string `json:"name,omitempty"`
 
 	// Owner of the infrastructure account (references an object in the organization service)
+	// Example: team/bar
 	Owner string `json:"owner,omitempty"`
 }
 
@@ -80,7 +83,6 @@ func (m *InfrastructureAccountUpdate) validateLifecycleStatusEnum(path, location
 }
 
 func (m *InfrastructureAccountUpdate) validateLifecycleStatus(formats strfmt.Registry) error {
-
 	if swag.IsZero(m.LifecycleStatus) { // not required
 		return nil
 	}
@@ -90,6 +92,11 @@ func (m *InfrastructureAccountUpdate) validateLifecycleStatus(formats strfmt.Reg
 		return err
 	}
 
+	return nil
+}
+
+// ContextValidate validates this infrastructure account update based on context it is used
+func (m *InfrastructureAccountUpdate) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 

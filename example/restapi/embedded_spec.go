@@ -1128,6 +1128,7 @@ func init() {
     "OAuth2": {
       "type": "oauth2",
       "flow": "password",
+      "authorizationUrl": "",
       "tokenUrl": "https://info.services.auth.zalando.com/oauth2/tokeninfo",
       "scopes": {
         "uid": "Unique identifier of the user accessing the service."
@@ -2326,6 +2327,7 @@ func init() {
     "OAuth2": {
       "type": "oauth2",
       "flow": "password",
+      "authorizationUrl": "",
       "tokenUrl": "https://info.services.auth.zalando.com/oauth2/tokeninfo",
       "scopes": {
         "uid": "Unique identifier of the user accessing the service."
