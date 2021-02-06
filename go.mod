@@ -12,7 +12,7 @@ require (
 	github.com/go-openapi/strfmt v0.20.0
 	github.com/go-openapi/swag v0.19.13
 	github.com/go-openapi/validate v0.20.1
-	github.com/go-swagger/go-swagger v0.26.0
+	github.com/go-swagger/go-swagger v0.26.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/zalando/gin-oauth2 v1.5.2
