@@ -14,7 +14,7 @@ require (
 	github.com/go-openapi/validate v0.20.2
 	github.com/go-swagger/go-swagger v0.26.1
 	github.com/opentracing/opentracing-go v1.2.0
-	github.com/sirupsen/logrus v1.7.0
+	github.com/sirupsen/logrus v1.8.0
 	github.com/spf13/afero v1.5.1 // indirect
 	github.com/zalando/gin-oauth2 v1.5.2
 	golang.org/x/mod v0.4.1 // indirect
