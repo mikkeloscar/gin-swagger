@@ -138,7 +138,7 @@ func main() {
         log.Fatal(err)
     }
     svc := &mySvc{health: true}
-    api := restapi.NewAPI(svc, &apiConfig)
+    api := restapi.NewServer(svc, &apiConfig)
     err = api.RunWithSigHandler()
     if err != nil {
         log.Fatal(err)
