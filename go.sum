@@ -221,7 +221,6 @@ github.com/go-stack/stack v1.8.0 h1:5SgMzNM5HxrEjV0ww2lTmX6E2Izsfxas4+YHWRs3Lsk=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/go-swagger/go-swagger v0.27.0 h1:K7+nkBuf4oS1jTBrdvWqYFpqD69V5CN8HamZzCDDhAI=
 github.com/go-swagger/go-swagger v0.27.0/go.mod h1:WodZVysInJilkW7e6IRw+dZGp5yW6rlMFZ4cb+THl9A=
-github.com/go-swagger/scan-repo-boundary v0.0.0-20180623220736-973b3573c013 h1:l9rI6sNaZgNC0LnF3MiE+qTmyBA/tZAg1rtyrGbUMK0=
 github.com/go-swagger/scan-repo-boundary v0.0.0-20180623220736-973b3573c013/go.mod h1:b65mBPzqzZWxOZGxSWrqs4GInLIn+u99Q9q7p+GKni0=
 github.com/gobuffalo/attrs v0.0.0-20190224210810-a9411de4debd/go.mod h1:4duuawTqi2wkkpB4ePgWMaai6/Kc6WEz83bhFwpHzj0=
 github.com/gobuffalo/depgen v0.0.0-20190329151759-d478694a28d3/go.mod h1:3STtPUQYuzV0gBVOY3vy6CfMm/ljR4pABfrTeHNLHUY=
