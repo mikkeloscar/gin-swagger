@@ -1,14 +1,17 @@
 package main
 
 import (
+	"embed"
 	"log"
-	"os"
 	"path"
 
 	"github.com/alecthomas/kingpin"
 	"github.com/go-openapi/analysis"
 	"github.com/go-swagger/go-swagger/generator"
 )
+
+//go:embed templates/*
+var templates embed.FS
 
 //go:generate go-bindata -pkg main -o bindata.go templates
 
@@ -17,8 +20,7 @@ const (
 )
 
 var (
-	assetDirFmt = path.Join(os.TempDir(), "gin-swagger-%d")
-	config      struct {
+	config struct {
 		Application string
 		SwaggerPath string
 	}
@@ -38,13 +40,18 @@ func main() {
 }
 
 func run(application, specPath string) error {
-	for _, asset := range AssetNames() {
-		data, err := Asset(asset)
+	assets, err := templates.ReadDir("templates")
+	if err != nil {
+		return err
+	}
+
+	for _, asset := range assets {
+		data, err := templates.ReadFile(path.Join("templates", asset.Name()))
 		if err != nil {
 			return err
 		}
 
-		err = generator.AddFile(asset, string(data))
+		err = generator.AddFile(path.Join("templates", asset.Name()), string(data))
 		if err != nil {
 			return err
 		}
@@ -135,7 +142,7 @@ func run(application, specPath string) error {
 		},
 	}
 
-	err := opts.EnsureDefaults()
+	err = opts.EnsureDefaults()
 	if err != nil {
 		return err
 	}
