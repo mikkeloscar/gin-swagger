@@ -37,6 +37,13 @@ func init() {
   "paths": {
     "/infrastructure-accounts": {
       "get": {
+        "security": [
+          {
+            "OAuth2": [
+              "uid"
+            ]
+          }
+        ],
         "tags": [
           "InfrastructureAccounts"
         ],
@@ -72,6 +79,14 @@ func init() {
         }
       },
       "post": {
+        "security": [
+          {
+            "OAuth2": [
+              "uid",
+              "write"
+            ]
+          }
+        ],
         "description": "Creates a new infrastructure account\n",
         "tags": [
           "InfrastructureAccounts"
@@ -155,6 +170,14 @@ func init() {
         }
       },
       "patch": {
+        "security": [
+          {
+            "OAuth2": [
+              "uid",
+              "write"
+            ]
+          }
+        ],
         "description": "update an infrastructure account.",
         "tags": [
           "InfrastructureAccounts"
@@ -1130,7 +1153,8 @@ func init() {
       "flow": "password",
       "tokenUrl": "https://info.services.auth.zalando.com/oauth2/tokeninfo",
       "scopes": {
-        "uid": "Unique identifier of the user accessing the service."
+        "uid": "Unique identifier of the user accessing the service.",
+        "write": "Allows write"
       }
     }
   },
@@ -1162,6 +1186,13 @@ func init() {
   "paths": {
     "/infrastructure-accounts": {
       "get": {
+        "security": [
+          {
+            "OAuth2": [
+              "uid"
+            ]
+          }
+        ],
         "tags": [
           "InfrastructureAccounts"
         ],
@@ -1197,6 +1228,14 @@ func init() {
         }
       },
       "post": {
+        "security": [
+          {
+            "OAuth2": [
+              "uid",
+              "write"
+            ]
+          }
+        ],
         "description": "Creates a new infrastructure account\n",
         "tags": [
           "InfrastructureAccounts"
@@ -1285,6 +1324,14 @@ func init() {
         }
       },
       "patch": {
+        "security": [
+          {
+            "OAuth2": [
+              "uid",
+              "write"
+            ]
+          }
+        ],
         "description": "update an infrastructure account.",
         "tags": [
           "InfrastructureAccounts"
@@ -2328,7 +2375,8 @@ func init() {
       "flow": "password",
       "tokenUrl": "https://info.services.auth.zalando.com/oauth2/tokeninfo",
       "scopes": {
-        "uid": "Unique identifier of the user accessing the service."
+        "uid": "Unique identifier of the user accessing the service.",
+        "write": "Allows write"
       }
     }
   },

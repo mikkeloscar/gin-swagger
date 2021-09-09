@@ -109,21 +109,28 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 {{ end }}	{{ if .Authorized }}if enableAuth {
 		{{ $routeName := (pascalize .Name) }}
 		{{ $securityDefinitions := .SecurityDefinitions }}
-		{{ range .Security }}{{ range . }}{{ $name := .Name }}{{ range $i, $def := $securityDefinitions }}
-		{{ if eq $def.ID $name }}
-		{{ if eq $def.Type "oauth2" }}
+		{{ range .Security }}
+			{{ range . }}
+				{{ $name := .Name }}
+				{{ $scopes := .Scopes }}
+				{{ range $i, $def := $securityDefinitions }}
+					{{ if eq $def.ID $name }}
+						{{ if eq $def.Type "oauth2" }}
 		routeTokenURL := tokenURL
 		if routeTokenURL == "" {
 			routeTokenURL = {{printf "%q" $def.TokenURL}}
 		}
 		routes.{{ $routeName }}.Auth = ginoauth2.Auth(
-			middleware.ScopesAuth({{range $index, $scope := .Scopes}}{{if $index}},{{end}}"{{$scope}}"{{end}}),
+			middleware.ScopesAuth({{range $index, $scope := $scopes}}{{if $index}},{{end}}"{{$scope}}"{{end}}),
 			oauth2.Endpoint{
 				TokenURL: routeTokenURL,
 			},
 		)
+						{{ end }}
+					{{ end }}
+				{{ end }}
+			{{ end }}
 		{{ end }}
-		{{ end }}{{ end }}{{ end }}{{ end }}
 	}
 {{end}}
 {{end}}

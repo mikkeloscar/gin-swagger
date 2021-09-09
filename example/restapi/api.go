@@ -218,7 +218,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
 		}
 		routes.CreateInfrastructureAccount.Auth = ginoauth2.Auth(
-			middleware.ScopesAuth("uid"),
+			middleware.ScopesAuth("uid", "write"),
 			oauth2.Endpoint{
 				TokenURL: routeTokenURL,
 			},
@@ -441,7 +441,7 @@ func initializeRoutes(enableAuth bool, tokenURL string, tracer opentracing.Trace
 			routeTokenURL = "https://info.services.auth.zalando.com/oauth2/tokeninfo"
 		}
 		routes.UpdateInfrastructureAccount.Auth = ginoauth2.Auth(
-			middleware.ScopesAuth("uid"),
+			middleware.ScopesAuth("uid", "write"),
 			oauth2.Endpoint{
 				TokenURL: routeTokenURL,
 			},
