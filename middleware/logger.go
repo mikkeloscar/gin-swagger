@@ -9,7 +9,7 @@ import (
 
 // LogrusLogger instance a Logger middleware that uses logrus for logging.
 // The output is in structured logging with the following format:
-// time="2017-09-19T15:27:37+02:00" level=info client="::1" duration=66ns method=GET path=/ status=404
+// time="2017-09-19T15:27:37+02:00" level=info client="::1" duration=66ns method=GET path=/ status=404 uid=johndoe
 func LogrusLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -28,12 +28,18 @@ func LogrusLogger() gin.HandlerFunc {
 		status := c.Writer.Status()
 		comment := c.Errors.ByType(gin.ErrorTypePrivate).String()
 
-		log.WithFields(log.Fields{
+		fields := log.Fields{
 			"status":   status,
 			"duration": duration,
 			"client":   clientIP,
 			"method":   method,
 			"path":     path,
-		}).Infoln(comment)
+		}
+
+		if uid := GetUser(c).UID; uid != "" {
+			fields["uid"] = uid
+		}
+
+		log.WithFields(fields).Infoln(comment)
 	}
 }
