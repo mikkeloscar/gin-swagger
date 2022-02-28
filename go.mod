@@ -7,10 +7,10 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-openapi/analysis v0.21.2
 	github.com/go-openapi/errors v0.20.2
-	github.com/go-openapi/runtime v0.23.0
+	github.com/go-openapi/runtime v0.23.1
 	github.com/go-openapi/strfmt v0.21.2
 	github.com/go-openapi/swag v0.21.1
-	github.com/go-openapi/validate v0.20.3
+	github.com/go-openapi/validate v0.21.0
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/go-swagger/go-swagger v0.29.0
 	github.com/opentracing/opentracing-go v1.2.0
