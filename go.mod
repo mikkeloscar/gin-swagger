@@ -8,7 +8,7 @@ require (
 	github.com/go-openapi/analysis v0.21.3
 	github.com/go-openapi/errors v0.20.2
 	github.com/go-openapi/runtime v0.24.1
-	github.com/go-openapi/strfmt v0.21.2
+	github.com/go-openapi/strfmt v0.21.3
 	github.com/go-openapi/swag v0.21.1
 	github.com/go-openapi/validate v0.22.0
 	github.com/go-playground/validator/v10 v10.11.0 // indirect
@@ -16,7 +16,6 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/zalando/gin-oauth2 v1.5.3
-	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/net v0.0.0-20220607020251-c690dde0001d // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
