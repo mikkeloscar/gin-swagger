@@ -205,8 +205,8 @@ github.com/go-playground/validator/v10 v10.11.0 h1:0W+xRM511GY47Yy3bZUbJVitCNg2B
 github.com/go-playground/validator/v10 v10.11.0/go.mod h1:i+3WkQ1FvaUjjxh1kSvIA4dMGDBiPU55YFDl0WbKdWU=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/go-stack/stack v1.8.1/go.mod h1:dcoOX6HbPZSZptuspn9bctJ+N/CnF5gGygcUP3XYfe4=
-github.com/go-swagger/go-swagger v0.30.2 h1:23odPUyQZdkNFZZSBJ3mqYYcdh+LnuReEbdWN18OMRo=
-github.com/go-swagger/go-swagger v0.30.2/go.mod h1:neDPes8r8PCz2JPvHRDj8BTULLh4VJUt7n6MpQqxhHM=
+github.com/go-swagger/go-swagger v0.30.3 h1:HuzvdMRed/9Q8vmzVcfNBQByZVtT79DNZxZ18OprdoI=
+github.com/go-swagger/go-swagger v0.30.3/go.mod h1:neDPes8r8PCz2JPvHRDj8BTULLh4VJUt7n6MpQqxhHM=
 github.com/go-swagger/scan-repo-boundary v0.0.0-20180623220736-973b3573c013/go.mod h1:b65mBPzqzZWxOZGxSWrqs4GInLIn+u99Q9q7p+GKni0=
 github.com/gobuffalo/attrs v0.0.0-20190224210810-a9411de4debd/go.mod h1:4duuawTqi2wkkpB4ePgWMaai6/Kc6WEz83bhFwpHzj0=
 github.com/gobuffalo/depgen v0.0.0-20190329151759-d478694a28d3/go.mod h1:3STtPUQYuzV0gBVOY3vy6CfMm/ljR4pABfrTeHNLHUY=
