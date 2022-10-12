@@ -19,3 +19,7 @@ build: $(BINARY)
 
 $(BINARY): $(SOURCES)
 	CGO_ENABLED=0 $(GO) build -o $(BINARY) $(BUILD_FLAGS) -ldflags "$(LDFLAGS)"
+
+install: build
+	$(GO) install -ldflags "$(LDFLAG~S)"
+
