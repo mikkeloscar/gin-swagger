@@ -5,7 +5,7 @@ import (
 	"log"
 	"path"
 
-	"github.com/alecthomas/kingpin"
+	"github.com/alecthomas/kingpin/v2"
 	"github.com/go-openapi/analysis"
 	"github.com/go-swagger/go-swagger/generator"
 )

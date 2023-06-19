@@ -8,8 +8,8 @@ package restapi
 import (
 	"fmt"
 
+	"github.com/alecthomas/kingpin/v2"
 	opentracing "github.com/opentracing/opentracing-go"
-	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 const (

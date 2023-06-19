@@ -1,8 +1,7 @@
 module github.com/mikkeloscar/gin-swagger
 
 require (
-	github.com/alecthomas/kingpin v2.2.6+incompatible
-	github.com/alecthomas/units v0.0.0-20201120081800-1786d5ef83d4 // indirect
+	github.com/alecthomas/kingpin/v2 v2.3.2
 	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-openapi/analysis v0.21.4
@@ -17,7 +16,6 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/zalando/gin-oauth2 v1.5.5
 	golang.org/x/oauth2 v0.9.0
-	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
 
 go 1.16
