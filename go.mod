@@ -9,7 +9,7 @@ require (
 	github.com/go-openapi/runtime v0.26.0
 	github.com/go-openapi/strfmt v0.21.7
 	github.com/go-openapi/swag v0.22.4
-	github.com/go-openapi/validate v0.22.2
+	github.com/go-openapi/validate v0.22.3
 	github.com/go-swagger/go-swagger v0.30.5
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pelletier/go-toml v1.9.5 // indirect
