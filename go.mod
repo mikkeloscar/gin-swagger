@@ -7,7 +7,7 @@ require (
 	github.com/go-openapi/analysis v0.21.4
 	github.com/go-openapi/errors v0.20.4
 	github.com/go-openapi/runtime v0.26.2
-	github.com/go-openapi/strfmt v0.21.8
+	github.com/go-openapi/strfmt v0.21.9
 	github.com/go-openapi/swag v0.22.4
 	github.com/go-openapi/validate v0.22.3
 	github.com/go-swagger/go-swagger v0.30.5
