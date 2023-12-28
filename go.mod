@@ -8,7 +8,7 @@ require (
 	github.com/go-openapi/errors v0.21.0
 	github.com/go-openapi/runtime v0.26.2
 	github.com/go-openapi/strfmt v0.21.10
-	github.com/go-openapi/swag v0.22.5
+	github.com/go-openapi/swag v0.22.6
 	github.com/go-openapi/validate v0.22.4
 	github.com/go-swagger/go-swagger v0.30.5
 	github.com/opentracing/opentracing-go v1.2.0
