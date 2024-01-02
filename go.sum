@@ -758,8 +758,8 @@ github.com/go-logr/stdr v1.2.2/go.mod h1:mMo/vtBO5dYbehREoey6XUKy/eSumjCCveDpRre
 github.com/go-openapi/analysis v0.21.2/go.mod h1:HZwRk4RRisyG8vx2Oe6aqeSQcoxRp47Xkp3+K6q+LdY=
 github.com/go-openapi/analysis v0.21.4/go.mod h1:4zQ35W4neeZTqh3ol0rv/O8JBbka9QyAgQRPp9y3pfo=
 github.com/go-openapi/analysis v0.21.5/go.mod h1:25YcZosX9Lwz2wBsrFrrsL8bmjjXdlyP6zsr2AMy29M=
-github.com/go-openapi/analysis v0.22.0 h1:wQ/d07nf78HNj4u+KiSY0sT234IAyePPbMgpUjUJQR0=
-github.com/go-openapi/analysis v0.22.0/go.mod h1:acDnkkCI2QxIo8sSIPgmp1wUlRohV7vfGtAIVae73b0=
+github.com/go-openapi/analysis v0.22.1 h1:nBWSKtx/OQr6FADwy0AYDZFdT05Abv5eYWECByHEQMg=
+github.com/go-openapi/analysis v0.22.1/go.mod h1:acDnkkCI2QxIo8sSIPgmp1wUlRohV7vfGtAIVae73b0=
 github.com/go-openapi/errors v0.19.8/go.mod h1:cM//ZKUKyO06HSwqAelJ5NsEMMcpa6VpXe8DOa1Mi1M=
 github.com/go-openapi/errors v0.19.9/go.mod h1:cM//ZKUKyO06HSwqAelJ5NsEMMcpa6VpXe8DOa1Mi1M=
 github.com/go-openapi/errors v0.20.2/go.mod h1:cM//ZKUKyO06HSwqAelJ5NsEMMcpa6VpXe8DOa1Mi1M=
