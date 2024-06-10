@@ -14,7 +14,7 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/zalando/gin-oauth2 v1.5.7
-	golang.org/x/oauth2 v0.20.0
+	golang.org/x/oauth2 v0.21.0
 )
 
 go 1.16
