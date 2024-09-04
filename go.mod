@@ -13,8 +13,8 @@ require (
 	github.com/go-swagger/go-swagger v0.31.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/zalando/gin-oauth2 v1.5.7
-	golang.org/x/oauth2 v0.21.0
+	github.com/zalando/gin-oauth2 v1.5.8
+	golang.org/x/oauth2 v0.22.0
 )
 
 go 1.16
