@@ -13,7 +13,7 @@ require (
 	github.com/go-swagger/go-swagger v0.31.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/zalando/gin-oauth2 v1.5.8
+	github.com/zalando/gin-oauth2 v1.5.9
 	golang.org/x/oauth2 v0.23.0
 )
 
