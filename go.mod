@@ -3,7 +3,7 @@ module github.com/mikkeloscar/gin-swagger
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/gin-contrib/pprof v1.5.3
-	github.com/gin-gonic/gin v1.10.0
+	github.com/gin-gonic/gin v1.10.1
 	github.com/go-openapi/analysis v0.23.0
 	github.com/go-openapi/errors v0.22.1
 	github.com/go-openapi/runtime v0.28.0
