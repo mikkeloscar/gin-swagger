@@ -50,7 +50,7 @@ func TestScopesAuth(t *testing.T) {
 	} {
 		t.Run(tc.msg, func(t *testing.T) {
 			fn := ScopesAuth(tc.scopes...)
-			if tc.accepted != fn(tc.container, &gin.Context{Keys: make(map[string]interface{})}) {
+			if tc.accepted != fn(tc.container, &gin.Context{Keys: make(map[any]any)}) {
 				t.Errorf("expected accepted: %t, got %t", tc.accepted, fn(tc.container, nil))
 			}
 		})
