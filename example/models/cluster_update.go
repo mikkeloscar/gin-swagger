@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	stderrors "errors"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -42,7 +43,7 @@ type ClusterUpdate struct {
 
 	// Status of the cluster.
 	// Example: ready
-	// Enum: [requested creating ready decommission-requested decommissioned]
+	// Enum: ["requested","creating","ready","decommission-requested","decommissioned"]
 	LifecycleStatus string `json:"lifecycle_status,omitempty"`
 
 	// The provider of the cluster. Possible values are "zalando-aws", "GKE", ...
@@ -71,7 +72,7 @@ func (m *ClusterUpdate) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-var clusterUpdateTypeLifecycleStatusPropEnum []interface{}
+var clusterUpdateTypeLifecycleStatusPropEnum []any
 
 func init() {
 	var res []string
@@ -129,11 +130,15 @@ func (m *ClusterUpdate) validateStatus(formats strfmt.Registry) error {
 
 	if m.Status != nil {
 		if err := m.Status.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
+			ve := new(errors.Validation)
+			if stderrors.As(err, &ve) {
 				return ve.ValidateName("status")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
+			}
+			ce := new(errors.CompositeError)
+			if stderrors.As(err, &ce) {
 				return ce.ValidateName("status")
 			}
+
 			return err
 		}
 	}
@@ -164,11 +169,15 @@ func (m *ClusterUpdate) contextValidateStatus(ctx context.Context, formats strfm
 		}
 
 		if err := m.Status.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
+			ve := new(errors.Validation)
+			if stderrors.As(err, &ve) {
 				return ve.ValidateName("status")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
+			}
+			ce := new(errors.CompositeError)
+			if stderrors.As(err, &ce) {
 				return ce.ValidateName("status")
 			}
+
 			return err
 		}
 	}

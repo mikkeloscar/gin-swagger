@@ -37,13 +37,6 @@ func init() {
   "paths": {
     "/infrastructure-accounts": {
       "get": {
-        "security": [
-          {
-            "OAuth2": [
-              "uid"
-            ]
-          }
-        ],
         "tags": [
           "InfrastructureAccounts"
         ],
@@ -76,17 +69,16 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           }
-        }
-      },
-      "post": {
+        },
         "security": [
           {
             "OAuth2": [
-              "uid",
-              "write"
+              "uid"
             ]
           }
-        ],
+        ]
+      },
+      "post": {
         "description": "Creates a new infrastructure account\n",
         "tags": [
           "InfrastructureAccounts"
@@ -129,7 +121,15 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "uid",
+              "write"
+            ]
+          }
+        ]
       }
     },
     "/infrastructure-accounts/{account_id}": {
@@ -170,14 +170,6 @@ func init() {
         }
       },
       "patch": {
-        "security": [
-          {
-            "OAuth2": [
-              "uid",
-              "write"
-            ]
-          }
-        ],
         "description": "update an infrastructure account.",
         "tags": [
           "InfrastructureAccounts"
@@ -220,7 +212,15 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "uid",
+              "write"
+            ]
+          }
+        ]
       }
     },
     "/kubernetes-clusters": {
@@ -1186,13 +1186,6 @@ func init() {
   "paths": {
     "/infrastructure-accounts": {
       "get": {
-        "security": [
-          {
-            "OAuth2": [
-              "uid"
-            ]
-          }
-        ],
         "tags": [
           "InfrastructureAccounts"
         ],
@@ -1225,17 +1218,16 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           }
-        }
-      },
-      "post": {
+        },
         "security": [
           {
             "OAuth2": [
-              "uid",
-              "write"
+              "uid"
             ]
           }
-        ],
+        ]
+      },
+      "post": {
         "description": "Creates a new infrastructure account\n",
         "tags": [
           "InfrastructureAccounts"
@@ -1278,7 +1270,15 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "uid",
+              "write"
+            ]
+          }
+        ]
       }
     },
     "/infrastructure-accounts/{account_id}": {
@@ -1324,14 +1324,6 @@ func init() {
         }
       },
       "patch": {
-        "security": [
-          {
-            "OAuth2": [
-              "uid",
-              "write"
-            ]
-          }
-        ],
         "description": "update an infrastructure account.",
         "tags": [
           "InfrastructureAccounts"
@@ -1379,7 +1371,15 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "uid",
+              "write"
+            ]
+          }
+        ]
       }
     },
     "/kubernetes-clusters": {

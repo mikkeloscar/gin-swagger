@@ -19,15 +19,16 @@ import (
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/mikkeloscar/gin-swagger/api"
-	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/clusters"
-	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/config_items"
-	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/infrastructure_accounts"
-	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/node_pools"
 	"github.com/mikkeloscar/gin-swagger/middleware"
 	"github.com/mikkeloscar/gin-swagger/tracing"
 	opentracing "github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
 	ginoauth2 "github.com/zalando/gin-oauth2"
+
+	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/clusters"
+	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/config_items"
+	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/infrastructure_accounts"
+	"github.com/mikkeloscar/gin-swagger/example/restapi/operations/node_pools"
 )
 
 // Routes defines all the routes of the Server service.

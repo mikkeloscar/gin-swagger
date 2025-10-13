@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	stderrors "errors"
 	"strconv"
 
 	"github.com/go-openapi/errors"
@@ -70,7 +71,7 @@ type Cluster struct {
 	// Status of the cluster.
 	// Example: ready
 	// Required: true
-	// Enum: [requested creating ready decommission-requested decommissioned]
+	// Enum: ["requested","creating","ready","decommission-requested","decommissioned"]
 	LifecycleStatus *string `json:"lifecycle_status"`
 
 	// Cluster identifier which is local to the region
@@ -224,7 +225,7 @@ func (m *Cluster) validateInfrastructureAccount(formats strfmt.Registry) error {
 	return nil
 }
 
-var clusterTypeLifecycleStatusPropEnum []interface{}
+var clusterTypeLifecycleStatusPropEnum []any
 
 func init() {
 	var res []string
@@ -297,11 +298,15 @@ func (m *Cluster) validateNodePools(formats strfmt.Registry) error {
 
 		if m.NodePools[i] != nil {
 			if err := m.NodePools[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
+				ve := new(errors.Validation)
+				if stderrors.As(err, &ve) {
 					return ve.ValidateName("node_pools" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
+				}
+				ce := new(errors.CompositeError)
+				if stderrors.As(err, &ce) {
 					return ce.ValidateName("node_pools" + "." + strconv.Itoa(i))
 				}
+
 				return err
 			}
 		}
@@ -336,11 +341,15 @@ func (m *Cluster) validateStatus(formats strfmt.Registry) error {
 
 	if m.Status != nil {
 		if err := m.Status.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
+			ve := new(errors.Validation)
+			if stderrors.As(err, &ve) {
 				return ve.ValidateName("status")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
+			}
+			ce := new(errors.CompositeError)
+			if stderrors.As(err, &ce) {
 				return ce.ValidateName("status")
 			}
+
 			return err
 		}
 	}
@@ -377,11 +386,15 @@ func (m *Cluster) contextValidateNodePools(ctx context.Context, formats strfmt.R
 			}
 
 			if err := m.NodePools[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
+				ve := new(errors.Validation)
+				if stderrors.As(err, &ve) {
 					return ve.ValidateName("node_pools" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
+				}
+				ce := new(errors.CompositeError)
+				if stderrors.As(err, &ce) {
 					return ce.ValidateName("node_pools" + "." + strconv.Itoa(i))
 				}
+
 				return err
 			}
 		}
@@ -400,11 +413,15 @@ func (m *Cluster) contextValidateStatus(ctx context.Context, formats strfmt.Regi
 		}
 
 		if err := m.Status.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
+			ve := new(errors.Validation)
+			if stderrors.As(err, &ve) {
 				return ve.ValidateName("status")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
+			}
+			ce := new(errors.CompositeError)
+			if stderrors.As(err, &ce) {
 				return ce.ValidateName("status")
 			}
+
 			return err
 		}
 	}
