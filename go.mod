@@ -13,7 +13,7 @@ require (
 	github.com/go-swagger/go-swagger v0.33.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/zalando/gin-oauth2 v1.5.12
+	github.com/zalando/gin-oauth2 v1.5.13
 	golang.org/x/oauth2 v0.32.0
 )
 
@@ -92,7 +92,7 @@ require (
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/tools v0.36.0 // indirect
-	google.golang.org/protobuf v1.36.9 // indirect
+	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
