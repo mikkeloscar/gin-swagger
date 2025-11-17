@@ -6,14 +6,14 @@ require (
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-openapi/analysis v0.24.1
 	github.com/go-openapi/errors v0.22.4
-	github.com/go-openapi/runtime v0.29.1
+	github.com/go-openapi/runtime v0.29.2
 	github.com/go-openapi/strfmt v0.25.0
 	github.com/go-openapi/swag v0.25.1
 	github.com/go-openapi/validate v0.25.1
 	github.com/go-swagger/go-swagger v0.33.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/zalando/gin-oauth2 v1.5.13
+	github.com/zalando/gin-oauth2 v1.5.14
 	golang.org/x/oauth2 v0.33.0
 )
 
