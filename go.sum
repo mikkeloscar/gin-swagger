@@ -183,8 +183,8 @@ github.com/ugorji/go/codec v1.3.0 h1:Qd2W2sQawAfG8XSvzwhBeoGq71zXOC/Q1E9y/wUcsUA
 github.com/ugorji/go/codec v1.3.0/go.mod h1:pRBVtBSKl77K30Bv8R2P+cLSGaTtex6fsA2Wjqmfxj4=
 github.com/xhit/go-str2duration/v2 v2.1.0 h1:lxklc02Drh6ynqX+DdPyp5pCKLUQpRT8bp8Ydu2Bstc=
 github.com/xhit/go-str2duration/v2 v2.1.0/go.mod h1:ohY8p+0f07DiV6Em5LKB0s2YpLtXVyJfNt1+BlmyAsU=
-github.com/zalando/gin-oauth2 v1.5.14 h1:GN2cZrprpccYbu/jsozzcedTI/7kEfbhd/KlMVB69jc=
-github.com/zalando/gin-oauth2 v1.5.14/go.mod h1:FBJ2pWEGtopCR30PH4KMMC+5kNlUA5bDlqu0m0UWyuo=
+github.com/zalando/gin-oauth2 v1.5.15 h1:LZU3dY9tzR/VrBHRR0mXHHKN8vFx7iN53J2p6sUlgV0=
+github.com/zalando/gin-oauth2 v1.5.15/go.mod h1:spC3HNSQIshQNLCZGSZn3DBTOXRhD1X8oimGM8wHLpQ=
 go.mongodb.org/mongo-driver v1.17.6 h1:87JUG1wZfWsr6rIz3ZmpH90rL5tea7O3IHuSwHUpsss=
 go.mongodb.org/mongo-driver v1.17.6/go.mod h1:Hy04i7O2kC4RS06ZrhPRqj/u4DTYkFDAAccj+rVKqgQ=
 go.uber.org/mock v0.5.2 h1:LbtPTcP8A5k9WPXj54PPPbjcI4Y6lhyOZXn+VS7wNko=
