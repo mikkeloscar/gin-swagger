@@ -4,7 +4,7 @@ require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/gin-contrib/pprof v1.5.3
 	github.com/gin-gonic/gin v1.12.0
-	github.com/go-openapi/analysis v0.24.3
+	github.com/go-openapi/analysis v0.25.0
 	github.com/go-openapi/errors v0.22.7
 	github.com/go-openapi/runtime v0.29.3
 	github.com/go-openapi/strfmt v0.26.1
