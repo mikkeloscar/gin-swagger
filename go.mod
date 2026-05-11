@@ -6,14 +6,14 @@ require (
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-openapi/analysis v0.25.0
 	github.com/go-openapi/errors v0.22.7
-	github.com/go-openapi/runtime v0.29.4
+	github.com/go-openapi/runtime v0.29.5
 	github.com/go-openapi/strfmt v0.26.2
 	github.com/go-openapi/swag v0.26.0
 	github.com/go-openapi/validate v0.25.2
 	github.com/go-swagger/go-swagger v0.33.2
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.9.4
-	github.com/zalando/gin-oauth2 v1.5.15
+	github.com/zalando/gin-oauth2 v1.5.16
 	golang.org/x/oauth2 v0.36.0
 )
 
@@ -91,7 +91,7 @@ require (
 	golang.org/x/sys v0.43.0 // indirect
 	golang.org/x/text v0.36.0 // indirect
 	golang.org/x/tools v0.43.0 // indirect
-	google.golang.org/protobuf v1.36.10 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
