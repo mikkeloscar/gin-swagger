@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"log"
+	"os"
 	"path"
 
 	"github.com/alecthomas/kingpin/v2"
@@ -40,22 +41,13 @@ func main() {
 }
 
 func run(application, specPath string) error {
-	assets, err := templates.ReadDir("templates")
+	templatesDir, err := extractTemplatesDir()
 	if err != nil {
 		return err
 	}
-
-	for _, asset := range assets {
-		data, err := templates.ReadFile(path.Join("templates", asset.Name()))
-		if err != nil {
-			return err
-		}
-
-		err = generator.AddFile(path.Join("templates", asset.Name()), string(data))
-		if err != nil {
-			return err
-		}
-	}
+	defer func() {
+		_ = os.RemoveAll(templatesDir)
+	}()
 
 	opts := &generator.GenOpts{
 		GenOptsCommon: generator.GenOptsCommon{
@@ -83,7 +75,7 @@ func run(application, specPath string) error {
 				Expand:       false,
 			},
 			ExcludeSpec:       false,
-			TemplateDir:       "",
+			TemplateDir:       templatesDir,
 			DumpData:          false,
 			Models:            nil,
 			Operations:        nil,
@@ -155,4 +147,42 @@ func run(application, specPath string) error {
 	}
 
 	return nil
+}
+
+func extractTemplatesDir() (string, error) {
+	tmpDir, err := os.MkdirTemp("", "gin-swagger-templates-*")
+	if err != nil {
+		return "", err
+	}
+
+	assets, err := templates.ReadDir("templates")
+	if err != nil {
+		_ = os.RemoveAll(tmpDir)
+		return "", err
+	}
+
+	for _, asset := range assets {
+		if asset.IsDir() {
+			continue
+		}
+
+		data, readErr := templates.ReadFile(path.Join("templates", asset.Name()))
+		if readErr != nil {
+			_ = os.RemoveAll(tmpDir)
+			return "", readErr
+		}
+
+		templatePath := path.Join(tmpDir, "templates", asset.Name())
+		if mkdirErr := os.MkdirAll(path.Dir(templatePath), 0o755); mkdirErr != nil {
+			_ = os.RemoveAll(tmpDir)
+			return "", mkdirErr
+		}
+
+		if writeErr := os.WriteFile(templatePath, data, 0o644); writeErr != nil {
+			_ = os.RemoveAll(tmpDir)
+			return "", writeErr
+		}
+	}
+
+	return tmpDir, nil
 }
