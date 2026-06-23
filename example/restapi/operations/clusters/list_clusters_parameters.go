@@ -16,7 +16,7 @@ import (
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
-	"github.com/go-openapi/swag"
+	"github.com/go-openapi/swag/conv"
 	"github.com/go-openapi/validate"
 
 	strfmt "github.com/go-openapi/strfmt"
@@ -255,7 +255,7 @@ func (o *ListClustersParams) bindCriticalityLevel(rawData []string, hasKey bool,
 		return nil
 	}
 
-	value, err := swag.ConvertInt32(raw)
+	value, err := conv.ConvertInt32(raw)
 	if err != nil {
 		return errors.InvalidType("criticality_level", "query", "int32", raw)
 	}
@@ -372,7 +372,7 @@ func (o *ListClustersParams) bindVerbose(rawData []string, hasKey bool, formats 
 		return nil
 	}
 
-	value, err := swag.ConvertBool(raw)
+	value, err := conv.ConvertBool(raw)
 	if err != nil {
 		return errors.InvalidType("verbose", "query", "bool", raw)
 	}
