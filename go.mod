@@ -4,7 +4,7 @@ require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/gin-contrib/pprof v1.5.4
 	github.com/gin-gonic/gin v1.12.0
-	github.com/go-openapi/analysis v0.25.2
+	github.com/go-openapi/analysis v0.25.3
 	github.com/go-openapi/errors v0.22.8
 	github.com/go-openapi/runtime v0.32.4
 	github.com/go-openapi/strfmt v0.26.3
@@ -13,10 +13,10 @@ require (
 	github.com/go-openapi/swag/jsonutils v0.26.1
 	github.com/go-openapi/swag/typeutils v0.26.1
 	github.com/go-openapi/validate v0.26.0
-	github.com/go-swagger/go-swagger v0.34.1
+	github.com/go-swagger/go-swagger v0.35.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.9.4
-	github.com/zalando/gin-oauth2 v1.5.16
+	github.com/zalando/gin-oauth2 v1.5.17
 	golang.org/x/oauth2 v0.36.0
 )
 
@@ -68,7 +68,7 @@ require (
 	github.com/oklog/ulid/v2 v2.1.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.3.1 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
-	github.com/quic-go/quic-go v0.59.1 // indirect
+	github.com/quic-go/quic-go v0.60.0 // indirect
 	github.com/rogpeppe/go-internal v1.15.0 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
@@ -83,15 +83,15 @@ require (
 	go.mongodb.org/mongo-driver/v2 v2.5.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.22.0 // indirect
-	golang.org/x/crypto v0.52.0 // indirect
-	golang.org/x/mod v0.36.0 // indirect
-	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/crypto v0.53.0 // indirect
+	golang.org/x/mod v0.37.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/sync v0.21.0 // indirect
-	golang.org/x/sys v0.45.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
-	golang.org/x/tools v0.45.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/text v0.38.0 // indirect
+	golang.org/x/tools v0.46.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-go 1.25.0
+go 1.25.8
