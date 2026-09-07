@@ -4,15 +4,15 @@ require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/gin-contrib/pprof v1.5.4
 	github.com/gin-gonic/gin v1.12.0
-	github.com/go-openapi/analysis v0.26.2
+	github.com/go-openapi/analysis v1.0.0
 	github.com/go-openapi/errors v0.22.8
-	github.com/go-openapi/runtime v0.33.1
-	github.com/go-openapi/strfmt v0.27.0
+	github.com/go-openapi/runtime v0.33.2
+	github.com/go-openapi/strfmt v0.27.1
 	github.com/go-openapi/swag v0.29.1
 	github.com/go-openapi/swag/conv v0.29.1
 	github.com/go-openapi/swag/jsonutils v0.29.1
 	github.com/go-openapi/swag/typeutils v0.29.1
-	github.com/go-openapi/validate v0.26.5
+	github.com/go-openapi/validate v1.0.0
 	github.com/go-swagger/go-swagger v0.36.5
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.10.2
@@ -37,7 +37,7 @@ require (
 	github.com/go-openapi/jsonpointer v1.0.0 // indirect
 	github.com/go-openapi/jsonreference v1.0.1 // indirect
 	github.com/go-openapi/loads v0.25.2 // indirect
-	github.com/go-openapi/spec v0.22.11 // indirect
+	github.com/go-openapi/spec v1.0.0 // indirect
 	github.com/go-openapi/swag/cmdutils v0.29.1 // indirect
 	github.com/go-openapi/swag/fileutils v0.29.1 // indirect
 	github.com/go-openapi/swag/loading v0.29.1 // indirect
@@ -94,4 +94,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-go 1.25.8
+go 1.26.0
