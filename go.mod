@@ -2,10 +2,10 @@ module github.com/mikkeloscar/gin-swagger
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
-	github.com/gin-contrib/pprof v1.5.5
+	github.com/gin-contrib/pprof v1.5.6
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-openapi/analysis v1.0.0
-	github.com/go-openapi/errors v0.22.8
+	github.com/go-openapi/errors v0.22.9
 	github.com/go-openapi/runtime v0.33.2
 	github.com/go-openapi/strfmt v0.27.2
 	github.com/go-openapi/swag v0.29.2
