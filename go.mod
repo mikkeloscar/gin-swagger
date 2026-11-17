@@ -2,7 +2,7 @@ module github.com/mikkeloscar/gin-swagger
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
-	github.com/gin-contrib/pprof v1.5.7
+	github.com/gin-contrib/pprof v1.5.8
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-openapi/analysis v1.0.1
 	github.com/go-openapi/errors v0.22.9
@@ -17,7 +17,7 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.10.2
 	github.com/zalando/gin-oauth2 v1.5.19
-	golang.org/x/oauth2 v0.37.0
+	golang.org/x/oauth2 v0.38.0
 )
 
 require (
